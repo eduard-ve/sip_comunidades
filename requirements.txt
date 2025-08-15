@@ -1,0 +1,29 @@
+# requirements.txt - Sistema de Información Poblacional (Versión SQLite)
+
+# Django Framework
+Django==4.2.7
+djangorestframework==3.14.0
+
+# Formularios y Validación
+django-crispy-forms==2.1
+crispy-bootstrap5==0.7
+
+# Autenticación
+django-allauth==0.57.0
+
+# Archivos y Media
+Pillow==10.4.0
+
+# Reportes y Exportación
+openpyxl==3.1.2
+reportlab==4.0.8
+
+# Utilidades
+python-decouple==3.8
+django-extensions==3.2.3
+
+# Desarrollo
+django-debug-toolbar==4.2.0
+
+# Testing (opcional)
+pytest-django==4.7.0
