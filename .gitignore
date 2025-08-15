@@ -1,0 +1,35 @@
+# ==== Backend / Django ====
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+*.pot
+*.mo
+
+# Archivos de entorno y configuración sensible
+.env
+.env.local
+.env.*.local
+
+# Archivos de logs
+*.log
+
+# ==== Frontend / Vue ====
+node_modules/
+dist/
+.vscode/
+.DS_Store
+*.cache
+*.temp
+*.tmp
+
+# ==== Configuración de IDE ====
+.idea/
+*.iml
+
+# ==== Archivos del sistema ====
+Thumbs.db
