@@ -62,8 +62,10 @@ const roles = ['Admin', 'Editor', 'Invitado']
 
 // KPIs
 const kpis = [
-  { title: 'Total Usuarios', value: 120, icon: 'bi-people', change: '+5%' },
-  { title: 'Roles Activos', value: 8, icon: 'bi-shield-lock', change: '—' },
+  { title: 'Total Usuarios', value: 120, icon: 'bi bi-people-fill', change: '100', color: '#0d6efd' },
+  { title: 'Roles Activos', value: 100, icon: 'bi-shield-lock', change: '80' },
+  {title: 'Roles inactivos', value: 20, icon: 'bi-shield-lock', change: '20', color: '#0d6efd'},
+
 ]
 
 // Charts
