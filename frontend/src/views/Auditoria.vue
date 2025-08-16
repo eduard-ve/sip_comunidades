@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, } from "vue"
 import AuditTable from "../components/AuditTable.vue"
 
 const events = ref([

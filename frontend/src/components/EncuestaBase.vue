@@ -26,10 +26,10 @@
       <div class="d-flex align-items-center gap-2">
         <slot name="actions">
           <button class="btn btn-primary btn-sm" @click="$emit('create')">
-            <i class="bi bi-plus-lg me-1"></i> Nuevo
-          </button>
-          <button class="btn btn-outline-secondary btn-sm" @click="$emit('export')">
-            <i class="bi bi-download me-1"></i> Exportar
+            <i class="bi bi-plus-lg me-1"></i> Nueva Encuesta
+          </button> 
+          <button class="btn btn-danger btn-sm" @click="$emit('export')">
+            <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
           </button>
         </slot>
       </div>
