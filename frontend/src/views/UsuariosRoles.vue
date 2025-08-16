@@ -8,9 +8,8 @@
     searchPlaceholder="Buscar usuario…"
     @create="openForm()"
     @export="onExport"
-    @rowClick="openForm"
   >
-    <!-- Slot extra para filtros -->
+    <!-- Filtro de roles -->
     <template #extra>
       <select class="form-select form-select-sm me-2" v-model="filterRole" style="max-width: 180px;">
         <option value="">Todos los roles</option>
@@ -18,20 +17,35 @@
       </select>
     </template>
 
-    <!-- Table footer slot -->
+    <!-- Personalización de las celdas de la tabla -->
+    <template #table-cell="{ column, row }">
+      <template v-if="column.key === 'acciones'">
+        <button class="btn btn-sm btn-outline-primary me-1" @click.stop="openForm(row)">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-danger" @click.stop="deleteUser(row.id)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </template>
+      <template v-else>
+        {{ row[column.key] }}
+      </template>
+    </template>
+
+    <!-- Footer de la tabla -->
     <template #table-footer>
       <div class="d-flex justify-content-end mt-2">
         <button class="btn btn-sm btn-secondary" @click="onExport">Exportar lista</button>
       </div>
     </template>
 
-    <!-- Formulario modal -->
-    <div v-if="showForm" class="modal-backdrop">
-      <div class="modal-dialog modal-lg">
+    <!-- Modal -->
+    <div v-if="showForm" class="modal fade show d-block" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{ selectedUser?.id ? 'Editar Usuario' : 'Nuevo Usuario' }}</h5>
-            <button type="button" class="btn-close" @click="closeForm()"></button>
+            <button type="button" class="btn-close" @click="closeForm"></button>
           </div>
           <div class="modal-body">
             <UserForm
@@ -45,6 +59,7 @@
         </div>
       </div>
     </div>
+    <div v-if="showForm" class="modal-backdrop fade show"></div>
   </BaseModule>
 </template>
 
@@ -53,17 +68,19 @@ import { ref, computed } from 'vue'
 import BaseModule from '../components/BaseModule.vue'
 import UserForm from '../components/UserForm.vue'
 
+const roles = ['Admin', 'Editor', 'Invitado']
+
+// Breadcrumbs
 const breadcrumbs = [
   { label: 'Inicio', to: '/' },
-  { label: 'Usuarios y Roles' }
+  { label: 'Usuarios y Roles', to: '/usuarios' }
 ]
-
-const roles = ['Admin', 'Editor', 'Invitado']
 
 // KPIs
 const kpis = [
-  { title: 'Total Usuarios', value: 120, icon: 'bi-people', change: '+5%' },
-  { title: 'Roles Activos', value: 8, icon: 'bi-shield-lock', change: '—' },
+  { title: 'Total Usuarios', value: 120, icon: 'bi bi-people-fill', change: '100', color: '#0d6efd' },
+  { title: 'Roles Activos', value: 100, icon: 'bi-shield-lock', change: '80' },
+  { title: 'Roles Inactivos', value: 20, icon: 'bi-shield-lock', change: '20', color: '#0d6efd' }
 ]
 
 // Charts
@@ -96,11 +113,12 @@ const table = {
     { key: 'nombre', label: 'Nombre' },
     { key: 'email', label: 'Email' },
     { key: 'rol', label: 'Rol' },
-    { key: 'estado', label: 'Estado' }
+    { key: 'estado', label: 'Estado' },
+    { key: 'acciones', label: 'Acciones' } // 👈 nueva columna
   ],
   rows: [
-    { id: 1, nombre: 'Ana Pérez', email: 'ana@example.com', rol: 'Admin', estado: true },
-    { id: 2, nombre: 'Juan Gómez', email: 'juan@example.com', rol: 'Editor', estado: false },
+    { id: 1, nombre: 'Ana Pérez', email: 'ana@example.com', rol: 'Admin', estado: 'Sí' },
+    { id: 2, nombre: 'Juan Gómez', email: 'juan@example.com', rol: 'Editor', estado: 'No' },
   ]
 }
 
@@ -137,39 +155,14 @@ function handleSubmit(userData) {
   closeForm()
 }
 
+function deleteUser(id) {
+  if (confirm('¿Seguro que deseas eliminar este usuario?')) {
+    const idx = table.rows.findIndex(u => u.id === id)
+    if (idx !== -1) table.rows.splice(idx, 1)
+  }
+}
+
 function onExport() {
   alert('Exportar lista de usuarios')
 }
 </script>
-
-<style scoped>
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1050;
-}
-
-.modal-dialog {
-  max-width: 700px;
-  width: 100%;
-}
-
-.modal-content {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-body {
-  padding: 1rem;
-}
-</style>

@@ -117,7 +117,9 @@
                 style="cursor:pointer"
               >
                 <td v-for="(col, cIdx) in safeColumns" :key="cIdx">
+                  <slot name="table-cell" :column="col" :row="row">
                   {{ displayCell(row[col.key]) }}
+                  </slot>
                 </td>
               </tr>
               <tr v-if="!filteredRows.length">
