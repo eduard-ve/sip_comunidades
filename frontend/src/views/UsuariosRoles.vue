@@ -8,7 +8,6 @@
     searchPlaceholder="Buscar usuario…"
     @create="openForm()"
     @export="onExport"
-    @rowClick="openForm"
   >
     <!-- Filtro de roles -->
     <template #extra>
@@ -16,6 +15,21 @@
         <option value="">Todos los roles</option>
         <option v-for="r in roles" :key="r" :value="r">{{ r }}</option>
       </select>
+    </template>
+
+    <!-- Personalización de las celdas de la tabla -->
+    <template #table-cell="{ column, row }">
+      <template v-if="column.key === 'acciones'">
+        <button class="btn btn-sm btn-outline-primary me-1" @click.stop="openForm(row)">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-danger" @click.stop="deleteUser(row.id)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </template>
+      <template v-else>
+        {{ row[column.key] }}
+      </template>
     </template>
 
     <!-- Footer de la tabla -->
@@ -56,6 +70,11 @@ import UserForm from '../components/UserForm.vue'
 
 const roles = ['Admin', 'Editor', 'Invitado']
 
+// Breadcrumbs
+const breadcrumbs = [
+  { label: 'Inicio', to: '/' },
+  { label: 'Usuarios y Roles', to: '/usuarios' }
+]
 
 // KPIs
 const kpis = [
@@ -94,11 +113,12 @@ const table = {
     { key: 'nombre', label: 'Nombre' },
     { key: 'email', label: 'Email' },
     { key: 'rol', label: 'Rol' },
-    { key: 'estado', label: 'Estado' }
+    { key: 'estado', label: 'Estado' },
+    { key: 'acciones', label: 'Acciones' } // 👈 nueva columna
   ],
   rows: [
-    { id: 1, nombre: 'Ana Pérez', email: 'ana@example.com', rol: 'Admin', estado: true },
-    { id: 2, nombre: 'Juan Gómez', email: 'juan@example.com', rol: 'Editor', estado: false },
+    { id: 1, nombre: 'Ana Pérez', email: 'ana@example.com', rol: 'Admin', estado: 'Sí' },
+    { id: 2, nombre: 'Juan Gómez', email: 'juan@example.com', rol: 'Editor', estado: 'No' },
   ]
 }
 
@@ -133,6 +153,13 @@ function handleSubmit(userData) {
     table.rows.push({ ...userData })
   }
   closeForm()
+}
+
+function deleteUser(id) {
+  if (confirm('¿Seguro que deseas eliminar este usuario?')) {
+    const idx = table.rows.findIndex(u => u.id === id)
+    if (idx !== -1) table.rows.splice(idx, 1)
+  }
 }
 
 function onExport() {
