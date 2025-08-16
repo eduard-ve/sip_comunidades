@@ -1,7 +1,9 @@
 <template>
   <div class="card shadow-sm border-0 p-3 dashboard-chart">
     <h6 class="fw-bold mb-3"><slot name="title"></slot></h6>
-    <canvas :id="chartId"></canvas>
+     <div class="chart-wrapper">
+        <canvas :id="chartId"></canvas>
+      </div>
   </div>
 </template>
 
@@ -31,5 +33,13 @@ onMounted(() => {
 <style scoped>
 .dashboard-chart {
   border-radius: 12px;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 420px; /* 👈 ancho máximo */
+  height: 280px;    /* 👈 altura fija más pequeña */
+  margin: auto;     /* centrar dentro de la tarjeta */
 }
 </style>
