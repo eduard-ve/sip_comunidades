@@ -10,7 +10,7 @@
     @export="onExport"
     @rowClick="openForm"
   >
-    <!-- Slot extra para filtros -->
+    <!-- Filtro de roles -->
     <template #extra>
       <select class="form-select form-select-sm me-2" v-model="filterRole" style="max-width: 180px;">
         <option value="">Todos los roles</option>
@@ -18,20 +18,20 @@
       </select>
     </template>
 
-    <!-- Table footer slot -->
+    <!-- Footer de la tabla -->
     <template #table-footer>
       <div class="d-flex justify-content-end mt-2">
         <button class="btn btn-sm btn-secondary" @click="onExport">Exportar lista</button>
       </div>
     </template>
 
-    <!-- Formulario modal -->
-    <div v-if="showForm" class="modal-backdrop">
-      <div class="modal-dialog modal-lg">
+    <!-- Modal -->
+    <div v-if="showForm" class="modal fade show d-block" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{ selectedUser?.id ? 'Editar Usuario' : 'Nuevo Usuario' }}</h5>
-            <button type="button" class="btn-close" @click="closeForm()"></button>
+            <button type="button" class="btn-close" @click="closeForm"></button>
           </div>
           <div class="modal-body">
             <UserForm
@@ -45,6 +45,7 @@
         </div>
       </div>
     </div>
+    <div v-if="showForm" class="modal-backdrop fade show"></div>
   </BaseModule>
 </template>
 
@@ -53,19 +54,14 @@ import { ref, computed } from 'vue'
 import BaseModule from '../components/BaseModule.vue'
 import UserForm from '../components/UserForm.vue'
 
-const breadcrumbs = [
-  { label: 'Inicio', to: '/' },
-  { label: 'Usuarios y Roles' }
-]
-
 const roles = ['Admin', 'Editor', 'Invitado']
+
 
 // KPIs
 const kpis = [
   { title: 'Total Usuarios', value: 120, icon: 'bi bi-people-fill', change: '100', color: '#0d6efd' },
   { title: 'Roles Activos', value: 100, icon: 'bi-shield-lock', change: '80' },
-  {title: 'Roles inactivos', value: 20, icon: 'bi-shield-lock', change: '20', color: '#0d6efd'},
-
+  { title: 'Roles Inactivos', value: 20, icon: 'bi-shield-lock', change: '20', color: '#0d6efd' }
 ]
 
 // Charts
@@ -143,35 +139,3 @@ function onExport() {
   alert('Exportar lista de usuarios')
 }
 </script>
-
-<style scoped>
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1050;
-}
-
-.modal-dialog {
-  max-width: 700px;
-  width: 100%;
-}
-
-.modal-content {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-body {
-  padding: 1rem;
-}
-</style>

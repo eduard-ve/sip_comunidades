@@ -59,8 +59,7 @@
 </template>
 
 <script setup>
-import { reactive, watch, toRefs } from 'vue'
-import { ref } from 'vue'
+import { reactive, watch } from 'vue'
 
 const props = defineProps({
   modelValue: {
@@ -78,7 +77,7 @@ const emit = defineEmits(['update:modelValue', 'submit', 'cancel'])
 const form = reactive({ ...props.modelValue })
 const errors = reactive({ nombre: '', email: '' })
 
-// Sincronizar cambios si se edita un usuario
+// Sincronizar cambios
 watch(() => props.modelValue, (newVal) => {
   Object.assign(form, newVal)
 })
@@ -107,7 +106,3 @@ function onSubmit() {
   emit('submit', { ...form })
 }
 </script>
-
-<style scoped>
-/* Estilo opcional para el modal */
-</style>
