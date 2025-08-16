@@ -1,88 +1,94 @@
 <template>
-  <BaseModule
-    title="Auditoría"
-    :breadcrumbs="[
-      { label: 'Inicio', to: '/' },
-      { label: 'Auditoría' }
-    ]"
-    :table="{ columns, rows }"
-    search-placeholder="Buscar evento…"
-    @rowClick="verDetalle"
-    @export="exportarAuditoria"
-  >
-    <!-- Filtros -->
-    <template #table-filters>
-      <div class="d-flex flex-wrap gap-2">
-        <!-- Filtro por módulo -->
-        <select v-model="filtros.modulo" class="form-select form-select-sm">
-          <option value="">Todos los módulos</option>
-          <option v-for="m in modulos" :key="m" :value="m">{{ m }}</option>
-        </select>
-
-        <!-- Filtro por usuario -->
-        <select v-model="filtros.usuario" class="form-select form-select-sm">
-          <option value="">Todos los usuarios</option>
-          <option v-for="u in usuarios" :key="u" :value="u">{{ u }}</option>
-        </select>
-
-        <!-- Filtro por fecha -->
-        <input
-          type="date"
-          v-model="filtros.fecha"
-          class="form-control form-control-sm"
-        />
+  <div class="container-fluid py-4">
+    <!-- Título y exportación -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold">Auditoría</h2>
+      <div class="d-flex gap-2">
+        <button class="btn btn-success btn-sm" @click="exportExcel">
+          <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+        </button>
+        <button class="btn btn-danger btn-sm" @click="exportPdf">
+          <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+        </button>
       </div>
-    </template>
-  </BaseModule>
+    </div>
+
+    <!-- Componente de tabla -->
+    <AuditTable :events="events" @view-details="showDetails" />
+
+    <!-- Modal detalle -->
+    <div v-if="selectedEvent" class="modal fade show d-block" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Detalle del evento</h5>
+            <button type="button" class="btn-close" @click="selectedEvent = null"></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>Módulo:</strong> {{ selectedEvent.module }}</p>
+            <p><strong>Usuario:</strong> {{ selectedEvent.user }}</p>
+            <p><strong>Acción:</strong> {{ selectedEvent.action }}</p>
+            <p><strong>Fecha:</strong> {{ selectedEvent.date }}</p>
+
+            <h6 class="fw-bold mt-3">Cambios</h6>
+            <ul>
+              <li v-for="(value, field) in selectedEvent.changes" :key="field">
+                <strong>{{ field }}:</strong> {{ value.old }} → {{ value.new }}
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="selectedEvent = null">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="selectedEvent" class="modal-backdrop fade show"></div>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
-import BaseModule from "../components/BaseModule.vue"
-import { useRouter } from "vue-router"
+import { ref } from "vue"
+import AuditTable from "../components/AuditTable.vue"
 
-const router = useRouter()
-
-// Definición de columnas de la tabla
-const columns = [
-  { key: "id", label: "ID" },
-  { key: "modulo", label: "Módulo" },
-  { key: "usuario", label: "Usuario" },
-  { key: "accion", label: "Acción" },
-  { key: "fecha", label: "Fecha" }
-]
-
-// Datos mock (aquí luego se conectaría a la API)
-const eventos = ref([
-  { id: 1, modulo: "Usuarios", usuario: "Admin", accion: "Creó usuario Juan", fecha: "2025-08-01" },
-  { id: 2, modulo: "Roles", usuario: "María", accion: "Actualizó permisos", fecha: "2025-08-10" },
-  { id: 3, modulo: "Reportes", usuario: "Pedro", accion: "Descargó informe PDF", fecha: "2025-08-12" }
+const events = ref([
+  {
+    id: 1,
+    module: "usuarios",
+    user: "admin",
+    action: "Creación de usuario",
+    date: "2025-08-15",
+    changes: { nombre: { old: "-", new: "Juan" }, rol: { old: "-", new: "Editor" } }
+  },
+  {
+    id: 2,
+    module: "reportes",
+    user: "soporte",
+    action: "Eliminación de reporte",
+    date: "2025-08-14",
+    changes: { reporte: { old: "Reporte A", new: "-" } }
+  },
+  {
+    id: 3,
+    module: "encuestas",
+    user: "usuario1",
+    action: "Modificación de encuesta",
+    date: "2025-08-13",
+    changes: { titulo: { old: "Encuesta 2024", new: "Encuesta 2025" } }
+  }
 ])
 
-// Filtros
-const filtros = ref({ modulo: "", usuario: "", fecha: "" })
+const selectedEvent = ref(null)
 
-const modulos = ["Usuarios", "Roles", "Reportes"]
-const usuarios = ["Admin", "María", "Pedro"]
-
-// Filtrado dinámico
-const rows = computed(() => {
-  return eventos.value.filter(e => {
-    return (
-      (!filtros.value.modulo || e.modulo === filtros.value.modulo) &&
-      (!filtros.value.usuario || e.usuario === filtros.value.usuario) &&
-      (!filtros.value.fecha || e.fecha === filtros.value.fecha)
-    )
-  })
-})
-
-// Navegar a detalle
-function verDetalle(evento) {
-  router.push({ name: "auditoria-detalle", params: { id: evento.id } })
+function exportExcel() {
+  alert("Exportando a Excel...")
 }
 
-// Exportar auditoría
-function exportarAuditoria() {
-  alert("Exportando auditoría en Excel/PDF...")
+function exportPdf() {
+  alert("Exportando a PDF...")
+}
+
+function showDetails(event) {
+  selectedEvent.value = event
 }
 </script>
