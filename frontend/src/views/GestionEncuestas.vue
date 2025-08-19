@@ -1,10 +1,6 @@
 <template>
   <EncuestaBase
     title="Encuestas"
-    :breadcrumbs="[
-      { label: 'Inicio', to: '/' },
-      { label: 'Encuestas' }
-    ]"
     :kpis="kpis"
     :charts="charts"
     :table="table"
