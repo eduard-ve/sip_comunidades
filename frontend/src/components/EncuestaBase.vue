@@ -27,9 +27,6 @@
         <slot name="actions">
           <button class="btn btn-primary btn-sm" @click="$emit('create')">
             <i class="bi bi-plus-lg me-1"></i> Nueva Encuesta
-          </button> 
-          <button class="btn btn-danger btn-sm" @click="$emit('export')">
-            <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
           </button>
         </slot>
       </div>
@@ -171,7 +168,8 @@ const props = defineProps({
   searchPlaceholder: { type: String, default: 'Buscar…' }
 })
 
-defineEmits(['create', 'export', 'rowClick'])
+// Se eliminó el evento 'export'
+defineEmits(['create', 'rowClick'])
 
 const query = ref('')
 
