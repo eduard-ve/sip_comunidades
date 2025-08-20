@@ -3,10 +3,6 @@ import { ref } from "vue"
 import BaseModule from "../components/BaseModule.vue"
 import ReporteForm from "../components/ReporteForm.vue"
 
-const breadcrumbs = [
-  { label: "Inicio", to: "/dashboard" },
-  { label: "Reportes" }
-]
 
 const kpis = [
   { title: "Reportes generados", value: 28, change: 12, icon: "bi bi-file-earmark-text" },
@@ -58,13 +54,13 @@ const showForm = ref(false)
 function saveReporte(newReporte) {
   const id = table.value.rows.length + 101
   table.value.rows.push({ id, ...newReporte, estado: "Generado" })
-  alert("✅ Reporte generado con éxito")
+  alert("Reporte generado con éxito")
   showForm.value = false
 }
 
 // Exportar simulación
 function exportar(tipo) {
-  alert(`📂 Exportando en formato ${tipo}...`)
+  alert(` Exportando en formato ${tipo}...`)
 }
 </script>
 
@@ -77,7 +73,7 @@ function exportar(tipo) {
     :table="table"
     @create="showForm = true"
     @export="() => exportar('Excel')"
-    @rowClick="(row) => alert(`📌 Detalles del reporte ID: ${row.id}`)"
+    @rowClick="(row) => alert(` Detalles del reporte ID: ${row.id}`)"
   >
   <template #table-filters>
     <div class="d-flex justify-content-end gap-2">
