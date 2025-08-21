@@ -170,7 +170,11 @@ const props = defineProps({
       rows: []     // [{ nombre: 'Ana', ... }, ...]
     })
   },
-  searchPlaceholder: { type: String, default: 'Buscar…' }
+
+  searchPlaceholder: { type: String, default: 'Buscar…' },
+
+  showExport: {type: Boolean, default: true },// Si se muestra el botón de exportar
+
 })
 
 defineEmits(['create', 'export', 'rowClick'])
