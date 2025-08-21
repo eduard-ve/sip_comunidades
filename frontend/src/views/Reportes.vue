@@ -1,7 +1,6 @@
 <template>
   <BaseModule
     title="Reportes"
-    :breadcrumbs="breadcrumbs"
     :kpis="kpis"
     :charts="charts"
     :table="table"
