@@ -22,13 +22,24 @@
         <h2 class="fw-bold mb-0">{{ title }}</h2>
       </div>
 
-      <!-- Acciones: slot o fallback -->
+      <!-- Acciones -->
       <div class="d-flex align-items-center gap-2">
         <slot name="actions">
-          <button class="btn btn-primary btn-sm" @click="$emit('create')">
+          <!-- Botón Nuevo -->
+          <button
+            v-if="showCreate"
+            class="btn btn-primary btn-sm"
+            @click="$emit('create')"
+          >
             <i class="bi bi-plus-lg me-1"></i> Nuevo
           </button>
-          <button class="btn btn-outline-secondary btn-sm" @click="$emit('export')">
+
+          <!-- Botón Exportar -->
+          <button
+            v-if="showExport"
+            class="btn btn-outline-secondary btn-sm"
+            @click="$emit('export')"
+          >
             <i class="bi bi-download me-1"></i> Exportar
           </button>
         </slot>
@@ -37,7 +48,11 @@
 
     <!-- KPIs -->
     <div v-if="kpis && kpis.length" class="row g-3 mb-3">
-      <div class="col-12 col-sm-6 col-lg-3" v-for="(k, idx) in kpis" :key="idx">
+      <div
+        class="col-12 col-sm-6 col-lg-3"
+        v-for="(k, idx) in kpis"
+        :key="idx"
+      >
         <KpiCard
           :title="k.title"
           :value="k.value"
@@ -52,7 +67,7 @@
     <!-- Extra contenido encima de charts -->
     <slot name="extra"></slot>
 
-    <!-- Charts (sobrescribibles con slots) -->
+    <!-- Charts -->
     <div class="row g-3">
       <div class="col-12 col-lg-6">
         <slot name="left">
@@ -63,7 +78,9 @@
             :data="charts.left.data"
             :options="charts.left.options || {}"
           >
-            <template #title>{{ charts.left.title || 'Gráfico izquierdo' }}</template>
+            <template #title>
+              {{ charts.left.title || "Gráfico izquierdo" }}
+            </template>
           </ChartPanel>
         </slot>
       </div>
@@ -77,7 +94,9 @@
             :data="charts.right.data"
             :options="charts.right.options || {}"
           >
-            <template #title>{{ charts.right.title || 'Gráfico derecho' }}</template>
+            <template #title>
+              {{ charts.right.title || "Gráfico derecho" }}
+            </template>
           </ChartPanel>
         </slot>
       </div>
@@ -86,7 +105,9 @@
     <!-- Filtros y tabla -->
     <div class="card border-0 shadow-sm mt-4">
       <div class="card-body">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <div
+          class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3"
+        >
           <div class="input-group input-group-sm" style="max-width: 340px;">
             <span class="input-group-text"><i class="bi bi-search"></i></span>
             <input
@@ -103,7 +124,12 @@
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th v-for="(col, i) in safeColumns" :key="i" class="text-nowrap">
+                <th
+                  v-for="(col, i) in safeColumns"
+                  :key="i"
+                  scope="col"
+                  class="text-nowrap"
+                >
                   {{ col.label || col.key }}
                 </th>
               </tr>
@@ -118,12 +144,15 @@
               >
                 <td v-for="(col, cIdx) in safeColumns" :key="cIdx">
                   <slot name="table-cell" :column="col" :row="row">
-                  {{ displayCell(row[col.key]) }}
+                    {{ displayCell(row[col.key]) }}
                   </slot>
                 </td>
               </tr>
               <tr v-if="!filteredRows.length">
-                <td :colspan="safeColumns.length" class="text-center text-muted py-4">
+                <td
+                  :colspan="safeColumns.length"
+                  class="text-center text-muted py-4"
+                >
                   Sin datos para mostrar
                 </td>
               </tr>
@@ -135,85 +164,106 @@
       </div>
     </div>
 
-    <!-- Contenido adicional al final -->
+    <!-- Contenido adicional -->
     <slot></slot>
   </div>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue'
-import KpiCard from './KpiCard.vue'
-import ChartPanel from './ChartPanel.vue'
+<script setup lang="ts">
+import { ref, computed } from "vue"
+import KpiCard from "./KpiCard.vue"
+import ChartPanel from "./ChartPanel.vue"
 
-const props = defineProps({
-  title: { type: String, default: 'Módulo' },
-  breadcrumbs: {
-    type: Array,
-    default: () => [] // [{ label: 'Inicio', to: '/' }, { label: 'Módulo' }]
-  },
-  kpis: {
-    type: Array,
-    default: () => [] // [{ title, value, change, icon, colorIcon?, colorBorder? }]
-  },
-  charts: {
-    type: Object,
-    default: () => ({
-      left: null,
-      right: null
-    })
-    // { left: { id, type, data, options, title }, right: { ... } }
-  },
-  table: {
-    type: Object,
-    default: () => ({
-      columns: [], // [{ key: 'nombre', label: 'Nombre' }, ...]
-      rows: []     // [{ nombre: 'Ana', ... }, ...]
-    })
-  },
+interface Breadcrumb {
+  label: string
+  to?: string
+}
 
-  searchPlaceholder: { type: String, default: 'Buscar…' },
+interface Kpi {
+  title: string
+  value: string | number
+  change?: string
+  icon?: string
+  colorIcon?: string
+  colorBorder?: string
+}
 
-  showExport: {type: Boolean, default: true },// Si se muestra el botón de exportar
+interface ChartConfig {
+  id?: string
+  type?: string
+  data: any
+  options?: any
+  title?: string
+}
 
+interface Column {
+  key: string
+  label?: string
+}
+
+interface TableConfig {
+  columns?: Column[]
+  rows?: Record<string, any>[]
+}
+
+const props = withDefaults(defineProps<{
+  title?: string
+  breadcrumbs?: Breadcrumb[]
+  kpis?: Kpi[]
+  charts?: {
+    left?: ChartConfig
+    right?: ChartConfig
+  }
+  table?: TableConfig
+  searchPlaceholder?: string
+  showCreate?: boolean
+  showExport?: boolean
+}>(), {
+  title: "Módulo",
+  searchPlaceholder: "Buscar...",
+  showCreate: false,
+  showExport: false,
+  table: () => ({ columns: [], rows: [] })
 })
 
-defineEmits(['create', 'export', 'rowClick'])
+const emit = defineEmits<{
+  (e: "create"): void
+  (e: "export"): void
+  (e: "rowClick", row: Record<string, any>): void
+}>()
 
-const query = ref('')
+//Estado local
+const query = ref("")
 
-const safeColumns = computed(() => {
-  // si no hay columnas, intenta inferir desde la primera fila
-  if (props.table.columns && props.table.columns.length) return props.table.columns
-  const first = props.table.rows?.[0]
+// Columnas seguras
+const safeColumns = computed<Column[]>(() => {
+  if (props.table?.columns?.length) return props.table.columns
+  const first = props.table?.rows?.[0]
   if (!first) return []
   return Object.keys(first).map(k => ({ key: k, label: k }))
 })
 
-const filteredRows = computed(() => {
+//  Filtrar por query
+const filteredRows = computed<Record<string, any>[]>(() => {
   const q = query.value.trim().toLowerCase()
-  if (!q) return props.table.rows || []
-  return (props.table.rows || []).filter((row) =>
-    safeColumns.value.some(col => String(row[col.key] ?? '').toLowerCase().includes(q))
+  if (!q) return props.table?.rows || []
+  return (props.table?.rows || []).filter(row =>
+    safeColumns.value.some(col =>
+      String(row[col.key] ?? "").toLowerCase().includes(q)
+    )
   )
 })
 
-function displayCell(value) {
-  if (value === null || value === undefined) return '—'
-  if (typeof value === 'boolean') return value ? 'Sí' : 'No'
+//  Mostrar celda
+function displayCell(value: unknown): string {
+  if (value === null || value === undefined) return "—"
+  if (typeof value === "boolean") return value ? "Sí" : "No"
   return String(value)
 }
 </script>
 
 <style scoped>
-.breadcrumb {
-  --bs-breadcrumb-divider: '›';
-}
-
 .table-row:hover {
   background-color: #f8f9fa;
-}
-
-.card {
-  border-radius: 12px;
 }
 </style>

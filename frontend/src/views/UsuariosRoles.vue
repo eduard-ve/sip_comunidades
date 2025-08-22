@@ -7,7 +7,6 @@
     :table="{ columns: table.columns, rows: filteredUsers }"
     searchPlaceholder="Buscar usuario…"
     @create="openForm()"
-    @export="onExport"
   >
     <!-- Filtro de roles -->
     <template #extra>
@@ -159,6 +158,6 @@ function deleteUser(id) {
 }
 
 function onExport() {
-  alert('Exportar lista de usuarios')
+  alert('Exportar lista de usuarios')// funcionalidad de exportación no implementada
 }
 </script>

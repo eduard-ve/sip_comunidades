@@ -17,7 +17,7 @@
 defineProps({
   title: String,
   value: [String, Number],
-  change: Number,
+  change:[String,Number],
   icon: String,
   colorIcon: { type: String, default: '#0d6efd' }
 })

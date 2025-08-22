@@ -70,10 +70,10 @@ const lastSavedSurveyId = ref(null) // NUEVO: Para guardar el ID de la última e
 
 // Datos de la interfaz
 const kpis = ref([
-  { title: "Encuestas activas", value: 5, change: "+2", icon: "bi-clipboard-check", colorIcon: "#198754" },
-  { title: "Respuestas totales", value: 1240, change: "+120", icon: "bi-people", colorIcon: "#0d6efd" },
-  { title: "Tasa de respuesta", value: "68%", change: "-3%", icon: "bi-bar-chart-line", colorIcon: "#ffc107" },
-  { title: "Promedio satisfacción", value: "4.2/5", change: "+0.3", icon: "bi-star", colorIcon: "#fd7e14" }
+  { title: "Encuestas activas", value: 5, change: "2", icon: "bi-clipboard-check", colorIcon: "#198754" },
+  { title: "Respuestas totales", value: 1240, change: "120", icon: "bi-people", colorIcon: "#0d6efd" },
+  { title: "Tasa de respuesta", value: "68%", change: "3", icon: "bi-bar-chart-line", colorIcon: "#ffc107" },
+  { title: "Promedio satisfacción", value: "4.2/5", change: "0.3", icon: "bi-star", colorIcon: "#fd7e14" }
 ])
 
 const charts = ref({
