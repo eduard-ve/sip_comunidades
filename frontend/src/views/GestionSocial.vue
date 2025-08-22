@@ -1,14 +1,11 @@
 <template>
   <BaseModule
     title="Gestión Social"
-    :breadcrumbs="[
-      { label: 'Inicio', to: '/' },
-      { label: 'Gestión Social' }
-    ]"
     :kpis="kpis"
     :charts="charts"
     :table="table"
     search-placeholder="Buscar programas o beneficiarios…"
+    :show-create="true"
     @create="onCreate"
     @export="onExport"
     @rowClick="onRowClick"
