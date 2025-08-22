@@ -4,6 +4,8 @@
     :kpis="kpis"
     :charts="charts"
     :table="table"
+    :show-create="true"
+    :show-export="false"
     @create="showForm = true"
     @rowClick="(row) => alert(` Detalles del reporte ID: ${row.id}`)"
   >

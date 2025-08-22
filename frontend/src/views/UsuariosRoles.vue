@@ -6,6 +6,8 @@
     :charts="charts"
     :table="{ columns: table.columns, rows: filteredUsers }"
     searchPlaceholder="Buscar usuario…"
+    :showCreate="true"
+    :showExport="false"
     @create="openForm()"
   >
     <!-- Filtro de roles -->
