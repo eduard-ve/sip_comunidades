@@ -6,8 +6,9 @@
     :charts="charts"
     :table="{ columns: table.columns, rows: filteredUsers }"
     searchPlaceholder="Buscar usuario…"
+    :showCreate="true"
+    :showExport="false"
     @create="openForm()"
-    @export="onExport"
   >
     <!-- Filtro de roles -->
     <template #extra>
@@ -70,11 +71,6 @@ import UserForm from '../components/UserForm.vue'
 
 const roles = ['Admin', 'Editor', 'Invitado']
 
-// Breadcrumbs
-const breadcrumbs = [
-  { label: 'Inicio', to: '/' },
-  { label: 'Usuarios y Roles', to: '/usuarios' }
-]
 
 // KPIs
 const kpis = [
@@ -114,11 +110,12 @@ const table = {
     { key: 'email', label: 'Email' },
     { key: 'rol', label: 'Rol' },
     { key: 'estado', label: 'Estado' },
-    { key: 'acciones', label: 'Acciones' } // 👈 nueva columna
+    { key: 'acciones', label: 'Acciones' } 
   ],
   rows: [
     { id: 1, nombre: 'Ana Pérez', email: 'ana@example.com', rol: 'Admin', estado: 'Sí' },
     { id: 2, nombre: 'Juan Gómez', email: 'juan@example.com', rol: 'Editor', estado: 'No' },
+    { id :3, nombre: 'Eduard', email: 'eduardvelez1@gmail.com', rol: 'Admin', estado: 'Sí' }
   ]
 }
 
@@ -163,6 +160,6 @@ function deleteUser(id) {
 }
 
 function onExport() {
-  alert('Exportar lista de usuarios')
+  alert('Exportar lista de usuarios')// funcionalidad de exportación no implementada
 }
 </script>

@@ -1,13 +1,54 @@
+<template>
+  <BaseModule
+    title="Reportes"
+    :kpis="kpis"
+    :charts="charts"
+    :table="table"
+    :show-create="true"
+    :show-export="false"
+    @create="showForm = true"
+    @rowClick="(row) => alert(` Detalles del reporte ID: ${row.id}`)"
+  >
+    <template #table-filters>
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-funnel me-1"></i> Filtros avanzados
+        </button>
+      </div>
+    </template>
+
+    <!-- Slot para las celdas de la tabla -->
+    <template #table-cell="{ column, row }">
+      <template v-if="column.key === 'acciones'">
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-success" @click.stop="exportar(row)">
+            <i class="bi bi-file-earmark-excel me-1"></i> PDF
+          </button>
+          <button class="btn btn-sm btn-danger" @click.stop="eliminarReporte(row)">
+            <i class="bi bi-trash me-1"></i> Eliminar
+          </button>
+        </div>
+      </template>
+      <template v-else>
+        {{ row[column.key] }}
+      </template>
+    </template>
+  </BaseModule>
+
+  <!-- Modal de reporte -->
+  <ReporteForm
+    v-if="showForm"
+    @close="showForm = false"
+    @save="saveReporte"
+  />
+</template>
+
 <script setup>
 import { ref } from "vue"
 import BaseModule from "../components/BaseModule.vue"
 import ReporteForm from "../components/ReporteForm.vue"
 
-const breadcrumbs = [
-  { label: "Inicio", to: "/dashboard" },
-  { label: "Reportes" }
-]
-
+// Datos de ejemplo para los KPIs
 const kpis = [
   { title: "Reportes generados", value: 28, change: 12, icon: "bi bi-file-earmark-text" },
   { title: "Pendientes", value: 5, change: -8, icon: "bi bi-hourglass-split" },
@@ -15,6 +56,7 @@ const kpis = [
   { title: "Descargas", value: 120, change: 7, icon: "bi bi-download" }
 ]
 
+// Datos de ejemplo para los gráficos
 const charts = {
   left: {
     id: "repMensuales",
@@ -36,13 +78,14 @@ const charts = {
   }
 }
 
-// Estado de tabla
+// Estado de la tabla
 const table = ref({
   columns: [
     { key: "id", label: "IDENTIFICACIÓN" },
     { key: "tipo", label: "Tipo" },
     { key: "fecha", label: "Fecha" },
-    { key: "estado", label: "Estado" }
+    { key: "estado", label: "Estado" },
+    { key: "acciones", label: "Acciones" } 
   ],
   rows: [
     { id: 101, tipo: "PDF", fecha: "10/08/2025", estado: "Generado" },
@@ -58,47 +101,20 @@ const showForm = ref(false)
 function saveReporte(newReporte) {
   const id = table.value.rows.length + 101
   table.value.rows.push({ id, ...newReporte, estado: "Generado" })
-  alert("✅ Reporte generado con éxito")
+  alert("Reporte generado con éxito")
   showForm.value = false
 }
 
-// Exportar simulación
-function exportar(tipo) {
-  alert(`📂 Exportando en formato ${tipo}...`)
+// Simulación de exportación para una fila específica
+function exportar(row) {
+  alert(`Exportando el reporte con ID: ${row.id} en formato PDF...`)
+}
+
+// Función para eliminar un reporte
+function eliminarReporte(row) {
+  if (confirm(`¿Estás seguro de que quieres eliminar el reporte ${row.id}?`)) {
+    table.value.rows = table.value.rows.filter(r => r.id !== row.id)
+    alert(`Reporte ${row.id} eliminado.`)
+  }
 }
 </script>
-
-<template>
-  <BaseModule
-    title="Reportes"
-    :breadcrumbs="breadcrumbs"
-    :kpis="kpis"
-    :charts="charts"
-    :table="table"
-    @create="showForm = true"
-    @export="() => exportar('Excel')"
-    @rowClick="(row) => alert(`📌 Detalles del reporte ID: ${row.id}`)"
-  >
-  <template #table-filters>
-    <div class="d-flex justify-content-end gap-2">
-      <button class="btn btn-sm btn-outline-primary">
-        <i class="bi bi-funnel me-1"></i> Filtros avanzados
-      </button>
-      <button class="btn btn-sm btn-success" @click="exportar('Excel')">
-        <i class="bi bi-file-earmark-excel me-1"></i> Exportar Excel
-      </button>
-      <button class="btn btn-sm btn-danger" @click="exportar('PDF')">
-        <i class="bi bi-file-earmark-pdf me-1"></i> Exportar PDF
-      </button>
-    </div>
-  </template>
-
-  </BaseModule>
-
-  <!-- Modal de reporte -->
-  <ReporteForm
-    v-if="showForm"
-    @close="showForm = false"
-    @save="saveReporte"
-  />
-</template>

@@ -31,6 +31,7 @@ const links = [
 <style scoped>
 .sidebar {
   width: 250px;
+  min-width: 250px;
 }
 
 .nav-link {

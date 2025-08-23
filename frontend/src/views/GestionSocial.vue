@@ -1,18 +1,30 @@
 <template>
   <BaseModule
     title="Gestión Social"
-    :breadcrumbs="[
-      { label: 'Inicio', to: '/' },
-      { label: 'Gestión Social' }
-    ]"
     :kpis="kpis"
     :charts="charts"
-    :table="table"
+    :table="{ columns: tableColumns, rows: programas }"
     search-placeholder="Buscar programas o beneficiarios…"
-    @create="onCreate"
+    :show-create="true"
+    @create="showForm = true"
     @export="onExport"
     @rowClick="onRowClick"
   >
+    <!-- Personalización de celdas de la tabla -->
+    <template #table-cell="{ column, row }">
+      <!-- Si es columna acciones -->
+      <div v-if="column.key === 'acciones'" class="d-flex gap-2 justify-content-center">
+        <button class="btn btn-sm btn-outline-primary" @click="editPrograma(row)">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-danger" @click="deletePrograma(row)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+      <!-- Para el resto de columnas -->
+      <span v-else>{{ row[column.key] }}</span>
+    </template>
+
     <!-- Extra contenido encima de charts -->
     <template #extra>
       <div class="mb-3">
@@ -47,6 +59,40 @@
       </div>
     </template>
   </BaseModule>
+
+  <!-- Modal para crear/editar programa -->
+  <div v-if="showForm" class="modal-backdrop">
+    <div class="modal-card">
+      <h5 class="mb-3">{{ editIndex !== null ? 'Editar Programa' : 'Nuevo Programa' }}</h5>
+      <form @submit.prevent="savePrograma">
+        <input 
+          v-model="form.programa" 
+          class="form-control mb-2" 
+          placeholder="Nombre del Programa" 
+          required 
+        />
+        <input 
+          v-model.number="form.beneficiarios" 
+          type="number" 
+          class="form-control mb-2" 
+          placeholder="Número de Beneficiarios" 
+          required 
+        />
+        <!-- Select de estado alineado -->
+        <select v-model="form.estado" class="form-control mb-3" required>
+          <option disabled value="">Seleccione un estado</option>
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+          <option value="Suspendido">Suspendido</option>
+          <option value="Completado">Tramite</option>
+        </select>
+        <div class="text-end">
+          <button type="button" class="btn btn-secondary btn-sm me-2" @click="closeForm">Cancelar</button>
+          <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -63,35 +109,33 @@ const kpis = ref([
   { title: 'Cobertura territorial', value: '5 regiones', change: '+1', icon: 'bi-geo-alt' }
 ])
 
-// Lista de actividades
+// Actividades recientes
 const actividades = ref([
-  'Festival comunitario en Barrio Norte',
+  'Festival comunitario de música',
   'Taller de arte para niños',
   'Campaña de salud preventiva',
   'Charla sobre medio ambiente'
 ])
 
-// Datos para ChartPanel
+// Chart de impacto social
 const impactoData = ref({
   labels: ['Programa A', 'Programa B', 'Programa C'],
-  datasets: [
-    { label: 'Beneficiarios', data: [120, 95, 125], backgroundColor: '#0d6efd' }
-  ]
+  datasets: [{ label: 'Beneficiarios', data: [120, 95, 125], backgroundColor: '#0d6efd' }]
 })
 
-// Tabla de beneficiarios por programa
-const table = ref({
-  columns: [
-    { key: 'programa', label: 'Programa' },
-    { key: 'beneficiarios', label: 'Beneficiarios' },
-    { key: 'region', label: 'Región' }
-  ],
-  rows: [
-    { programa: 'Programa A', beneficiarios: 120, region: 'Norte' },
-    { programa: 'Programa B', beneficiarios: 95, region: 'Sur' },
-    { programa: 'Programa C', beneficiarios: 125, region: 'Centro' }
-  ]
-})
+// Tabla de programas con columna de acciones
+const tableColumns = [
+  { key: 'programa', label: 'Programa' },
+  { key: 'beneficiarios', label: 'Beneficiarios' },
+  { key: 'estado', label: 'Estado' },
+  { key: 'acciones', label: 'Acciones', class: 'text-center'}
+]
+
+const programas = ref([
+  { programa: 'Programa A', beneficiarios: 120, estado: 'Activo' },
+  { programa: 'Programa B', beneficiarios: 95, estado: 'Inactivo' },
+  { programa: 'Programa C', beneficiarios: 125, estado: 'Suspendido' }
+])
 
 // Mapas de cobertura
 const mapProgramas = ref([
@@ -100,16 +144,51 @@ const mapProgramas = ref([
   { nombre: 'Programa C', coordenadas: [-12.0464, -77.0428] }
 ])
 
+// Modal formulario
+const showForm = ref(false)
+const form = ref({ programa: '', beneficiarios: '', estado: '' })
+const editIndex = ref(null)
+
+// Funciones del modal
+function closeForm() {
+  showForm.value = false
+  form.value = { programa: '', beneficiarios: '', estado: '' }
+  editIndex.value = null
+}
+
+function savePrograma() {
+  if (editIndex.value !== null) {
+    programas.value[editIndex.value] = { ...form.value }
+  } else {
+    programas.value.push({ ...form.value })
+  }
+  closeForm()
+}
+
+function editPrograma(row) {
+  editIndex.value = programas.value.indexOf(row)
+  form.value = { ...row }
+  showForm.value = true
+}
+
+function deletePrograma(row) {
+  const idx = programas.value.indexOf(row)
+  if (idx !== -1 && confirm('¿Seguro que deseas eliminar este registro?')) {
+    programas.value.splice(idx, 1)
+  }
+}
+
 // Eventos
-function onCreate() {
-  console.log('Crear nuevo programa')
-}
-
-function onExport() {
-  console.log('Exportar datos')
-}
-
-function onRowClick(row) {
-  console.log('Fila clickeada', row)
-}
+function onExport() { console.log('Exportar datos') }
+function onRowClick(row) { console.log('Fila clickeada', row) }
 </script>
+
+<style scoped>
+.modal-backdrop {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.5); display:flex; justify-content:center; align-items:center; z-index:1050;
+}
+.modal-card {
+  background:white; padding:20px; border-radius:10px; width:100%; max-width:400px;
+}
+</style>
