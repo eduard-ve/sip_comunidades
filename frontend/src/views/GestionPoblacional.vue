@@ -7,6 +7,9 @@
     :showCreate="true"
     :showExport="false"
     :table="{ columns: tableColumns, rows: people }"
+    :showSearch="true"
+    :showEmptyMessage="true"
+    :forceTable="true"
     @create="showForm = true"
   >
     <!-- Personalización de celdas de la tabla -->
