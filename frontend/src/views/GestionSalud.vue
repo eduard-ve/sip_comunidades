@@ -3,8 +3,7 @@
     title="Salud Comunitaria" 
     :kpis="kpis" 
     :charts="charts"
-    :table="tableData"
-    :show-search="true"
+    :show-search="false"
   >
     <!-- Contenido adicional arriba de los charts -->
     <template #extra>
