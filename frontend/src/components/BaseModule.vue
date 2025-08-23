@@ -5,13 +5,8 @@
       <div>
         <nav v-if="breadcrumbs && breadcrumbs.length" aria-label="breadcrumb">
           <ol class="breadcrumb mb-1">
-            <li
-              v-for="(bc, i) in breadcrumbs"
-              :key="i"
-              class="breadcrumb-item"
-              :class="{ active: i === breadcrumbs.length - 1 }"
-              aria-current="page"
-            >
+            <li v-for="(bc, i) in breadcrumbs" :key="i" class="breadcrumb-item"
+              :class="{ active: i === breadcrumbs.length - 1 }" aria-current="page">
               <template v-if="bc.to && i !== breadcrumbs.length - 1">
                 <router-link :to="bc.to">{{ bc.label }}</router-link>
               </template>
@@ -26,20 +21,12 @@
       <div class="d-flex align-items-center gap-2">
         <slot name="actions">
           <!-- Botón Nuevo -->
-          <button
-            v-if="showCreate"
-            class="btn btn-primary btn-sm"
-            @click="$emit('create')"
-          >
+          <button v-if="showCreate" class="btn btn-primary btn-sm" @click="$emit('create')">
             <i class="bi bi-plus-lg me-1"></i> Nuevo
           </button>
 
           <!-- Botón Exportar -->
-          <button
-            v-if="showExport"
-            class="btn btn-outline-secondary btn-sm"
-            @click="$emit('export')"
-          >
+          <button v-if="showExport" class="btn btn-outline-secondary btn-sm" @click="$emit('export')">
             <i class="bi bi-download me-1"></i> Exportar
           </button>
         </slot>
@@ -48,19 +35,9 @@
 
     <!-- KPIs -->
     <div v-if="kpis && kpis.length" class="row g-3 mb-3">
-      <div
-        class="col-12 col-sm-6 col-lg-3"
-        v-for="(k, idx) in kpis"
-        :key="idx"
-      >
-        <KpiCard
-          :title="k.title"
-          :value="k.value"
-          :change="k.change"
-          :icon="k.icon"
-          :colorIcon="k.colorIcon || '#0d6efd'"
-          :colorBorder="k.colorBorder || '#eaeef5'"
-        />
+      <div class="col-12 col-sm-6 col-lg-3" v-for="(k, idx) in kpis" :key="idx">
+        <KpiCard :title="k.title" :value="k.value" :change="k.change" :icon="k.icon"
+          :colorIcon="k.colorIcon || '#0d6efd'" :colorBorder="k.colorBorder || '#eaeef5'" />
       </div>
     </div>
 
@@ -71,13 +48,8 @@
     <div class="row g-3">
       <div class="col-12 col-lg-6">
         <slot name="left">
-          <ChartPanel
-            v-if="charts?.left?.data"
-            :chart-id="charts.left.id || 'leftChart'"
-            :type="charts.left.type || 'bar'"
-            :data="charts.left.data"
-            :options="charts.left.options || {}"
-          >
+          <ChartPanel v-if="charts?.left?.data" :chart-id="charts.left.id || 'leftChart'"
+            :type="charts.left.type || 'bar'" :data="charts.left.data" :options="charts.left.options || {}">
             <template #title>
               {{ charts.left.title || "Gráfico izquierdo" }}
             </template>
@@ -87,13 +59,8 @@
 
       <div class="col-12 col-lg-6">
         <slot name="right">
-          <ChartPanel
-            v-if="charts?.right?.data"
-            :chart-id="charts.right.id || 'rightChart'"
-            :type="charts.right.type || 'pie'"
-            :data="charts.right.data"
-            :options="charts.right.options || {}"
-          >
+          <ChartPanel v-if="charts?.right?.data" :chart-id="charts.right.id || 'rightChart'"
+            :type="charts.right.type || 'pie'" :data="charts.right.data" :options="charts.right.options || {}">
             <template #title>
               {{ charts.right.title || "Gráfico derecho" }}
             </template>
@@ -105,60 +72,40 @@
     <!-- Filtros y tabla -->
     <div class="card border-0 shadow-sm mt-4">
       <div class="card-body">
-        <div
-          class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3"
-        >
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
           <div class="input-group input-group-sm" style="max-width: 340px;">
             <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input
-              v-model="query"
-              type="text"
-              class="form-control"
-              :placeholder="searchPlaceholder"
-            />
+            <input v-model="query" type="text" class="form-control" :placeholder="searchPlaceholder" />
           </div>
           <slot name="table-filters"></slot>
         </div>
 
         <div class="table-responsive">
-          <table class="table table-sm align-middle">
-            <thead>
-              <tr>
-                <th
-                  v-for="(col, i) in safeColumns"
-                  :key="i"
-                  scope="col"
-                  class="text-nowrap"
-                >
-                  {{ col.label || col.key }}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(row, rIdx) in filteredRows"
-                :key="rIdx"
-                class="table-row"
-                @click="$emit('rowClick', row)"
-                style="cursor:pointer"
-              >
-                <td v-for="(col, cIdx) in safeColumns" :key="cIdx">
-                  <slot name="table-cell" :column="col" :row="row">
-                    {{ displayCell(row[col.key]) }}
-                  </slot>
-                </td>
-              </tr>
-              <tr v-if="!filteredRows.length">
-                <td
-                  :colspan="safeColumns.length"
-                  class="text-center text-muted py-4"
-                >
-                  Sin datos para mostrar
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+  <table class="table table-sm align-middle">
+    <thead>
+      <tr>
+        <th v-for="(col, cIdx) in safeColumns" :key="cIdx" :class="col.class">
+          {{ col.label || col.key }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(row, rIdx) in filteredRows" :key="rIdx" class="table-row" @click="$emit('rowClick', row)" style="cursor:pointer">
+        <td v-for="(col, cIdx) in safeColumns" :key="cIdx">
+          <slot name="table-cell" :column="col" :row="row">
+            {{ displayCell(row[col.key]) }}
+          </slot>
+        </td>
+      </tr>
+      <tr v-if="!filteredRows.length">
+        <td :colspan="safeColumns.length" class="text-center text-muted py-4">
+          Sin datos para mostrar
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 
         <slot name="table-footer"></slot>
       </div>
@@ -199,6 +146,7 @@ interface ChartConfig {
 interface Column {
   key: string
   label?: string
+  class?: string
 }
 
 interface TableConfig {
