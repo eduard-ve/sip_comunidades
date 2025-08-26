@@ -22,7 +22,7 @@ const routes = [
     path: '/',
     component: MainLayout,
     children: [
-      { path: 'dashboard', name: 'Dashboard', component: Dashboard },
+      { path: 'dashboard', name: 'Home', component: Dashboard },
       { path: 'poblacion', name: 'GestionPoblacional', component: GestionPoblacional },
       { path: 'salud', name: 'GestionSalud', component: GestionSalud },
       { path: 'social', name: 'GestionSocial', component: GestionSocial },
