@@ -3,7 +3,7 @@
     <!-- ======= Encabezado ======= -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
       <div>
-        <h2 class="fw-bold mb-0">📊 Panel de Control Comunitario</h2>
+        <h2 class="fw-bold mb-0">📊 bienvenidos, aca podras visualizar y conocer todo sobre nuestro objetivo</h2>
         <div class="text-muted small">
           Comunidad: <span class="fw-semibold">{{ currentCommunity }}</span> |
           Año: <span class="fw-semibold">{{ currentYear }}</span>
