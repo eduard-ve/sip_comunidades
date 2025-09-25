@@ -99,12 +99,13 @@
 
 <script setup>
 import { ref } from 'vue'
-import KpiCard from '../components/KpiCard.vue'
-import ChartPanel from '../components/ChartPanel.vue'
-import PopulationPyramid from '../components/PopulationPyramid.vue'
-import ServicesMap from '../components/ServicesMap.vue'
-import HealthIndicators from '../components/HealthIndicators.vue'
-import EducationStats from '../components/EducationStats.vue'
+
+import KpiCard from '../../components/tarjetas/KpiCard.vue'
+import ChartPanel from '../../components/graficas/ChartPanel.vue'
+import PopulationPyramid from '../../components/graficas/PopulationPyramid.vue'
+import ServicesMap from '../../components/mapas/ServicesMap.vue'
+import HealthIndicators from '../../components/tarjetas/HealthIndicators.vue'
+import EducationStats from '../../components/graficas/EducationStats.vue'
 
 const currentCommunity = ref('Comunidad A')
 const currentYear = ref(2025)

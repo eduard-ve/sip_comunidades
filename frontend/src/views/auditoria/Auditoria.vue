@@ -258,7 +258,7 @@
  
 <script setup> 
 import { ref, computed } from "vue" 
-import AuditTable from "../components/AuditTable.vue" 
+import AuditTable from "../../components/comun/AuditTable.vue" 
  
 const events = ref([ 
   { 

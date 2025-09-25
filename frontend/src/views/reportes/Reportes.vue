@@ -45,8 +45,8 @@
 
 <script setup>
 import { ref } from "vue"
-import BaseModule from "../components/BaseModule.vue"
-import ReporteForm from "../components/ReporteForm.vue"
+import BaseModule from "../../components/comun/BaseModule.vue"
+import ReporteForm from "../../components/formularios/ReporteForm.vue"
 
 // Datos de ejemplo para los KPIs
 const kpis = [

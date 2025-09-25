@@ -1,18 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 // Layout principal
-import MainLayout from '../layouts/MainLayout.vue'
+import MainLayout from '../components/layouts/MainLayout.vue'
 
 // Vistas
-import Login from '../views/Login.vue'
-import Dashboard from '../views/Dashboard.vue'
-import GestionPoblacional from '../views/GestionPoblacional.vue'
-import GestionSalud from '../views/GestionSalud.vue'
-import GestionSocial from '../views/GestionSocial.vue'
-import GestionEncuestas from '../views/GestionEncuestas.vue'
-import Reportes from '../views/Reportes.vue'
-import UsuariosRoles from '../views/UsuariosRoles.vue'
-import Auditoria from '../views/Auditoria.vue'
+import Login from '../views//usuarios/Login.vue'
+import Dashboard from '../views/dashboard/Dashboard.vue'
+import GestionPoblacional from '../views/poblacional/GestionPoblacional.vue'
+import GestionSalud from '../views/salud/GestionSalud.vue'
+import GestionSocial from '../views/social/GestionSocial.vue'
+import GestionEncuestas from '../views/encuestas/GestionEncuestas.vue'
+import Reportes from '../views/reportes/Reportes.vue'
+import UsuariosRoles from '../views/usuarios/UsuariosRoles.vue'
+import Auditoria from '../views//auditoria/Auditoria.vue'
 
 const routes = [
   { path: '/', redirect: '/login' },

@@ -161,8 +161,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue"
-import KpiCard from "./KpiCard.vue"
-import ChartPanel from "./ChartPanel.vue"
+import KpiCard from "../tarjetas/KpiCard.vue"
+import ChartPanel from "../graficas/ChartPanel.vue"
 
 interface Breadcrumb { label: string; to?: string }
 interface Kpi {

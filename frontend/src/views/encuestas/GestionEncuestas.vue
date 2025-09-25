@@ -58,8 +58,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue"
-import EncuestaBase from "../components/EncuestaBase.vue"
-import EncuestaForm from "../components/EncuestaForm.vue"
+import EncuestaBase from "./components/EncuestaBase.vue"
+import EncuestaForm from "../../components/formularios/EncuestaForm.vue"
 
 // Variables de estado
 const showForm = ref(false)

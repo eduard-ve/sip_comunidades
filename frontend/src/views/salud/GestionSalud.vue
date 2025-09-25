@@ -92,7 +92,7 @@
 </template>
 
 <script setup>
-import BaseModule from '../components/BaseModule.vue'
+import BaseModule from '../../components/comun/BaseModule.vue'
 
 /* Indicadores principales */
 const kpis = [

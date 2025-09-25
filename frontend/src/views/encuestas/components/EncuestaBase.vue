@@ -138,8 +138,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import KpiCard from './KpiCard.vue'
-import ChartPanel from './ChartPanel.vue'
+import KpiCard from '../../../components/tarjetas/KpiCard.vue'
+import ChartPanel from '../../../components/graficas/ChartPanel.vue'
 
 const props = defineProps({
   title: { type: String, default: 'Encuestas' },
