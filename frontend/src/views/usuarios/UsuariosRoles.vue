@@ -66,8 +66,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import BaseModule from '../components/BaseModule.vue'
-import UserForm from '../components/UserForm.vue'
+import BaseModule from '../../components/comun/BaseModule.vue'
+import UserForm from '../../components/formularios/UserForm.vue'
 
 const roles = ['Admin', 'Editor', 'Invitado']
 

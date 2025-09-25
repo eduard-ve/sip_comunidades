@@ -97,9 +97,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import BaseModule from '../components/BaseModule.vue'
-import MapPanel from '../components/MapPanel.vue'
-import ChartPanel from '../components/ChartPanel.vue'
+import BaseModule from '../../components/comun/BaseModule.vue'
+import MapPanel from '../../components/mapas/MapPanel.vue'
+import ChartPanel from '../../components/graficas/ChartPanel.vue'
 
 // KPIs
 const kpis = ref([

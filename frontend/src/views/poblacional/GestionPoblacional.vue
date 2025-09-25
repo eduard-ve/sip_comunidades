@@ -127,8 +127,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import BaseModule from '../components/BaseModule.vue'
-import ServicesMap from '../components/ServicesMap.vue'
+import BaseModule from '../../components/comun/BaseModule.vue'
+import ServicesMap from '../../components/mapas/ServicesMap.vue'
 
 // KPIs
 const kpis = [
