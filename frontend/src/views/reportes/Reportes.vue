@@ -10,7 +10,7 @@
     @rowClick="(row) => alert(` Detalles del reporte ID: ${row.id}`)"
   >
     <template #table-filters>
-      <div class="d-flex justify-content-end gap-2">
+      <div class="table-filters">
         <button class="btn btn-sm btn-outline-primary">
           <i class="bi bi-funnel me-1"></i> Filtros avanzados
         </button>
@@ -20,7 +20,7 @@
     <!-- Slot para las celdas de la tabla -->
     <template #table-cell="{ column, row }">
       <template v-if="column.key === 'acciones'">
-        <div class="d-flex gap-2">
+        <div class="table-actions">
           <button class="btn btn-sm btn-success" @click.stop="exportar(row)">
             <i class="bi bi-file-earmark-excel me-1"></i> PDF
           </button>
@@ -28,6 +28,16 @@
             <i class="bi bi-trash me-1"></i> Eliminar
           </button>
         </div>
+      </template>
+      <template v-else-if="column.key === 'estado'">
+        <span :class="`estado-badge estado-${row.estado.toLowerCase()}`">
+          {{ row.estado }}
+        </span>
+      </template>
+      <template v-else-if="column.key === 'tipo'">
+        <span :class="`tipo-badge tipo-${row.tipo.toLowerCase()}`">
+          {{ row.tipo }}
+        </span>
       </template>
       <template v-else>
         {{ row[column.key] }}
@@ -47,6 +57,7 @@
 import { ref } from "vue"
 import BaseModule from "../../components/comun/BaseModule.vue"
 import ReporteForm from "../../components/formularios/ReporteForm.vue"
+import '../../assets/css/Reportes.css'
 
 // Datos de ejemplo para los KPIs
 const kpis = [
