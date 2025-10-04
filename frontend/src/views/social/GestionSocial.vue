@@ -100,6 +100,7 @@ import { ref } from 'vue'
 import BaseModule from '../../components/comun/BaseModule.vue'
 import MapPanel from '../../components/mapas/MapPanel.vue'
 import ChartPanel from '../../components/graficas/ChartPanel.vue'
+import '../../assets/css/GestionSocial.css'
 
 // KPIs
 const kpis = ref([
@@ -182,13 +183,3 @@ function deletePrograma(row) {
 function onExport() { console.log('Exportar datos') }
 function onRowClick(row) { console.log('Fila clickeada', row) }
 </script>
-
-<style scoped>
-.modal-backdrop {
-  position: fixed; top:0; left:0; width:100%; height:100%;
-  background: rgba(0,0,0,0.5); display:flex; justify-content:center; align-items:center; z-index:1050;
-}
-.modal-card {
-  background:white; padding:20px; border-radius:10px; width:100%; max-width:400px;
-}
-</style>

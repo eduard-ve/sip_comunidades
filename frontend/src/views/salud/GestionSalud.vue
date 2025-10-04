@@ -10,10 +10,10 @@
       <div class="row g-3">
         <!-- Campañas -->
         <div class="col-md-6">
-          <div class="card shadow-sm border-0 h-100">
+          <div class="card shadow-sm border-0 h-100 salud-card salud-campaigns-card">
             <div class="card-body">
               <h5 class="fw-bold mb-3">
-                <i class="bi bi-bullhorn me-2"></i> Campañas de Salud
+                <i class="bi bi-bullhorn me-2 salud-icon"></i> Campañas de Salud
               </h5>
               <ul class="list-group list-group-flush">
                 <li v-for="(c, i) in campaigns" :key="i" class="list-group-item">
@@ -26,10 +26,10 @@
 
         <!-- Recursos disponibles -->
         <div class="col-md-6">
-          <div class="card shadow-sm border-0 h-100">
+          <div class="card shadow-sm border-0 h-100 salud-card salud-resources-card">
             <div class="card-body">
               <h5 class="fw-bold mb-3">
-                <i class="bi bi-hospital me-2"></i> Recursos disponibles
+                <i class="bi bi-hospital me-2 salud-icon"></i> Recursos disponibles
               </h5>
               <ul class="list-group list-group-flush">
                 <li class="list-group-item">
@@ -51,10 +51,10 @@
       <div class="row g-3 mt-2">
         <!-- Alertas -->
         <div class="col-12">
-          <div class="card shadow-sm border-0">
+          <div class="card shadow-sm border-0 salud-card salud-alerts">
             <div class="card-body">
               <h5 class="fw-bold mb-3">
-                <i class="bi bi-exclamation-triangle me-2"></i> Alertas de Salud
+                <i class="bi bi-exclamation-triangle me-2 salud-icon"></i> Alertas de Salud
               </h5>
               <ul>
                 <li>⚠️ Prevención de dengue: eliminar criaderos de zancudos.</li>
@@ -67,10 +67,10 @@
 
         <!-- Medicina tradicional -->
         <div class="col-12">
-          <div class="card shadow-sm border-0">
+          <div class="card shadow-sm border-0 salud-card salud-traditional-medicine">
             <div class="card-body">
               <h5 class="fw-bold mb-3">
-                <i class="bi bi-leaf me-2"></i> Medicina Tradicional
+                <i class="bi bi-leaf me-2 salud-icon"></i> Medicina Tradicional
               </h5>
               <p>
                 En la comunidad se valora el conocimiento ancestral transmitido por los mayores.
@@ -93,6 +93,7 @@
 
 <script setup>
 import BaseModule from '../../components/comun/BaseModule.vue'
+import '../../assets/css/GestionSalud.css'
 
 /* Indicadores principales */
 const kpis = [
