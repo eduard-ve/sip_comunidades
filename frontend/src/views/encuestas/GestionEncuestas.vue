@@ -10,33 +10,37 @@
   >
     <!-- El resto de tus templates actuales -->
     <template #table-filters>
-      <select v-model="selectedStatus" class="form-select form-select-sm" style="max-width: 180px;">
-        <option value="">Todos los estados</option>
-        <option value="activa">Activa</option>
-        <option value="cerrada">Cerrada</option>
-        <option value="borrador">Borrador</option>
-      </select>
+      <div class="table-filters">
+        <select v-model="selectedStatus" class="form-select form-select-sm">
+          <option value="">Todos los estados</option>
+          <option value="activa">Activa</option>
+          <option value="cerrada">Cerrada</option>
+          <option value="borrador">Borrador</option>
+        </select>
+      </div>
     </template>
     <template #table-footer>
-      <div class="d-flex justify-content-end text-muted small mt-2">
-        Total: {{ filteredCount }} encuestas
+      <div class="table-footer">
+        <div class="text-muted small">
+          Total: {{ filteredCount }} encuestas
+        </div>
       </div>
     </template>
   </EncuestaBase>
 
   <!-- Modal para el formulario de la encuesta -->
-  <div v-if="showForm" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1050;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
-    <div class="bg-white p-4 rounded shadow" style="min-width:320px;">
+  <div v-if="showForm" class="modal-backdrop">
+    <div class="modal-card">
       <EncuestaForm @save="saveSurvey" @cancel="cancelSurvey" />
     </div>
   </div>
 
   <!-- NUEVO: Modal para elegir entre Enlace y PDF -->
-  <div v-if="showOptions" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1050;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
-    <div class="bg-white p-4 rounded shadow" style="min-width:320px;">
+  <div v-if="showOptions" class="modal-backdrop">
+    <div class="modal-card modal-options">
       <h5>Encuesta guardada</h5>
       <div class="mb-3">¿Qué acción deseas realizar?</div>
-      <div class="d-flex justify-content-between">
+      <div class="d-flex">
         <button class="btn btn-primary" @click="generateLink">Generar Enlace</button>
         <button class="btn btn-secondary" @click="generatePdf">Generar PDF</button>
       </div>
@@ -44,8 +48,8 @@
   </div>
 
   <!-- Modal para mostrar el enlace único (sin cambios) -->
-  <div v-if="showLink" class="modal-backdrop" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1050;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
-    <div class="bg-white p-4 rounded shadow" style="min-width:320px;">
+  <div v-if="showLink" class="modal-backdrop">
+    <div class="modal-card modal-link">
       <h5>Encuesta creada</h5>
       <div class="mb-2">Comparte este enlace con los usuarios:</div>
       <div class="mb-3">
@@ -60,6 +64,7 @@
 import { ref, computed, onMounted } from "vue"
 import EncuestaBase from "./components/EncuestaBase.vue"
 import EncuestaForm from "../../components/formularios/EncuestaForm.vue"
+import '../../assets/css/GestionEncuestas.css'
 
 // Variables de estado
 const showForm = ref(false)
