@@ -12,21 +12,35 @@
   >
     <!-- Filtro de roles -->
     <template #extra>
-      <select class="form-select form-select-sm me-2" v-model="filterRole" style="max-width: 180px;">
-        <option value="">Todos los roles</option>
-        <option v-for="r in roles" :key="r" :value="r">{{ r }}</option>
-      </select>
+      <div class="roles-filter">
+        <select class="form-select form-select-sm" v-model="filterRole">
+          <option value="">Todos los roles</option>
+          <option v-for="r in roles" :key="r" :value="r">{{ r }}</option>
+        </select>
+      </div>
     </template>
 
     <!-- Personalización de las celdas de la tabla -->
     <template #table-cell="{ column, row }">
       <template v-if="column.key === 'acciones'">
-        <button class="btn btn-sm btn-outline-primary me-1" @click.stop="openForm(row)">
-          <i class="bi bi-pencil"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-danger" @click.stop="deleteUser(row.id)">
-          <i class="bi bi-trash"></i>
-        </button>
+        <div class="table-actions">
+          <button class="btn btn-sm btn-outline-primary" @click.stop="openForm(row)">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" @click.stop="deleteUser(row.id)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </template>
+      <template v-else-if="column.key === 'estado'">
+        <span :class="`estado-badge estado-${row.estado.toLowerCase()}`">
+          {{ row.estado }}
+        </span>
+      </template>
+      <template v-else-if="column.key === 'rol'">
+        <span :class="`rol-badge rol-${row.rol.toLowerCase()}`">
+          {{ row.rol }}
+        </span>
       </template>
       <template v-else>
         {{ row[column.key] }}
@@ -35,14 +49,14 @@
 
     <!-- Footer de la tabla -->
     <template #table-footer>
-      <div class="d-flex justify-content-end mt-2">
+      <div class="table-footer">
         <button class="btn btn-sm btn-secondary" @click="onExport">Exportar lista</button>
       </div>
     </template>
 
     <!-- Modal -->
-    <div v-if="showForm" class="modal fade show d-block" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-lg" role="document">
+    <div v-if="showForm" class="modal">
+      <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{ selectedUser?.id ? 'Editar Usuario' : 'Nuevo Usuario' }}</h5>
@@ -60,7 +74,7 @@
         </div>
       </div>
     </div>
-    <div v-if="showForm" class="modal-backdrop fade show"></div>
+    <div v-if="showForm" class="modal-backdrop"></div>
   </BaseModule>
 </template>
 
@@ -68,6 +82,7 @@
 import { ref, computed } from 'vue'
 import BaseModule from '../../components/comun/BaseModule.vue'
 import UserForm from '../../components/formularios/UserForm.vue'
+import '../../assets/css/UsuariosRoles.css'
 
 const roles = ['Admin', 'Editor', 'Invitado']
 

@@ -1,0 +1,604 @@
+/* Estilos específicos para la gestión de auditoría */
+
+/* Estilos para las tarjetas */
+.audit-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.audit-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Estilos para las barras de progreso */
+.audit-progress {
+  border-radius: 10px;
+}
+
+.audit-progress-bar {
+  border-radius: 10px;
+}
+
+/* Estilos para las estadísticas de acción */
+.action-stat {
+  padding: 1rem 0;
+}
+
+.action-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  font-size: 1.5rem;
+}
+
+/* Estilos para los avatares de actividad */
+.activity-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+/* Estilos para los elementos de actividad */
+.activity-item {
+  transition: background-color 0.2s ease;
+}
+
+.activity-item:hover {
+  background-color: #f8f9fa;
+}
+
+.activity-item:last-child {
+  border-bottom: none !important;
+}
+
+/* Estilos para los badges */
+.audit-badge {
+  font-size: 0.75rem;
+}
+
+/* Estilos para el dropdown */
+.audit-dropdown-toggle::after {
+  margin-left: 0.5rem;
+}
+
+.audit-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1050;
+  display: none;
+  min-width: 200px;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  color: #212529;
+  text-align: left;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.375rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.audit-dropdown-menu.show {
+  display: block;
+}
+
+.audit-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 1rem;
+  clear: both;
+  font-weight: 400;
+  color: #212529;
+  text-align: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.audit-dropdown-item:hover,
+.audit-dropdown-item:focus {
+  color: #1e2125;
+  background-color: #e9ecef;
+}
+
+.audit-dropdown-divider {
+  height: 0;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para el modal de auditoría */
+.audit-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1050;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.audit-modal-dialog {
+  max-width: 800px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.audit-modal-content {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+.audit-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.audit-modal-title {
+  color: #495057;
+  font-weight: 600;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.audit-modal-body {
+  padding: 1.5rem;
+}
+
+.audit-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.audit-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Animaciones para el modal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Estilos para los KPIs de auditoría */
+.audit-kpi {
+  transition: all 0.3s ease;
+}
+
+.audit-kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.audit-kpi .card-body {
+  padding: 1.5rem;
+}
+
+.audit-kpi-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-right: 1rem;
+}
+
+.audit-kpi-content h6 {
+  color: #6c757d;
+  font-weight: 400;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.audit-kpi-content h3 {
+  color: #495057;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  font-size: 1.75rem;
+}
+
+.audit-kpi-content small {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Estilos para los gráficos de auditoría */
+.audit-chart-container {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.audit-chart-header {
+  background: white;
+  border: none;
+  padding-bottom: 0;
+  margin-bottom: 1rem;
+}
+
+.audit-chart-title {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.audit-chart-subtitle {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+/* Estilos para la actividad por módulo */
+.module-activity {
+  padding: 0.5rem 0;
+}
+
+.module-activity-item {
+  margin-bottom: 1rem;
+}
+
+.module-activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.module-activity-name {
+  font-weight: 500;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.module-activity-count {
+  color: #6c757d;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Estilos para la distribución de acciones */
+.action-distribution {
+  padding: 0.5rem 0;
+}
+
+.action-distribution-item {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/* Estilos para la actividad reciente */
+.recent-activity {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.recent-activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: white;
+  border: none;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.recent-activity-title {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.recent-activity-subtitle {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+/* Estilos para el filtro dropdown */
+.audit-filter-dropdown {
+  position: relative;
+}
+
+.audit-filter-button {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border: 1px solid #6c757d;
+  border-radius: 0.375rem;
+  background-color: white;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.audit-filter-button:hover {
+  background-color: #f8f9fa;
+  border-color: #5c636a;
+}
+
+.audit-filter-button.show {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+/* Estilos para la tabla de auditoría */
+.audit-table-container {
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+}
+
+/* Estilos para los cambios en el modal */
+.audit-changes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.audit-changes-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.9rem;
+}
+
+.audit-changes-list li:last-child {
+  border-bottom: none;
+}
+
+.audit-changes-list strong {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* Estilos para el contenedor principal */
+.audit-container {
+  background: #f8f9fa;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+/* Estilos para el título principal */
+.audit-title {
+  color: #495057;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .col-xl-3 {
+    margin-bottom: 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .action-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+  
+  .audit-modal-dialog {
+    width: 95%;
+    margin: 0.5rem;
+  }
+  
+  .audit-modal-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .audit-modal-body {
+    padding: 1rem;
+  }
+  
+  .audit-kpi-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+    margin-right: 0.75rem;
+  }
+  
+  .audit-kpi-content h3 {
+    font-size: 1.5rem;
+  }
+  
+  .module-activity-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .recent-activity-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .audit-filter-dropdown {
+    width: 100%;
+  }
+  
+  .audit-filter-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .audit-container {
+    padding: 0.5rem;
+  }
+  
+  .audit-title {
+    font-size: 1.5rem;
+  }
+  
+  .audit-kpi .card-body {
+    padding: 1rem;
+  }
+  
+  .audit-kpi-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 1.1rem;
+    margin-right: 0.5rem;
+  }
+  
+  .audit-kpi-content h3 {
+    font-size: 1.25rem;
+  }
+  
+  .audit-chart-container {
+    padding: 1rem;
+  }
+  
+  .audit-modal-dialog {
+    width: 98%;
+    margin: 0.25rem;
+  }
+  
+  .audit-modal-header,
+  .audit-modal-body,
+  .audit-modal-footer {
+    padding: 0.75rem;
+  }
+  
+  .action-distribution-item {
+    padding: 0.75rem 0;
+  }
+  
+  .activity-item {
+    padding: 0.75rem !important;
+  }
+}
+
+/* Estilos para el estado de carga */
+.audit-loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.audit-loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 0.25rem solid #f3f3f3;
+  border-top: 0.25rem solid #0d6efd;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estilos para el estado vacío */
+.audit-empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.audit-empty-state i {
+  font-size: 3rem;
+  color: #dee2e6;
+  margin-bottom: 1rem;
+}
+
+.audit-empty-state h5 {
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.audit-empty-state p {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Estilos para mensajes de estado */
+.audit-status-message {
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.audit-status-success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+}
+
+.audit-status-error {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+
+.audit-status-info {
+  background-color: #cff4fc;
+  color: #055160;
+  border: 1px solid #b6effb;
+}
+
+.audit-status-warning {
+  background-color: #fff3cd;
+  color: #664d03;
+  border: 1px solid #ffecb5;
+}
