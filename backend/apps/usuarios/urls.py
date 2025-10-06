@@ -7,7 +7,7 @@ router.register(r'usuarios', UsuarioViewSet, basename='usuarios')
 
 urlpatterns = [
     path('registro/', RegistroView.as_view(), name='registro'),
-    path('login/', CustomTokenObtainPairView.as_view(), name='login'),
+    path('login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('perfil/', PerfilView.as_view(), name='perfil'),
 ]
 

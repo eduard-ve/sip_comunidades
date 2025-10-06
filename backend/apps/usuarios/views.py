@@ -1,9 +1,11 @@
 from rest_framework import generics, permissions, viewsets
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .serializers import RegistroSerializer, UsuarioSerializer
+from .permissions import EsAdminRol
 
 Usuario = get_user_model()
 
@@ -27,8 +29,9 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 # Perfil del usuario autenticado
-class PerfilView(generics.RetrieveAPIView):
+class PerfilView(generics.RetrieveUpdateAPIView):
     serializer_class = UsuarioSerializer
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
@@ -38,4 +41,6 @@ class PerfilView(generics.RetrieveAPIView):
 class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-    permission_classes = [permissions.IsAdminUser]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
+

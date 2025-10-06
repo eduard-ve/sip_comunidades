@@ -57,4 +57,4 @@ class UsuarioSerializer(serializers.ModelSerializer):
             'rol',
             'date_joined'
         ]
-        read_only_fields = ['id', 'date_joined']
+        read_only_fields = ['id', 'date_joined', 'rol,', 'is_staff','is_superuser']
