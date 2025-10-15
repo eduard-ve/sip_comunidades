@@ -4,7 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 
 Usuario = get_user_model()
 
-
+# clase para serializar y validar datos de usuario
 class RegistroSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True, 
@@ -44,6 +44,7 @@ class RegistroSerializer(serializers.ModelSerializer):
         return user
 
 
+# Serializer para el modelo Usuario
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario

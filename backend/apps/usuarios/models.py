@@ -21,6 +21,7 @@ class Usuario(AbstractUser):
     rol = models.CharField(max_length=50, choices=ROLE_CHOICES, default=INVITADO, help_text="Rol del usuario en el sistema"
     )
     
+    # Fecha de creación
     def __str__(self):
         return f"{self.username} ({self.get_rol_display()})"
     

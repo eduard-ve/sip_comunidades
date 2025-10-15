@@ -17,6 +17,7 @@ Including another URLconf
 from django.urls import path
 from django.urls import path, include
 
+# Rutas de la aplicación de usuarios
 urlpatterns = [
-    path('api/usuarios', include('apps.usuarios.urls'))
+    path('api/usuarios', include('apps.usuarios.urls'))   
 ]
