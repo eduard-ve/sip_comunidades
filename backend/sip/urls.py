@@ -19,5 +19,6 @@ from django.urls import path, include
 
 # Rutas de la aplicación de usuarios
 urlpatterns = [
+    path('admin/', include('admin.site.urls')),
     path('api/usuarios/', include('apps.usuarios.urls'))   
 ]
