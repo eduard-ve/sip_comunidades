@@ -4,7 +4,7 @@ from poblacion.models.catalogos import (
     GrupoFamiliar, EstadoCivil, Lengua, TipoRelacion
 )
 
-class CatalogoBaseSerializer(serializers.ModelSerializer):
+class CatalogoSerializer(serializers.ModelSerializer):
     class Meta:
         model = None  # será asignado dinámicamente en las vistas
         fields = ['id', 'nombre']
