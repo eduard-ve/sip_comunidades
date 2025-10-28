@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     #apps
     'apps.usuarios',
+    'apps.poblacion',
 
 ]
 
