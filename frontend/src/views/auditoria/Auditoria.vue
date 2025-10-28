@@ -9,18 +9,18 @@
     <div class="row mb-4">
       <!-- Total de Eventos -->
       <div class="col-xl-3 col-md-6 mb-3">
-        <div class="card h-100 shadow-sm border-0 audit-kpi">
+        <div class="card h-100 shadow-sm border-0 audit-kpi audit-kpi-total-events">
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0">
-                <div class="audit-kpi-icon bg-primary bg-opacity-10 rounded-3 p-3">
-                  <i class="fas fa-list-alt text-primary fs-4"></i>
+                <div class="audit-kpi-icon bg-white bg-opacity-20 rounded-3 p-3">
+                  <i class="fas fa-list-alt text-white fs-4"></i>
                 </div>
               </div>
               <div class="flex-grow-1 ms-3 audit-kpi-content">
-                <h6 class="text-muted mb-1 fw-normal">Total Eventos</h6>
+                <h6 class="mb-1 fw-normal">Total Eventos</h6>
                 <h3 class="mb-0 fw-bold">{{ totalEvents }}</h3>
-                <small class="text-success">
+                <small>
                   <i class="fas fa-arrow-up"></i> +{{ todayEvents }} hoy
                 </small>
               </div>
@@ -31,18 +31,18 @@
 
       <!-- Eventos por Usuario Activo -->
       <div class="col-xl-3 col-md-6 mb-3">
-        <div class="card h-100 shadow-sm border-0 audit-kpi">
+        <div class="card h-100 shadow-sm border-0 audit-kpi audit-kpi-active-users">
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0">
-                <div class="audit-kpi-icon bg-success bg-opacity-10 rounded-3 p-3">
-                  <i class="fas fa-users text-success fs-4"></i>
+                <div class="audit-kpi-icon bg-white bg-opacity-20 rounded-3 p-3">
+                  <i class="fas fa-users text-white fs-4"></i>
                 </div>
               </div>
               <div class="flex-grow-1 ms-3 audit-kpi-content">
-                <h6 class="text-muted mb-1 fw-normal">Usuarios Activos</h6>
+                <h6 class="mb-1 fw-normal">Usuarios Activos</h6>
                 <h3 class="mb-0 fw-bold">{{ activeUsers }}</h3>
-                <small class="text-info">
+                <small>
                   <i class="fas fa-clock"></i> Última hora
                 </small>
               </div>
@@ -53,18 +53,18 @@
 
       <!-- Módulos Monitoreados -->
       <div class="col-xl-3 col-md-6 mb-3">
-        <div class="card h-100 shadow-sm border-0 audit-kpi">
+        <div class="card h-100 shadow-sm border-0 audit-kpi audit-kpi-active-modules">
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0">
-                <div class="audit-kpi-icon bg-warning bg-opacity-10 rounded-3 p-3">
-                  <i class="fas fa-cubes text-warning fs-4"></i>
+                <div class="audit-kpi-icon bg-white bg-opacity-20 rounded-3 p-3">
+                  <i class="fas fa-cubes text-white fs-4"></i>
                 </div>
               </div>
               <div class="flex-grow-1 ms-3 audit-kpi-content">
-                <h6 class="text-muted mb-1 fw-normal">Módulos Activos</h6>
+                <h6 class="mb-1 fw-normal">Módulos Activos</h6>
                 <h3 class="mb-0 fw-bold">{{ activeModules }}</h3>
-                <small class="text-muted">
+                <small>
                   <i class="fas fa-shield-alt"></i> Monitoreados
                 </small>
               </div>
@@ -75,18 +75,18 @@
 
       <!-- Eventos Críticos -->
       <div class="col-xl-3 col-md-6 mb-3">
-        <div class="card h-100 shadow-sm border-0 audit-kpi">
+        <div class="card h-100 shadow-sm border-0 audit-kpi audit-kpi-critical-events">
           <div class="card-body">
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0">
-                <div class="audit-kpi-icon bg-danger bg-opacity-10 rounded-3 p-3">
-                  <i class="fas fa-exclamation-triangle text-danger fs-4"></i>
+                <div class="audit-kpi-icon bg-white bg-opacity-20 rounded-3 p-3">
+                  <i class="fas fa-exclamation-triangle text-white fs-4"></i>
                 </div>
               </div>
               <div class="flex-grow-1 ms-3 audit-kpi-content">
-                <h6 class="text-muted mb-1 fw-normal">Eventos Críticos</h6>
+                <h6 class="mb-1 fw-normal">Eventos Críticos</h6>
                 <h3 class="mb-0 fw-bold">{{ criticalEvents }}</h3>
-                <small class="text-danger">
+                <small>
                   <i class="fas fa-bell"></i> Requieren atención
                 </small>
               </div>
