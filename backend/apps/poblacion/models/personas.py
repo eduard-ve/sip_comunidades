@@ -16,7 +16,7 @@ class Persona(models.Model):
     tipo_identificacion = models.ForeignKey(TipoIdentificacion, on_delete=models.PROTECT)
     numero_identificacion = models.CharField(max_length=50, unique=True)
     primer_nombre = models.CharField(max_length=100)
-    segundo_nombre = models.CharField(max_lenth=100, blank=True, null=True)
+    segundo_nombre = models.CharField(max_length=100, blank=True, null=True)
     primer_apellido = models.CharField(max_length=100)
     segundo_apellido = models.CharField(max_length=100,blank=True, null=True)
     fecha_nacimiento = models.DateField()

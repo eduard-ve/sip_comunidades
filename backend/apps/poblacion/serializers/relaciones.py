@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from poblacion.models.relaciones import RelacionFamiliar
+from apps.poblacion.models.relaciones import RelacionFamiliar
 
 # Serializer para la relación familiar
 class RelacionFamiliarSerializer(serializers.ModelSerializer):

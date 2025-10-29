@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from poblacion.models.personas import Persona
+from apps.poblacion.models.personas import Persona
 
 class PersonaSerializer(serializers.ModelSerializer):
     tipo_indentificacion_nombre = serializers.CharField(source='tipo_identificacion.nombre', read_only=True)

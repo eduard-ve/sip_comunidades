@@ -1,7 +1,7 @@
 from rest_framework.routers import DefaultRouter
-from poblacion.views.personas import PersonaViewSet
-from poblacion.views.relaciones import RelacionFamiliarViewSet
-from poblacion.views.catalogos import CatalogoViewSet
+from apps.poblacion.views.personas import PersonaViewSet
+from apps.poblacion.views.relaciones import RelacionFamiliarViewSet
+from apps.poblacion.views.catalogos import CatalogoViewSet
 
 router = DefaultRouter()
 

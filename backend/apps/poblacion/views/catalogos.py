@@ -1,6 +1,6 @@
 from rest_framework import viewsets, permissions
-from poblacion.serializers.catalogos import CatalogoSerializer
-from poblacion.models import catalogos
+from apps.poblacion.serializers.catalogos import CatalogoSerializer
+from apps.poblacion.models import catalogos
 
 # crear un viewset generico para los catalogos
 class CatalogoViewSet(viewsets.ReadOnlyModelViewSet):
