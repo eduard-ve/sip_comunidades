@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from ..models import EstadoPrograma, ProgramaSocial
 
+# Serializer para el modelo EstadoPrograma y ProgramaSocial
 class EstadoProgramaSerializer(serializers.ModelSerializer):
     class Meta:
         model = EstadoPrograma
