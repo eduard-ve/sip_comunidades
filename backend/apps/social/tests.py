@@ -50,11 +50,12 @@ class SocialModuloTests(APITestCase):
         )
 
         # URLs de la API
-        self.estados_url = reverse('estado-list')
-        self.programas_url = reverse('programa-list')
-        self.beneficiarios_url = reverse('beneficiario-list')
-        self.actividades_url = reverse('actividad-list')
-        self.coberturas_url = reverse('cobertura-list')
+        self.estados_url = reverse('social:estado-list')
+        self.programas_url = reverse('social:programa-list')
+        self.beneficiarios_url = reverse('social:beneficiario-list')
+        self.actividades_url = reverse('social:actividad-list')
+        self.coberturas_url = reverse('social:cobertura-list')
+
 
         # Token para autenticación
         self.token = RefreshToken.for_user(self.admin).access_token
@@ -135,7 +136,7 @@ class SocialModuloTests(APITestCase):
 
     def test_detalle_estado_programa(self):
         """Obtener detalle de estado de programa"""
-        url = reverse('estado-detail', kwargs={'pk': self.estado.pk})
+        url = reverse('social:estado-detail', kwargs={'pk': self.estado.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['nombre'], "Activo")
@@ -164,7 +165,7 @@ class SocialModuloTests(APITestCase):
 
     def test_detalle_programa_social(self):
         """Obtener detalle de programa social"""
-        url = reverse('programa-detail', kwargs={'pk': self.programa.pk})
+        url = reverse('social:programa-detail', kwargs={'pk': self.programa.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['nombre'], "Programa de Alimentación")
