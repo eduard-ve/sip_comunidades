@@ -5,14 +5,14 @@ from ..models import ProgramaBeneficiario, ActividadSocial, CoberturaPrograma
 class ProgramaBeneficiarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgramaBeneficiario
-        fields = '_all_'
+        fields = '__all__'
 
 class ActividadSocialSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActividadSocial
-        fields = '_all_'
+        fields = '__all__'
 
 class CoberturaProgramaSerializer(serializers.ModelSerializer):
     class Meta:
         model = CoberturaPrograma
-        fields = '_all_'
+        fields = '__all__'

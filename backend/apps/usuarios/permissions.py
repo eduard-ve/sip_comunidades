@@ -1,63 +1,77 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
+
 class TieneRol(BasePermission):
     """
     Permite acceso solo a usuarios con uno de los roles especificados.
-    Uso:
-        permission_classes = [TieneRol('admin', 'editor')]
+    Uso recomendado:
+        Crear subclases o usar la función factory `crear_permiso_roles()`.
     """
 
-    def __init__(self, *roles_permitidos):
-        self.roles_permitidos = roles_permitidos
+    roles_permitidos = []
 
     def has_permission(self, request, view):
+        user = request.user
         return (
-            request.user
-            and request.user.is_authenticated
+            user
+            and user.is_authenticated
+            and hasattr(user, "rol")
             and (
-                request.user.rol in self.roles_permitidos
-                or request.user.is_staff
+                user.rol in self.roles_permitidos
+                or user.is_staff
             )
         )
 
-# Permisos específicos
+
+def crear_permiso_roles(*roles):
+    """
+    Crea una clase de permiso personalizada para los roles indicados.
+    Ejemplo:
+        EsAdminOEditor = crear_permiso_roles('admin', 'editor')
+        permission_classes = [permissions.IsAuthenticated, EsAdminOEditor]
+    """
+    class PermisoDinamico(TieneRol):
+        roles_permitidos = roles
+    return PermisoDinamico
+
+
 class SoloLectura(BasePermission):
-    """
-    Permite acceso de solo lectura (GET, HEAD, OPTIONS).
-    Ideal para endpoints públicos.
-    """
+    """Permite acceso de solo lectura (GET, HEAD, OPTIONS)."""
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
 
-# Permisos personalizados
-class EsAdmin(BasePermission):
-    """Permite acceso solo a administradores."""
+
+class EsAdminRol(BasePermission):
+    """Permite acceso solo a usuarios con rol 'admin' o staff."""
     def has_permission(self, request, view):
+        user = request.user
         return (
-            request.user
-            and request.user.is_authenticated
-            and (request.user.rol == 'admin' or request.user.is_staff)
+            user
+            and user.is_authenticated
+            and hasattr(user, "rol")
+            and (user.rol == "admin" or user.is_staff)
         )
 
-# Permisos personalizados
-class EsEditor(BasePermission):
+
+class EsEditorRol(BasePermission):
     """Permite acceso a administradores y editores."""
     def has_permission(self, request, view):
+        user = request.user
         return (
-            request.user
-            and request.user.is_authenticated
-            and (
-                request.user.rol in ['admin', 'editor']
-                or request.user.is_staff
-            )
+            user
+            and user.is_authenticated
+            and hasattr(user, "rol")
+            and (user.rol in ["admin", "editor"] or user.is_staff)
         )
 
-# Permisos personalizados
-class EsInvitado(BasePermission):
+
+class EsInvitadoRol(BasePermission):
     """Permite acceso solo a usuarios con rol 'invitado'."""
     def has_permission(self, request, view):
+        user = request.user
         return (
-            request.user
-            and request.user.is_authenticated
-            and request.user.rol == 'invitado'
+            user
+            and user.is_authenticated
+            and hasattr(user, "rol")
+            and user.rol == "invitado"
         )

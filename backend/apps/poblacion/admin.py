@@ -1,9 +1,16 @@
 from django.contrib import admin
-from poblacion.models.catalogos import *
-from poblacion.models.personas import Persona
-from poblacion.models.relaciones import RelacionFamiliar
+from apps.poblacion.models.catalogos import *
+from apps.poblacion.models.personas import Persona
+from apps.poblacion.models.relaciones import RelacionFamiliar
 
 
-# Register your models here.
-admin.site.register(TipoIdentificacion, NivelEducatico, Ocupacion, GrupoFamiliar,
-            EstadoCivil, Lengua, TipoRelacion, Persona, RelacionFamiliar)
+# Registro de los modelos de población en el admin de Django
+admin.site.register(TipoIdentificacion)
+admin.site.register(NivelEducativo)
+admin.site.register(Ocupacion)
+admin.site.register(GrupoFamiliar)
+admin.site.register(EstadoCivil)
+admin.site.register(Lengua)
+admin.site.register(TipoRelacion)
+admin.site.register(Persona)
+admin.site.register(RelacionFamiliar)

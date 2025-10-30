@@ -8,7 +8,7 @@ class RelacionFamiliar(models.Model):
     familiar = models.ForeignKey(Persona, on_delete=models.CASCADE, related_name='familiares')
     tipo_relacion = models.ForeignKey(TipoRelacion, on_delete=models.PROTECT)
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.persona} - {self.tipo_relacion} - {self.familiar}"
     
     class Meta:

@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
-from poblacion.models.relaciones import RelacionFamiliar
-from poblacion.serializers.relaciones import RelacionFamiliarSerializer
-from usuarios.permissions import EsAdminRol
+from ..models.relaciones import RelacionFamiliar
+from ..serializers.relaciones import RelacionFamiliarSerializer
+from apps.usuarios.permissions import EsAdminRol
 
 # Vista genérica para el modelo RelacionFamiliar
 class RelacionFamiliarViewSet(viewsets.ModelViewSet):

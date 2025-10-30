@@ -1,6 +1,6 @@
 from django.db import models
-from poblacion.models import personas
-from usuarios.models import Usuario
+from apps.poblacion.models.personas import Persona
+from apps.usuarios.models import Usuario
 
 # Modelo para gestionar programas sociales y sus beneficiarios
 class EstadoPrograma(models.Model):
@@ -12,31 +12,33 @@ class EstadoPrograma(models.Model):
 
     def __str__(self):
         return self.nombre
-    
-class ProgramaSocial(models.Model):# modelo principal de programas sociales
+
+
+class ProgramaSocial(models.Model):  # modelo principal de programas sociales
     nombre = models.CharField(max_length=150)
     descripcion = models.TextField(blank=True)
     estado = models.ForeignKey(EstadoPrograma, on_delete=models.PROTECT)
     fecha_inicio = models.DateField(null=True, blank=True)
     fecha_fin = models.DateField(null=True, blank=True)
-    beneficiarios = models.ManyToManyField(personas.Persona, related_name='programas_sociales')
+    beneficiarios = models.ManyToManyField(Persona, related_name='programas_sociales', blank=True)
     responsable = models.ForeignKey(Usuario, null=True, blank=True, on_delete=models.SET_NULL)
-    
+
     class Meta:
         verbose_name = "Programa Social"
         verbose_name_plural = "Programas Sociales"
 
     def __str__(self):
         return self.nombre
-    
-class ProgramaBeneficiario(models.Model):# intermediario para gestionar beneficiarios de programas sociales
+
+
+class ProgramaBeneficiario(models.Model):  # intermediario para gestionar beneficiarios de programas sociales
     ESTADO_CHOICES = [
         ('activo', 'Activo'),
-        ('egresado', 'Egresado')
+        ('egresado', 'Egresado'),
     ]
 
     programa = models.ForeignKey(ProgramaSocial, on_delete=models.CASCADE)
-    persona = models.ForeignKey(personas, on_delete=models.CASCADE)
+    persona = models.ForeignKey(Persona, on_delete=models.CASCADE)
     fecha_inscripcion = models.DateField(auto_now_add=True)
     observaciones = models.TextField(blank=True)
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='activo')
@@ -46,9 +48,18 @@ class ProgramaBeneficiario(models.Model):# intermediario para gestionar benefici
         verbose_name = "Beneficiario de Programa"
         verbose_name_plural = "Beneficiarios de Programas"
         unique_together = ('programa', 'persona')
-    
 
-class ActividadSocial(models.Model):# modelo para actividades relacionadas con programas sociales
+    def save(self, *args, **kwargs):
+        """Sincroniza el ManyToMany al guardar un beneficiario"""
+        super().save(*args, **kwargs)
+        if self.persona not in self.programa.beneficiarios.all():
+            self.programa.beneficiarios.add(self.persona)
+
+    def __str__(self):
+        return f"{self.persona} - {self.programa}"
+
+
+class ActividadSocial(models.Model):  # modelo para actividades relacionadas con programas sociales
     programa = models.ForeignKey(ProgramaSocial, null=True, blank=True, on_delete=models.SET_NULL)
     titulo = models.CharField(max_length=150)
     descripcion = models.TextField(blank=True)
@@ -59,10 +70,11 @@ class ActividadSocial(models.Model):# modelo para actividades relacionadas con p
         verbose_name = "Actividad Social"
         verbose_name_plural = "Actividades Sociales"
 
-    def _str_(self):
+    def __str__(self):
         return self.titulo
 
-class CoberturaPrograma(models.Model): # modelo para definir areas de cobertura de programas sociales
+
+class CoberturaPrograma(models.Model):  # modelo para definir áreas de cobertura de programas sociales
     programa = models.ForeignKey(ProgramaSocial, on_delete=models.CASCADE)
     latitud = models.DecimalField(max_digits=10, decimal_places=6)
     longitud = models.DecimalField(max_digits=10, decimal_places=6)
@@ -74,4 +86,4 @@ class CoberturaPrograma(models.Model): # modelo para definir areas de cobertura 
         verbose_name_plural = "Coberturas de Programa"
 
     def __str__(self):
-        return f"{self.programa.nombre} - {self}"
+        return f"{self.programa.nombre} - {self.area_nombre or 'Área sin nombre'}"
