@@ -1,10 +1,13 @@
 from rest_framework import viewsets, permissions
-from apps.poblacion.models.personas import Persona
-from apps.poblacion.serializers.personas import PersonaSerializer
-from apps.usuarios.permissions import EsAdmin
+from ..models.personas import Persona
+from ..serializers.personas import PersonaSerializer
+from apps.usuarios.permissions import EsAdminRol
 
-# Vista genérica para el modelo Persona
 class PersonaViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet para gestionar las operaciones CRUD del modelo Persona.
+    Solo accesible para usuarios autenticados con rol de administrador.
+    """
     queryset = Persona.objects.all()
     serializer_class = PersonaSerializer
-    permission_classes = [permissions.IsAuthenticated, EsAdmin]
+    permission_classes = [permissions.IsAuthenticated, EsAdminRol]

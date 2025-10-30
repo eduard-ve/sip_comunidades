@@ -4,9 +4,9 @@ from apps.poblacion.models.personas import Persona
 from apps.poblacion.models.relaciones import RelacionFamiliar
 
 
-# Register your models here.
+# Registro de los modelos de población en el admin de Django
 admin.site.register(TipoIdentificacion)
-admin.site.register(NivelEducatico)
+admin.site.register(NivelEducativo)
 admin.site.register(Ocupacion)
 admin.site.register(GrupoFamiliar)
 admin.site.register(EstadoCivil)

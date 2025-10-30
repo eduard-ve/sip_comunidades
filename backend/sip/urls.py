@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/usuarios/', include('apps.usuarios.urls')),
     path('api/poblacion/', include('apps.poblacion.urls')),
+    path('api/social/', include('apps.social.urls')),
     path('api/salud/', include('apps.salud.urls')),
-    path('api/reportes/', include('apps.reportes.urls'))
+    path('api/reportes/', include('apps.reportes.urls')),
 ]

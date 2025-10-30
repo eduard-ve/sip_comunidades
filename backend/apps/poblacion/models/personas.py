@@ -1,6 +1,6 @@
 from django.db import models
 from .catalogos import (
-    TipoIdentificacion, NivelEducatico, Ocupacion, GrupoFamiliar,
+    TipoIdentificacion, NivelEducativo, Ocupacion, GrupoFamiliar,
     EstadoCivil, Lengua, TipoRelacion
 )
 
@@ -22,7 +22,7 @@ class Persona(models.Model):
     fecha_nacimiento = models.DateField()
     genero = models.CharField(max_length=1, choices=GENERO_CHOICES)
     direccion = models.CharField(max_length=255,blank=True, null=True)
-    nivel_educativo = models.ForeignKey(NivelEducatico, on_delete=models.SET_NULL, null=True, blank=True)
+    nivel_educativo = models.ForeignKey(NivelEducativo, on_delete=models.SET_NULL, null=True, blank=True)
     ocupacion = models.ForeignKey(Ocupacion, on_delete=models.SET_NULL, null=True, blank=True)
     grupo_familiar = models.ForeignKey(GrupoFamiliar, on_delete=models.SET_NULL, null=True, blank=True)
     estado_civil = models.ForeignKey(EstadoCivil, on_delete=models.SET_NULL, null=True, blank=True)

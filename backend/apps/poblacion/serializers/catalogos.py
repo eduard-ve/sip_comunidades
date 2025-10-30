@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from apps.poblacion.models.catalogos import (
-    TipoIdentificacion, NivelEducatico, Ocupacion, 
+from ..models.catalogos import (
+    TipoIdentificacion, NivelEducativo, Ocupacion,
     GrupoFamiliar, EstadoCivil, Lengua, TipoRelacion
 )
 

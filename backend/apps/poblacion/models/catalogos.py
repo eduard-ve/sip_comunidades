@@ -17,7 +17,7 @@ class TipoIdentificacion(CatalogoBase):
         verbose_name = "Tipo de Identificación"
         verbose_name_plural = "Tipos de Identificación"
 
-class NivelEducatico(CatalogoBase):
+class NivelEducativo(CatalogoBase):
     class Meta:
         verbose_name = "Nivel Educativo"
         verbose_name_plural = "Niveles Educativos"

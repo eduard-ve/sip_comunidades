@@ -5,7 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .serializers import RegistroSerializer, UsuarioSerializer
-from .permissions import EsAdmin
+from .permissions import EsAdminRol
 
 Usuario = get_user_model()
 
@@ -42,5 +42,5 @@ class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated, EsAdmin]
+    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
 
