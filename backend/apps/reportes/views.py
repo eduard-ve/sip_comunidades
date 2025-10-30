@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 from .models import ReporteSalud, ReporteSocial, ReporteEncuestas
 from .serializers import ReporteSaludSerializer, ReporteSocialSerializer, ReporteEncuestasSerializer
-from apps.usuarios.permissions import EsAdmin
+from apps.usuarios.permissions import EsAdminRol
 
 # Vista para Reportes de Salud
 class ReporteSaludViewSet(viewsets.ModelViewSet):

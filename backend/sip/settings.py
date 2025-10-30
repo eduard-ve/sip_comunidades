@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'apps.poblacion',
     'apps.social',
     'apps.salud',
-    'apps.reportes.apps.ReportesConfig',
+    'apps.reportes',
 
 ]
 
