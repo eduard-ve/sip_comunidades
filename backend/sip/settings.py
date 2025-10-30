@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'apps.usuarios',
     'apps.poblacion',
     'apps.social',
+    'apps.salud',
+    'apps.reportes.apps.ReportesConfig',
 
 ]
 
