@@ -43,18 +43,24 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
 
+    # CORS
+    'corsheaders',
+
     #apps
     'apps.usuarios',
     'apps.poblacion',
     'apps.salud',
+
     'apps.reportes',
     'apps.encuestas',
     'apps.social',
+
 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -161,3 +167,13 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
+
+# CORS settings
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+]
+
+CORS_ALLOW_CREDENTIALS = True
