@@ -1,13 +1,11 @@
-from django.urls import path, include
+# apps/encuestas/urls.py
 from rest_framework.routers import DefaultRouter
 from .views import EncuestaViewSet, PreguntaViewSet, OpcionViewSet, RespuestaViewSet
 
 router = DefaultRouter()
-router.register(r'encuestas', EncuestaViewSet)
-router.register(r'preguntas', PreguntaViewSet)
-router.register(r'opciones', OpcionViewSet)
-router.register(r'respuestas', RespuestaViewSet)
+router.register(r'', EncuestaViewSet, basename='encuestas')
+router.register(r'preguntas', PreguntaViewSet, basename='preguntas')
+router.register(r'opciones', OpcionViewSet, basename='opciones')
+router.register(r'respuestas', RespuestaViewSet, basename='respuestas')
 
-urlpatterns = [
-    path('', include(router.urls)),
-]
+urlpatterns = router.urls
