@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'apps.social',
     'apps.salud',
     'apps.reportes',
+    'apps.encuestas',
 
 ]
 
