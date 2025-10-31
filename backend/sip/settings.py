@@ -47,13 +47,9 @@ INSTALLED_APPS = [
     'apps.usuarios',
     'apps.poblacion',
     'apps.salud',
-<<<<<<< Updated upstream
     'apps.reportes',
     'apps.encuestas',
-=======
     'apps.social',
-    'apps.reportes.apps.ReportesConfig',
->>>>>>> Stashed changes
 
 ]
 
