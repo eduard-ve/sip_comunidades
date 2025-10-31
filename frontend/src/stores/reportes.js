@@ -170,6 +170,34 @@ export const useReportesStore = defineStore('reportes', {
         this.error = 'Error al eliminar reporte de encuestas'
         throw error
       }
+    },
+
+    async updateReporteSocial(id, reporteData) {
+      try {
+        const response = await axios.put(`${API_BASE_URL}/reportes/social/${id}/`, reporteData)
+        const index = this.reportesSociales.findIndex(r => r.id === id)
+        if (index !== -1) {
+          this.reportesSociales[index] = response.data
+        }
+        return response.data
+      } catch (error) {
+        this.error = 'Error al actualizar reporte social'
+        throw error
+      }
+    },
+
+    async updateReporteEncuestas(id, reporteData) {
+      try {
+        const response = await axios.put(`${API_BASE_URL}/reportes/encuestas/${id}/`, reporteData)
+        const index = this.reportesEncuestas.findIndex(r => r.id === id)
+        if (index !== -1) {
+          this.reportesEncuestas[index] = response.data
+        }
+        return response.data
+      } catch (error) {
+        this.error = 'Error al actualizar reporte de encuestas'
+        throw error
+      }
     }
   }
 })
