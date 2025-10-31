@@ -92,19 +92,22 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+import { useSaludStore } from '../../stores/salud.js'
 import BaseModule from '../../components/comun/BaseModule.vue'
 import '../../assets/css/GestionSalud.css'
 
-/* Indicadores principales */
-const kpis = [
-  { title: 'Niños vacunados', value: '85%', icon: 'bi bi-capsule' },
-  { title: 'Controles prenatales', value: 35, icon: 'bi bi-gender-female' },
-  { title: 'Casos de malaria (último mes)', value: 12, icon: 'bi bi-bug' },
-  { title: 'Acceso a agua potable', value: '70%', icon: 'bi bi-droplet' }
-]
+const saludStore = useSaludStore()
 
-/* Gráficos representativos */
-const charts = {
+/* Estado reactivo para datos dinámicos */
+const kpis = ref([
+  { title: 'Registros de salud', value: 0, icon: 'bi bi-clipboard-data' },
+  { title: 'Alertas activas', value: 0, icon: 'bi bi-exclamation-triangle' },
+  { title: 'Controles pendientes', value: 0, icon: 'bi bi-calendar-check' },
+  { title: 'Controles realizados', value: 0, icon: 'bi bi-check-circle' }
+])
+
+const charts = ref({
   left: {
     title: 'Enfermedades más comunes',
     type: 'bar',
@@ -121,7 +124,7 @@ const charts = {
       datasets: [{ data: [45, 40, 15] }]
     }
   }
-}
+})
 
 /* Campañas de salud activas */
 const campaigns = [
@@ -130,4 +133,24 @@ const campaigns = [
   'Charlas sobre alimentación saludable',
   'Taller de medicina tradicional'
 ]
+
+/* Cargar datos del backend */
+onMounted(async () => {
+  try {
+    await Promise.all([
+      saludStore.fetchRegistros(),
+      saludStore.fetchAlertas(),
+      saludStore.fetchControles()
+    ])
+
+    // Actualizar KPIs con datos reales
+    kpis.value[0].value = saludStore.registrosCount
+    kpis.value[1].value = saludStore.alertasActivas
+    kpis.value[2].value = saludStore.controlesPendientes
+    kpis.value[3].value = saludStore.controles.filter(c => c.realizado).length
+
+  } catch (error) {
+    console.error('Error al cargar datos de salud:', error)
+  }
+})
 </script>

@@ -21,32 +21,30 @@
                 <input v-model="form.titulo" type="text" class="form-control" required />
               </div>
 
-              <!-- Módulo -->
+              <!-- Tipo de reporte -->
               <div class="col-md-6">
-                <label class="form-label fw-bold">Módulo</label>
-                <select v-model="form.modulo" class="form-select" required>
+                <label class="form-label fw-bold">Tipo de reporte</label>
+                <select v-model="form.tipo_reporte" class="form-select" required>
                   <option value="">Seleccione...</option>
-                  <option value="Salud">Salud</option>
-                  <option value="Educación">Educación</option>
-                  <option value="Social">Social</option>
+                  <option value="resumen_salud">Resumen de Salud</option>
+                  <option value="indicadores_salud">Indicadores de Salud</option>
+                  <option value="reporte_social">Reporte Social</option>
+                  <option value="condiciones_sociales">Condiciones Sociales</option>
+                  <option value="resultados_encuesta">Resultados de Encuesta</option>
+                  <option value="analisis_encuesta">Análisis de Encuesta</option>
                 </select>
               </div>
 
-              <!-- Fecha -->
+              <!-- Fecha del reporte -->
               <div class="col-md-6">
-                <label class="form-label fw-bold">Fecha</label>
-                <input v-model="form.fecha" type="date" class="form-control" required />
+                <label class="form-label fw-bold">Fecha del reporte</label>
+                <input v-model="form.fecha_reporte" type="date" class="form-control" required />
               </div>
 
-              <!-- Configuración automática -->
+              <!-- Persona (ID) -->
               <div class="col-md-6">
-                <label class="form-label fw-bold">Configuración automática</label>
-                <select v-model="form.auto" class="form-select">
-                  <option value="">Ninguna</option>
-                  <option value="diario">Diario</option>
-                  <option value="semanal">Semanal</option>
-                  <option value="mensual">Mensual</option>
-                </select>
+                <label class="form-label fw-bold">ID de Persona</label>
+                <input v-model="form.persona" type="number" class="form-control" required min="1" />
               </div>
 
               <!-- Descripción -->
@@ -84,11 +82,12 @@ const emit = defineEmits(["close", "save"])
 const loading = ref(false)
 
 const form = reactive({
-  titulo: "",
-  modulo: "",
-  fecha: "",
-  descripcion: "",
-  auto: ""
+  persona: 1, // ID de persona por defecto
+  tipo_reporte: "",
+  datos_agregados: {},
+  fecha_reporte: "",
+  generado_por: "Usuario Frontend",
+  descripcion: ""
 })
 
 // Rellenar datos si es edición
@@ -101,16 +100,29 @@ watch(
 )
 
 async function guardar() {
-  if (!form.titulo || !form.modulo || !form.fecha) {
+  if (!form.tipo_reporte || !form.fecha_reporte || !form.persona) {
     alert("Por favor complete los campos obligatorios.")
     return
   }
 
   loading.value = true
-  setTimeout(() => {
-    emit("save", { ...form })
+  try {
+    // Preparar datos para el backend
+    const reporteData = {
+      persona: form.persona,
+      tipo_reporte: form.tipo_reporte,
+      datos_agregados: form.datos_agregados || {},
+      fecha_reporte: form.fecha_reporte,
+      generado_por: form.generado_por
+    }
+
+    emit("save", reporteData)
+  } catch (error) {
+    console.error('Error al guardar:', error)
+    alert("Error al guardar el reporte")
+  } finally {
     loading.value = false
-  }, 800) // Simulación de petición async
+  }
 }
 </script>
 
