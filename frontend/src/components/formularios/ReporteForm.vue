@@ -15,12 +15,6 @@
         <div class="modal-body">
           <form @submit.prevent="guardar">
             <div class="row g-3">
-              <!-- Título -->
-              <div class="col-md-6">
-                <label class="form-label fw-bold">Título</label>
-                <input v-model="form.titulo" type="text" class="form-control" required />
-              </div>
-
               <!-- Tipo de reporte -->
               <div class="col-md-6">
                 <label class="form-label fw-bold">Tipo de reporte</label>
