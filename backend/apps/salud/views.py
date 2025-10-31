@@ -7,16 +7,16 @@ from apps.usuarios.permissions import EsAdminRol
 class RegistroSaludViewSet(viewsets.ModelViewSet):
     queryset = RegistroSalud.objects.all()
     serializer_class = RegistroSaludSerializer
-    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
+    permission_classes = [permissions.AllowAny]
 
 # Vista para Alertas de Salud
 class AlertaSaludViewSet(viewsets.ModelViewSet):
     queryset = AlertaSalud.objects.all()
     serializer_class = AlertaSaludSerializer
-    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
+    permission_classes = [permissions.AllowAny]
 
 # Vista para Controles de Salud
 class ControlSaludViewSet(viewsets.ModelViewSet):
     queryset = ControlSalud.objects.all()
     serializer_class = ControlSaludSerializer
-    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
+    permission_classes = [permissions.AllowAny]

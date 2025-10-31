@@ -152,14 +152,29 @@ onMounted(async () => {
 // Guardar reporte
 async function saveReporte(newReporte) {
   try {
-    // Determinar el tipo de reporte basado en los datos
-    if (newReporte.tipo_reporte.includes('salud')) {
-      await reportesStore.createReporteSalud(newReporte)
-    } else if (newReporte.tipo_reporte.includes('social')) {
-      await reportesStore.createReporteSocial(newReporte)
+    console.log('Datos del reporte a guardar:', newReporte)
+
+    // Determinar el tipo de reporte basado en el valor seleccionado
+    let storeMethod
+    if (newReporte.tipo_reporte === 'resumen_salud' || newReporte.tipo_reporte === 'indicadores_salud') {
+      storeMethod = reportesStore.createReporteSalud
+    } else if (newReporte.tipo_reporte === 'reporte_social' || newReporte.tipo_reporte === 'condiciones_sociales') {
+      storeMethod = reportesStore.createReporteSocial
+    } else if (newReporte.tipo_reporte === 'resultados_encuesta' || newReporte.tipo_reporte === 'analisis_encuesta') {
+      storeMethod = reportesStore.createReporteEncuestas
     } else {
-      await reportesStore.createReporteEncuestas(newReporte)
+      // Fallback: si no coincide exactamente, usar lógica anterior
+      if (newReporte.tipo_reporte.includes('salud')) {
+        storeMethod = reportesStore.createReporteSalud
+      } else if (newReporte.tipo_reporte.includes('social')) {
+        storeMethod = reportesStore.createReporteSocial
+      } else {
+        storeMethod = reportesStore.createReporteEncuestas
+      }
     }
+
+    console.log('Método del store a usar:', storeMethod.name)
+    await storeMethod(newReporte)
 
     // Recargar datos
     await Promise.all([
@@ -168,11 +183,26 @@ async function saveReporte(newReporte) {
       reportesStore.fetchReportesEncuestas()
     ])
 
+    // Actualizar tabla
+    const allReportes = [
+      ...reportesStore.reportesSalud.map(r => ({ ...r, categoria: 'Salud' })),
+      ...reportesStore.reportesSociales.map(r => ({ ...r, categoria: 'Social' })),
+      ...reportesStore.reportesEncuestas.map(r => ({ ...r, categoria: 'Encuestas' }))
+    ]
+
+    table.value.rows = allReportes.map(reporte => ({
+      id: reporte.id,
+      tipo_reporte: reporte.tipo_reporte,
+      fecha_reporte: new Date(reporte.fecha_reporte).toLocaleDateString(),
+      generado_por: reporte.generado_por,
+      categoria: reporte.categoria
+    }))
+
     alert("Reporte generado con éxito")
     showForm.value = false
   } catch (error) {
     console.error('Error al guardar reporte:', error)
-    alert("Error al generar el reporte")
+    alert(`Error al generar el reporte: ${error.response?.data?.detail || error.message}`)
   }
 }
 

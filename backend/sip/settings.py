@@ -46,10 +46,14 @@ INSTALLED_APPS = [
     #apps
     'apps.usuarios',
     'apps.poblacion',
-    'apps.social',
     'apps.salud',
+<<<<<<< Updated upstream
     'apps.reportes',
     'apps.encuestas',
+=======
+    'apps.social',
+    'apps.reportes.apps.ReportesConfig',
+>>>>>>> Stashed changes
 
 ]
 
@@ -91,8 +95,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'sip_db',
-        'USER': 'sip_user',
-        'PASSWORD': '12345',
+        'USER': 'root',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {

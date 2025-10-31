@@ -26,12 +26,9 @@
                 <label class="form-label fw-bold">Tipo de reporte</label>
                 <select v-model="form.tipo_reporte" class="form-select" required>
                   <option value="">Seleccione...</option>
-                  <option value="resumen_salud">Resumen de Salud</option>
-                  <option value="indicadores_salud">Indicadores de Salud</option>
+                  <option value="reporte_salud">Reporte de Salud</option>
                   <option value="reporte_social">Reporte Social</option>
-                  <option value="condiciones_sociales">Condiciones Sociales</option>
-                  <option value="resultados_encuesta">Resultados de Encuesta</option>
-                  <option value="analisis_encuesta">Análisis de Encuesta</option>
+                  <option value="reporte_encuestas">Reporte de Encuestas</option>
                 </select>
               </div>
 

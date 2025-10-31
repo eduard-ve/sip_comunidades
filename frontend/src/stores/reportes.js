@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:8000/api'
+const API_BASE_URL = 'http://127.0.0.1:8000/api'
 
 export const useReportesStore = defineStore('reportes', {
   state: () => ({
@@ -20,6 +20,18 @@ export const useReportesStore = defineStore('reportes', {
   },
 
   actions: {
+    // Función para determinar la URL según el tipo de reporte
+    getApiUrl(tipoReporte) {
+      if (tipoReporte === 'reporte_salud') {
+        return '/api/reportes/salud/';
+      } else if (tipoReporte === 'reporte_social') {
+        return '/api/reportes/social/';
+      } else if (tipoReporte === 'reporte_encuestas') {
+        return '/api/reportes/encuestas/';
+      }
+      return '/api/reportes/salud/'; // fallback
+    },
+
     async fetchReportesSalud() {
       this.loading = true
       try {
@@ -59,6 +71,27 @@ export const useReportesStore = defineStore('reportes', {
         console.error(error)
       } finally {
         this.loading = false
+      }
+    },
+
+    async createReporte(reporteData) {
+      try {
+        const apiUrl = this.getApiUrl(reporteData.tipo_reporte);
+        const response = await axios.post(`${API_BASE_URL}${apiUrl}`, reporteData)
+
+        // Agregar a la lista correspondiente según el tipo
+        if (reporteData.tipo_reporte === 'reporte_salud') {
+          this.reportesSalud.push(response.data)
+        } else if (reporteData.tipo_reporte === 'reporte_social') {
+          this.reportesSociales.push(response.data)
+        } else if (reporteData.tipo_reporte === 'reporte_encuestas') {
+          this.reportesEncuestas.push(response.data)
+        }
+
+        return response.data
+      } catch (error) {
+        this.error = 'Error al crear reporte'
+        throw error
       }
     },
 
