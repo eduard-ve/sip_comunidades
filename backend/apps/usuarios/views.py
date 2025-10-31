@@ -37,8 +37,8 @@ class PerfilView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
-# Vista para listar todos los usuarios (solo admin)
-class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):
+# Vista para gestionar usuarios (CRUD completo para admin)
+class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
     authentication_classes = [JWTAuthentication]

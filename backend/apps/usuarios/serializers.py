@@ -49,13 +49,14 @@ class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         fields = [
-            'id', 
-            'username', 
-            'email', 
-            'first_name', 
-            'last_name', 
-            'telefono', 
+            'id',
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'telefono',
             'rol',
+            'is_active',
             'date_joined'
         ]
-        read_only_fields = ['id', 'date_joined', 'rol,', 'is_staff','is_superuser']
+        read_only_fields = ['id', 'date_joined', 'is_staff', 'is_superuser']

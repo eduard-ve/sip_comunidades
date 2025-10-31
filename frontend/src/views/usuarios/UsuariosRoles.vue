@@ -18,6 +18,13 @@
           <option v-for="r in roles" :key="r" :value="r">{{ r }}</option>
         </select>
       </div>
+      <div v-if="error" class="alert alert-danger mt-2">
+        {{ error }}
+      </div>
+      <div v-if="loading" class="text-center mt-2">
+        <div class="spinner-border spinner-border-sm" role="status"></div>
+        Cargando usuarios...
+      </div>
     </template>
 
     <!-- Personalización de las celdas de la tabla -->
@@ -32,9 +39,9 @@
           </button>
         </div>
       </template>
-      <template v-else-if="column.key === 'estado'">
-        <span :class="`estado-badge estado-${row.estado.toLowerCase()}`">
-          {{ row.estado }}
+      <template v-else-if="column.key === 'is_active'">
+        <span :class="`estado-badge estado-${row.is_active ? 'activo' : 'inactivo'}`">
+          {{ row.is_active ? 'Activo' : 'Inactivo' }}
         </span>
       </template>
       <template v-else-if="column.key === 'rol'">
@@ -55,8 +62,8 @@
     </template>
 
     <!-- Modal -->
-    <div v-if="showForm" class="modal">
-      <div class="modal-dialog">
+    <div v-if="showForm" class="modal d-block" style="z-index: 1055;">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{ selectedUser?.id ? 'Editar Usuario' : 'Nuevo Usuario' }}</h5>
@@ -74,35 +81,68 @@
         </div>
       </div>
     </div>
-    <div v-if="showForm" class="modal-backdrop"></div>
+    <div v-if="showForm" class="modal-backdrop fade show" style="z-index: 1050;"></div>
   </BaseModule>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import BaseModule from '../../components/comun/BaseModule.vue'
 import UserForm from '../../components/formularios/UserForm.vue'
+import { userService } from '../../services/api.js'
 import '../../assets/css/UsuariosRoles.css'
 
-const roles = ['Admin', 'Editor', 'Invitado']
+const roles = ['admin', 'editor', 'invitado']
 
+// Estado reactivo
+const users = ref([])
+const loading = ref(false)
+const error = ref('')
+const filterRole = ref('')
+const showForm = ref(false)
+const selectedUser = ref(null)
 
-// KPIs
-const kpis = [
-  { title: 'Total Usuarios', value: 120, icon: 'bi bi-people-fill', change: '100', color: '#0d6efd' },
-  { title: 'Roles Activos', value: 100, icon: 'bi-shield-lock', change: '80' },
-  { title: 'Roles Inactivos', value: 20, icon: 'bi-shield-lock', change: '20', color: '#0d6efd' }
-]
+// KPIs calculados
+const kpis = computed(() => [
+  {
+    title: 'Total Usuarios',
+    value: users.value.length,
+    icon: 'bi bi-people-fill',
+    change: '+10',
+    color: '#0d6efd'
+  },
+  {
+    title: 'Roles Activos',
+    value: users.value.filter(u => u.is_active).length,
+    icon: 'bi-shield-lock',
+    change: '+5'
+  },
+  {
+    title: 'Roles Inactivos',
+    value: users.value.filter(u => !u.is_active).length,
+    icon: 'bi-shield-lock',
+    change: '-2',
+    color: '#6c757d'
+  }
+])
 
 // Charts
-const charts = {
+const charts = computed(() => ({
   left: {
     id: 'rolesChart',
     type: 'bar',
     title: 'Usuarios por rol',
     data: {
-      labels: ['Admin', 'Editor', 'Invitado'],
-      datasets: [{ label: 'Usuarios', data: [5, 60, 55], backgroundColor: '#0d6efd' }]
+      labels: ['admin', 'editor', 'invitado'],
+      datasets: [{
+        label: 'Usuarios',
+        data: [
+          users.value.filter(u => u.rol === 'admin').length,
+          users.value.filter(u => u.rol === 'editor').length,
+          users.value.filter(u => u.rol === 'invitado').length
+        ],
+        backgroundColor: '#0d6efd'
+      }]
     },
     options: { responsive: true, plugins: { legend: { display: false } } }
   },
@@ -116,36 +156,52 @@ const charts = {
     },
     options: { responsive: true }
   }
-}
+}))
 
 // Tabla
-const table = {
+const table = computed(() => ({
   columns: [
-    { key: 'nombre', label: 'Nombre' },
+    { key: 'first_name', label: 'Nombre' },
+    { key: 'username', label: 'Usuario' },
     { key: 'email', label: 'Email' },
     { key: 'rol', label: 'Rol' },
-    { key: 'estado', label: 'Estado' },
-    { key: 'acciones', label: 'Acciones' } 
+    { key: 'is_active', label: 'Estado' },
+    { key: 'acciones', label: 'Acciones' }
   ],
-  rows: [
-    { id: 1, nombre: 'Ana Pérez', email: 'ana@example.com', rol: 'Admin', estado: 'Sí' },
-    { id: 2, nombre: 'Juan Gómez', email: 'juan@example.com', rol: 'Editor', estado: 'No' },
-    { id :3, nombre: 'Eduard', email: 'eduardvelez1@gmail.com', rol: 'Admin', estado: 'Sí' }
-  ]
-}
-
-const filterRole = ref('')
-const showForm = ref(false)
-const selectedUser = ref(null)
+  rows: filteredUsers.value
+}))
 
 const filteredUsers = computed(() => {
-  if (!filterRole.value) return table.rows
-  return table.rows.filter(u => u.rol === filterRole.value)
+  if (!filterRole.value) return users.value
+  return users.value.filter(u => u.rol === filterRole.value)
 })
 
 // Funciones
+async function fetchUsers() {
+  loading.value = true
+  error.value = ''
+  try {
+    const response = await userService.getUsers()
+    users.value = response.data
+  } catch (err) {
+    console.error('Error fetching users:', err)
+    error.value = 'Error al cargar los usuarios'
+  } finally {
+    loading.value = false
+  }
+}
+
 function openForm(user = null) {
-  selectedUser.value = user ? { ...user } : { nombre: '', email: '', rol: '', estado: true }
+  selectedUser.value = user ? { ...user } : {
+    username: '',
+    email: '',
+    first_name: '',
+    last_name: '',
+    telefono: '',
+    rol: 'invitado',
+    password: '',
+    password2: ''
+  }
   showForm.value = true
 }
 
@@ -154,27 +210,47 @@ function closeForm() {
   selectedUser.value = null
 }
 
-function handleSubmit(userData) {
-  if (userData.id) {
-    // Editar usuario
-    const idx = table.rows.findIndex(u => u.id === userData.id)
-    if (idx !== -1) table.rows[idx] = { ...userData }
-  } else {
-    // Nuevo usuario
-    userData.id = table.rows.length + 1
-    table.rows.push({ ...userData })
+async function handleSubmit(userData) {
+  try {
+    if (userData.id) {
+      // Actualizar usuario existente
+      await userService.updateUser(userData.id, userData)
+    } else {
+      // Crear nuevo usuario
+      await userService.createUser(userData)
+    }
+    await fetchUsers() // Recargar lista
+    closeForm()
+  } catch (err) {
+    console.error('Error saving user:', err)
+    // Mostrar mensaje de error más específico
+    if (err.response?.data) {
+      const errors = Object.values(err.response.data).flat().join('\n')
+      alert(`Error al guardar el usuario:\n${errors}`)
+    } else {
+      alert('Error al guardar el usuario')
+    }
   }
-  closeForm()
 }
 
-function deleteUser(id) {
+async function deleteUser(id) {
   if (confirm('¿Seguro que deseas eliminar este usuario?')) {
-    const idx = table.rows.findIndex(u => u.id === id)
-    if (idx !== -1) table.rows.splice(idx, 1)
+    try {
+      await userService.deleteUser(id)
+      await fetchUsers() // Recargar lista
+    } catch (err) {
+      console.error('Error deleting user:', err)
+      alert('Error al eliminar el usuario')
+    }
   }
 }
 
 function onExport() {
-  alert('Exportar lista de usuarios')// funcionalidad de exportación no implementada
+  alert('Exportar lista de usuarios - funcionalidad no implementada')
 }
+
+// Cargar datos al montar el componente
+onMounted(() => {
+  fetchUsers()
+})
 </script>
