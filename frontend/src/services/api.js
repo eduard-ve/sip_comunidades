@@ -80,5 +80,38 @@ export const poblacionService = {
 
   // Estadísticas de población
   getPopulationStats: () => api.get('/poblacion/stats/'),
-}
-export default api
+  }
+  
+  // Servicios sociales
+  export const socialService = {
+    // Estados de programas
+    getEstadosProgramas: () => api.get('/social/estados/'),
+    createEstadoPrograma: (estadoData) => api.post('/social/estados/', estadoData),
+    updateEstadoPrograma: (id, estadoData) => api.put(`/social/estados/${id}/`, estadoData),
+    deleteEstadoPrograma: (id) => api.delete(`/social/estados/${id}/`),
+  
+    // Programas sociales
+    getProgramasSociales: () => api.get('/social/programas/'),
+    createProgramaSocial: (programaData) => api.post('/social/programas/', programaData),
+    updateProgramaSocial: (id, programaData) => api.put(`/social/programas/${id}/`, programaData),
+    deleteProgramaSocial: (id) => api.delete(`/social/programas/${id}/`),
+  
+    // Beneficiarios
+    getBeneficiarios: () => api.get('/social/beneficiarios/'),
+    createBeneficiario: (beneficiarioData) => api.post('/social/beneficiarios/', beneficiarioData),
+    updateBeneficiario: (id, beneficiarioData) => api.put(`/social/beneficiarios/${id}/`, beneficiarioData),
+    deleteBeneficiario: (id) => api.delete(`/social/beneficiarios/${id}/`),
+  
+    // Actividades sociales
+    getActividadesSociales: () => api.get('/social/actividades/'),
+    createActividadSocial: (actividadData) => api.post('/social/actividades/', actividadData),
+    updateActividadSocial: (id, actividadData) => api.put(`/social/actividades/${id}/`, actividadData),
+    deleteActividadSocial: (id) => api.delete(`/social/actividades/${id}/`),
+  
+    // Coberturas de programas
+    getCoberturasProgramas: () => api.get('/social/coberturas/'),
+    createCoberturaPrograma: (coberturaData) => api.post('/social/coberturas/', coberturaData),
+    updateCoberturaPrograma: (id, coberturaData) => api.put(`/social/coberturas/${id}/`, coberturaData),
+    deleteCoberturaPrograma: (id) => api.delete(`/social/coberturas/${id}/`),
+  }
+  export default api
