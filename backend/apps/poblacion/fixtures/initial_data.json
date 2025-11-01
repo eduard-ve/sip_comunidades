@@ -1,0 +1,268 @@
+[
+  {
+    "model": "poblacion.tipoidentificacion",
+    "pk": 1,
+    "fields": {
+      "nombre": "Cédula de Ciudadanía"
+    }
+  },
+  {
+    "model": "poblacion.tipoidentificacion",
+    "pk": 2,
+    "fields": {
+      "nombre": "Tarjeta de Identidad"
+    }
+  },
+  {
+    "model": "poblacion.tipoidentificacion",
+    "pk": 3,
+    "fields": {
+      "nombre": "Cédula de Extranjería"
+    }
+  },
+  {
+    "model": "poblacion.niveleducativo",
+    "pk": 1,
+    "fields": {
+      "nombre": "Primaria"
+    }
+  },
+  {
+    "model": "poblacion.niveleducativo",
+    "pk": 2,
+    "fields": {
+      "nombre": "Secundaria"
+    }
+  },
+  {
+    "model": "poblacion.niveleducativo",
+    "pk": 3,
+    "fields": {
+      "nombre": "Técnico"
+    }
+  },
+  {
+    "model": "poblacion.niveleducativo",
+    "pk": 4,
+    "fields": {
+      "nombre": "Universitario"
+    }
+  },
+  {
+    "model": "poblacion.niveleducativo",
+    "pk": 5,
+    "fields": {
+      "nombre": "Postgrado"
+    }
+  },
+  {
+    "model": "poblacion.ocupacion",
+    "pk": 1,
+    "fields": {
+      "nombre": "Estudiante"
+    }
+  },
+  {
+    "model": "poblacion.ocupacion",
+    "pk": 2,
+    "fields": {
+      "nombre": "Empleado"
+    }
+  },
+  {
+    "model": "poblacion.ocupacion",
+    "pk": 3,
+    "fields": {
+      "nombre": "Independiente"
+    }
+  },
+  {
+    "model": "poblacion.ocupacion",
+    "pk": 4,
+    "fields": {
+      "nombre": "Ama de Casa"
+    }
+  },
+  {
+    "model": "poblacion.ocupacion",
+    "pk": 5,
+    "fields": {
+      "nombre": "Pensionado"
+    }
+  },
+  {
+    "model": "poblacion.grupofamiliar",
+    "pk": 1,
+    "fields": {
+      "nombre": "Jefe de Hogar"
+    }
+  },
+  {
+    "model": "poblacion.grupofamiliar",
+    "pk": 2,
+    "fields": {
+      "nombre": "Cónyuge"
+    }
+  },
+  {
+    "model": "poblacion.grupofamiliar",
+    "pk": 3,
+    "fields": {
+      "nombre": "Hijo(a)"
+    }
+  },
+  {
+    "model": "poblacion.grupofamiliar",
+    "pk": 4,
+    "fields": {
+      "nombre": "Padre"
+    }
+  },
+  {
+    "model": "poblacion.grupofamiliar",
+    "pk": 5,
+    "fields": {
+      "nombre": "Madre"
+    }
+  },
+  {
+    "model": "poblacion.estadocivil",
+    "pk": 1,
+    "fields": {
+      "nombre": "Soltero(a)"
+    }
+  },
+  {
+    "model": "poblacion.estadocivil",
+    "pk": 2,
+    "fields": {
+      "nombre": "Casado(a)"
+    }
+  },
+  {
+    "model": "poblacion.estadocivil",
+    "pk": 3,
+    "fields": {
+      "nombre": "Divorciado(a)"
+    }
+  },
+  {
+    "model": "poblacion.estadocivil",
+    "pk": 4,
+    "fields": {
+      "nombre": "Viudo(a)"
+    }
+  },
+  {
+    "model": "poblacion.estadocivil",
+    "pk": 5,
+    "fields": {
+      "nombre": "Unión Libre"
+    }
+  },
+  {
+    "model": "poblacion.lengua",
+    "pk": 1,
+    "fields": {
+      "nombre": "Español"
+    }
+  },
+  {
+    "model": "poblacion.lengua",
+    "pk": 2,
+    "fields": {
+      "nombre": "Inglés"
+    }
+  },
+  {
+    "model": "poblacion.lengua",
+    "pk": 3,
+    "fields": {
+      "nombre": "Francés"
+    }
+  },
+  {
+    "model": "poblacion.lengua",
+    "pk": 4,
+    "fields": {
+      "nombre": "Portugués"
+    }
+  },
+  {
+    "model": "poblacion.lengua",
+    "pk": 5,
+    "fields": {
+      "nombre": "Otro"
+    }
+  },
+  {
+    "model": "poblacion.tiporelacion",
+    "pk": 1,
+    "fields": {
+      "nombre": "Padre"
+    }
+  },
+  {
+    "model": "poblacion.tiporelacion",
+    "pk": 2,
+    "fields": {
+      "nombre": "Madre"
+    }
+  },
+  {
+    "model": "poblacion.tiporelacion",
+    "pk": 3,
+    "fields": {
+      "nombre": "Hijo(a)"
+    }
+  },
+  {
+    "model": "poblacion.tiporelacion",
+    "pk": 4,
+    "fields": {
+      "nombre": "Hermano(a)"
+    }
+  },
+  {
+    "model": "poblacion.tiporelacion",
+    "pk": 5,
+    "fields": {
+      "nombre": "Abuelo(a)"
+    }
+  },
+  {
+    "model": "poblacion.tiporelacion",
+    "pk": 6,
+    "fields": {
+      "nombre": "Nieto(a)"
+    }
+  },
+  {
+    "model": "poblacion.tiporelacion",
+    "pk": 7,
+    "fields": {
+      "nombre": "Tío(a)"
+    }
+  },
+  {
+    "model": "poblacion.tiporelacion",
+    "pk": 8,
+    "fields": {
+      "nombre": "Sobrino(a)"
+    }
+  },
+  {
+    "model": "poblacion.tiporelacion",
+    "pk": 9,
+    "fields": {
+      "nombre": "Primo(a)"
+    }
+  },
+  {
+    "model": "poblacion.tiporelacion",
+    "pk": 10,
+    "fields": {
+      "nombre": "Cónyuge"
+    }
+  }
+]

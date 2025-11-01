@@ -55,4 +55,27 @@ export const userService = {
   deleteUser: (id) => api.delete(`/usuarios/usuarios/${id}/`),
 }
 
+// Servicios de población
+export const poblacionService = {
+  // Personas
+  getPersonas: () => api.get('/poblacion/personas/'),
+  createPersona: (personaData) => api.post('/poblacion/personas/', personaData),
+  updatePersona: (id, personaData) => api.put(`/poblacion/personas/${id}/`, personaData),
+  deletePersona: (id) => api.delete(`/poblacion/personas/${id}/`),
+
+  // Catálogos
+  getTiposIdentificacion: () => api.get('/poblacion/tipos_identificacion/'),
+  getNivelesEducativos: () => api.get('/poblacion/niveles_educativos/'),
+  getOcupaciones: () => api.get('/poblacion/ocupaciones/'),
+  getGruposFamiliares: () => api.get('/poblacion/grupos_familiares/'),
+  getEstadosCiviles: () => api.get('/poblacion/estados_civiles/'),
+  getLenguas: () => api.get('/poblacion/lenguas/'),
+  getTiposRelaciones: () => api.get('/poblacion/tipos_relaciones/'),
+
+  // Relaciones familiares
+  getRelacionesFamiliares: () => api.get('/poblacion/relaciones_familiares/'),
+  createRelacionFamiliar: (relacionData) => api.post('/poblacion/relaciones_familiares/', relacionData),
+  updateRelacionFamiliar: (id, relacionData) => api.put(`/poblacion/relaciones_familiares/${id}/`, relacionData),
+  deleteRelacionFamiliar: (id) => api.delete(`/poblacion/relaciones_familiares/${id}/`),
+}
 export default api

@@ -8,7 +8,7 @@ from .catalogos import (
 class Persona(models.Model):
     # Opciones de género
     GENERO_CHOICES = [
-        ('M', 'Maculino'),
+        ('M', 'Masculino'),
         ('F', 'Femenino'),
         ('O', 'Otro'),
     ]
@@ -31,8 +31,14 @@ class Persona(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
+    @property
+    def nombre_completo(self):
+        nombres = f"{self.primer_nombre} {self.segundo_nombre or ''}".strip()
+        apellidos = f"{self.primer_apellido} {self.segundo_apellido or ''}".strip()
+        return f"{nombres} {apellidos}".strip()
+
     def __str__(self):
-        return f"{self.primer_nombre} {self.primer_apellido} - {self.numero_identificacion}"
+        return f"{self.nombre_completo} - {self.numero_identificacion}"
     
     # Meta información
     class Meta:
