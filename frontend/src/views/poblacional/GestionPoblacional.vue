@@ -142,12 +142,12 @@ import { poblacionService } from '../../services/api.js'
 import '../../assets/css/GestionPoblacional.css'
 
 // KPIs
-const kpis = [
-  { title: 'Población Total', value: '12,450', change: '2.5', icon: 'bi bi-people-fill' },
-  { title: 'Nacimientos', value: '340', change: '1.2', icon: 'bi bi-person-plus-fill' },
-  { title: 'Defunciones', value: '120', change: '-0.5', icon: 'bi bi-person-dash-fill' },
-  { title: 'Crecimiento', value: '2.1%', change: '0.3', icon: 'bi bi-graph-up' }
-]
+const kpis = ref([
+  { title: 'Población Total', value: '0', change: '0', icon: 'bi bi-people-fill' },
+  { title: 'Nacimientos', value: '0', change: '0', icon: 'bi bi-person-plus-fill' },
+  { title: 'Defunciones', value: '0', change: '0', icon: 'bi bi-person-dash-fill' },
+  { title: 'Crecimiento', value: '0%', change: '0', icon: 'bi bi-graph-up' }
+])
 
 // Gráficas
 const charts = {
@@ -250,29 +250,61 @@ const familyTree = ref([{ name:'Juan Pérez', relation:'Padre' },{ name:'Ana Gó
 
 // Cargar datos al montar el componente
 onMounted(async () => {
-   try {
-      // Cargar personas
-      const personasResponse = await poblacionService.getPersonas()
-      people.value = personasResponse.data
+    try {
+       // Cargar estadísticas para KPIs
+       const statsResponse = await poblacionService.getPopulationStats()
+       const stats = statsResponse.data
 
-      // Cargar catálogos
-      const [tiposId, nivelesEdu, ocup, gruposFam, estadosCiv, leng] = await Promise.all([
-         poblacionService.getTiposIdentificacion(),
-         poblacionService.getNivelesEducativos(),
-         poblacionService.getOcupaciones(),
-         poblacionService.getGruposFamiliares(),
-         poblacionService.getEstadosCiviles(),
-         poblacionService.getLenguas()
-      ])
+       // Actualizar KPIs con datos del backend
+       kpis.value = [
+          {
+             title: 'Población Total',
+             value: stats.total_population.toLocaleString(),
+             change: '2.5',
+             icon: 'bi bi-people-fill'
+          },
+          {
+             title: 'Nacimientos',
+             value: stats.births.toLocaleString(),
+             change: '1.2',
+             icon: 'bi bi-person-plus-fill'
+          },
+          {
+             title: 'Defunciones',
+             value: stats.deaths.toLocaleString(),
+             change: '-0.5',
+             icon: 'bi bi-person-dash-fill'
+          },
+          {
+             title: 'Crecimiento',
+             value: `${stats.growth_rate}%`,
+             change: '0.3',
+             icon: 'bi bi-graph-up'
+          }
+       ]
 
-      tiposIdentificacion.value = tiposId.data
-      nivelesEducativos.value = nivelesEdu.data
-      ocupaciones.value = ocup.data
-      gruposFamiliares.value = gruposFam.data
-      estadosCiviles.value = estadosCiv.data
-      lenguas.value = leng.data
-   } catch (error) {
-      console.error('Error loading data:', error)
-   }
+       // Cargar personas
+       const personasResponse = await poblacionService.getPersonas()
+       people.value = personasResponse.data
+
+       // Cargar catálogos
+       const [tiposId, nivelesEdu, ocup, gruposFam, estadosCiv, leng] = await Promise.all([
+          poblacionService.getTiposIdentificacion(),
+          poblacionService.getNivelesEducativos(),
+          poblacionService.getOcupaciones(),
+          poblacionService.getGruposFamiliares(),
+          poblacionService.getEstadosCiviles(),
+          poblacionService.getLenguas()
+       ])
+
+       tiposIdentificacion.value = tiposId.data
+       nivelesEducativos.value = nivelesEdu.data
+       ocupaciones.value = ocup.data
+       gruposFamiliares.value = gruposFam.data
+       estadosCiviles.value = estadosCiv.data
+       lenguas.value = leng.data
+    } catch (error) {
+       console.error('Error loading data:', error)
+    }
 })
 </script>

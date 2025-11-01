@@ -77,5 +77,8 @@ export const poblacionService = {
   createRelacionFamiliar: (relacionData) => api.post('/poblacion/relaciones_familiares/', relacionData),
   updateRelacionFamiliar: (id, relacionData) => api.put(`/poblacion/relaciones_familiares/${id}/`, relacionData),
   deleteRelacionFamiliar: (id) => api.delete(`/poblacion/relaciones_familiares/${id}/`),
+
+  // Estadísticas de población
+  getPopulationStats: () => api.get('/poblacion/stats/'),
 }
 export default api

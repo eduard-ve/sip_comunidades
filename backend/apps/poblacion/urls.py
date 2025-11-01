@@ -1,7 +1,9 @@
 from rest_framework.routers import DefaultRouter
+from django.urls import path
 from apps.poblacion.views.personas import PersonaViewSet
 from apps.poblacion.views.relaciones import RelacionFamiliarViewSet
-from apps.poblacion.views.catalogos import CatalogoViewSet
+from apps.poblacion.serializers.catalogos import CatalogoViewSet
+from apps.poblacion.views.stats import population_stats
 
 router = DefaultRouter()
 
@@ -18,4 +20,7 @@ router.register(r'tipos_relaciones', CatalogoViewSet, basename='tipos_relaciones
 router.register(r'personas', PersonaViewSet)
 router.register(r'relaciones_familiares', RelacionFamiliarViewSet)
 
-urlpatterns = router.urls
+# Endpoint adicional para estadísticas
+urlpatterns = [
+    path('stats/', population_stats, name='population_stats'),
+] + router.urls
