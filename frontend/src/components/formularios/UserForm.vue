@@ -1,116 +1,126 @@
 <template>
   <form @submit.prevent="onSubmit">
-    <div class="mb-3">
-      <label for="username" class="form-label">Nombre de Usuario</label>
-      <input
-        type="text"
-        id="username"
-        v-model="form.username"
-        class="form-control"
-        :class="{ 'is-invalid': errors.username }"
-        placeholder="Ingrese el nombre de usuario"
-        required
-      />
-      <div class="invalid-feedback">{{ errors.username }}</div>
-    </div>
-
-    <div class="mb-3">
-      <label for="first_name" class="form-label">Nombre</label>
-      <input
-        type="text"
-        id="first_name"
-        v-model="form.first_name"
-        class="form-control"
-        :class="{ 'is-invalid': errors.first_name }"
-        placeholder="Ingrese el nombre"
-        required
-      />
-      <div class="invalid-feedback">{{ errors.first_name }}</div>
-    </div>
-
-    <div class="mb-3">
-      <label for="last_name" class="form-label">Apellido</label>
-      <input
-        type="text"
-        id="last_name"
-        v-model="form.last_name"
-        class="form-control"
-        placeholder="Ingrese el apellido"
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input
-        type="email"
-        id="email"
-        v-model="form.email"
-        class="form-control"
-        :class="{ 'is-invalid': errors.email }"
-        placeholder="Ingrese el email"
-        required
-      />
-      <div class="invalid-feedback">{{ errors.email }}</div>
-    </div>
-
-    <div class="mb-3">
-      <label for="telefono" class="form-label">Teléfono</label>
-      <input
-        type="tel"
-        id="telefono"
-        v-model="form.telefono"
-        class="form-control"
-        placeholder="Ingrese el teléfono"
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="rol" class="form-label">Rol</label>
-      <select
-        id="rol"
-        v-model="form.rol"
-        class="form-select"
-        required
-      >
-        <option value="" disabled>Seleccione un rol</option>
-        <option v-for="r in roles" :key="r" :value="r">{{ r }}</option>
-      </select>
-    </div>
-
-    <!-- Campos de contraseña solo para nuevos usuarios -->
-    <template v-if="!form.id">
-      <div class="mb-3">
-        <label for="password" class="form-label">Contraseña</label>
+    <div class="row g-3">
+      <!-- Primera fila: Username y Nombre -->
+      <div class="col-md-6">
+        <label for="username" class="form-label fw-semibold">Nombre de Usuario</label>
         <input
-          type="password"
-          id="password"
-          v-model="form.password"
-          class="form-control"
-          :class="{ 'is-invalid': errors.password }"
-          placeholder="Ingrese la contraseña"
+          type="text"
+          id="username"
+          v-model="form.username"
+          class="form-control form-control-sm"
+          :class="{ 'is-invalid': errors.username }"
+          placeholder="Usuario"
           required
         />
-        <div class="invalid-feedback">{{ errors.password }}</div>
+        <div class="invalid-feedback">{{ errors.username }}</div>
       </div>
 
-      <div class="mb-3">
-        <label for="password2" class="form-label">Confirmar Contraseña</label>
+      <div class="col-md-6">
+        <label for="first_name" class="form-label fw-semibold">Nombre</label>
         <input
-          type="password"
-          id="password2"
-          v-model="form.password2"
-          class="form-control"
-          :class="{ 'is-invalid': errors.password2 }"
-          placeholder="Confirme la contraseña"
+          type="text"
+          id="first_name"
+          v-model="form.first_name"
+          class="form-control form-control-sm"
+          :class="{ 'is-invalid': errors.first_name }"
+          placeholder="Nombre completo"
           required
         />
-        <div class="invalid-feedback">{{ errors.password2 }}</div>
+        <div class="invalid-feedback">{{ errors.first_name }}</div>
       </div>
-    </template>
 
-    <div class="d-flex justify-content-end">
-      <button type="button" class="btn btn-secondary me-2" @click="$emit('cancel')">Cancelar</button>
-      <button type="submit" class="btn btn-primary">{{ form.id ? 'Actualizar' : 'Crear' }}</button>
+      <!-- Segunda fila: Apellido y Email -->
+      <div class="col-md-6">
+        <label for="last_name" class="form-label fw-semibold">Apellido</label>
+        <input
+          type="text"
+          id="last_name"
+          v-model="form.last_name"
+          class="form-control form-control-sm"
+          placeholder="Apellido completo"
+        />
+      </div>
+
+      <div class="col-md-6">
+        <label for="email" class="form-label fw-semibold">Email</label>
+        <input
+          type="email"
+          id="email"
+          v-model="form.email"
+          class="form-control form-control-sm"
+          :class="{ 'is-invalid': errors.email }"
+          placeholder="correo@ejemplo.com"
+          required
+        />
+        <div class="invalid-feedback">{{ errors.email }}</div>
+      </div>
+
+      <!-- Tercera fila: Teléfono y Rol -->
+      <div class="col-md-6">
+        <label for="telefono" class="form-label fw-semibold">Teléfono</label>
+        <input
+          type="tel"
+          id="telefono"
+          v-model="form.telefono"
+          class="form-control form-control-sm"
+          placeholder="+57 300 123 4567"
+        />
+      </div>
+
+      <div class="col-md-6">
+        <label for="rol" class="form-label fw-semibold">Rol</label>
+        <select
+          id="rol"
+          v-model="form.rol"
+          class="form-select form-select-sm"
+          required
+        >
+          <option value="" disabled>Seleccionar rol</option>
+          <option v-for="r in roles" :key="r" :value="r">{{ getRoleDisplay(r) }}</option>
+        </select>
+      </div>
+
+      <!-- Campos de contraseña solo para nuevos usuarios -->
+      <template v-if="!form.id">
+        <!-- Cuarta fila: Contraseñas -->
+        <div class="col-md-6">
+          <label for="password" class="form-label fw-semibold">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            v-model="form.password"
+            class="form-control form-control-sm"
+            :class="{ 'is-invalid': errors.password }"
+            placeholder="Mínimo 8 caracteres"
+            required
+          />
+          <div class="invalid-feedback">{{ errors.password }}</div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="password2" class="form-label fw-semibold">Confirmar Contraseña</label>
+          <input
+            type="password"
+            id="password2"
+            v-model="form.password2"
+            class="form-control form-control-sm"
+            :class="{ 'is-invalid': errors.password2 }"
+            placeholder="Repetir contraseña"
+            required
+          />
+          <div class="invalid-feedback">{{ errors.password2 }}</div>
+        </div>
+      </template>
+    </div>
+
+    <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+      <button type="button" class="btn btn-outline-secondary btn-sm me-2" @click="$emit('cancel')">
+        <i class="bi bi-x-circle me-1"></i>Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary btn-sm">
+        <i class="bi bi-check-circle me-1"></i>{{ form.id ? 'Actualizar Usuario' : 'Crear Usuario' }}
+      </button>
     </div>
   </form>
 </template>
@@ -206,6 +216,15 @@ function onSubmit() {
   }
 
   emit('submit', userData)
+}
+
+function getRoleDisplay(rol) {
+  const roles = {
+    'admin': '👑 Administrador',
+    'editor': '✏️ Editor',
+    'invitado': '👤 Invitado'
+  }
+  return roles[rol] || rol
 }
 </script>
 

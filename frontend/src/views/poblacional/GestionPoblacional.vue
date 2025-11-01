@@ -72,62 +72,116 @@
     <div class="modal-card">
       <h5 class="mb-3">{{ editIndex !== null ? 'Editar Individuo' : 'Nuevo Individuo' }}</h5>
       <form @submit.prevent="savePerson">
-        <div class="mb-2">
-          <label class="form-label">Tipo de Identificación</label>
-          <select v-model="form.tipo_identificacion" class="form-select" required>
-            <option value="">Seleccione...</option>
-            <option v-for="tipo in tiposIdentificacion" :key="tipo.id" :value="tipo.id">{{ tipo.nombre }}</option>
-          </select>
+        <div class="row g-3">
+          <!-- Primera fila: Tipo ID y Número ID -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Tipo de Identificación</label>
+            <select v-model="form.tipo_identificacion" class="form-select form-select-sm" required>
+              <option value="">Seleccionar tipo</option>
+              <option v-for="tipo in tiposIdentificacion" :key="tipo.id" :value="tipo.id">{{ tipo.nombre }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Número de Identificación</label>
+            <input v-model="form.numero_identificacion" class="form-control form-control-sm" placeholder="Ej: 1234567890" required />
+          </div>
+
+          <!-- Segunda fila: Primer nombre y Segundo nombre -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Primer Nombre</label>
+            <input v-model="form.primer_nombre" class="form-control form-control-sm" placeholder="Nombre principal" required />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Segundo Nombre</label>
+            <input v-model="form.segundo_nombre" class="form-control form-control-sm" placeholder="Segundo nombre (opcional)" />
+          </div>
+
+          <!-- Tercera fila: Primer apellido y Segundo apellido -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Primer Apellido</label>
+            <input v-model="form.primer_apellido" class="form-control form-control-sm" placeholder="Apellido paterno" required />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Segundo Apellido</label>
+            <input v-model="form.segundo_apellido" class="form-control form-control-sm" placeholder="Apellido materno (opcional)" />
+          </div>
+
+          <!-- Cuarta fila: Fecha nacimiento y Género -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Fecha de Nacimiento</label>
+            <input v-model="form.fecha_nacimiento" type="date" class="form-control form-control-sm" required />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Género</label>
+            <select v-model="form.genero" class="form-select form-select-sm" required>
+              <option value="">Seleccionar género</option>
+              <option value="M">👨 Masculino</option>
+              <option value="F">👩 Femenino</option>
+              <option value="O">🏳️‍🌈 Otro</option>
+            </select>
+          </div>
+
+          <!-- Quinta fila: Dirección completa -->
+          <div class="col-12">
+            <label class="form-label fw-semibold">Dirección</label>
+            <input v-model="form.direccion" class="form-control form-control-sm" placeholder="Dirección completa de residencia" />
+          </div>
+
+          <!-- Sexta fila: Nivel educativo y Ocupación -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Nivel Educativo</label>
+            <select v-model="form.nivel_educativo" class="form-select form-select-sm" required>
+              <option value="">Seleccionar nivel</option>
+              <option v-for="nivel in nivelesEducativos" :key="nivel.id" :value="nivel.id">{{ nivel.nombre }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Ocupación</label>
+            <select v-model="form.ocupacion" class="form-select form-select-sm" required>
+              <option value="">Seleccionar ocupación</option>
+              <option v-for="ocup in ocupaciones" :key="ocup.id" :value="ocup.id">{{ ocup.nombre }}</option>
+            </select>
+          </div>
+
+          <!-- Séptima fila: Grupo familiar y Estado civil -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Grupo Familiar</label>
+            <select v-model="form.grupo_familiar" class="form-select form-select-sm">
+              <option value="">Seleccionar grupo</option>
+              <option v-for="grupo in gruposFamiliares" :key="grupo.id" :value="grupo.id">{{ grupo.nombre }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Estado Civil</label>
+            <select v-model="form.estado_civil" class="form-select form-select-sm">
+              <option value="">Seleccionar estado</option>
+              <option v-for="estado in estadosCiviles" :key="estado.id" :value="estado.id">{{ estado.nombre }}</option>
+            </select>
+          </div>
+
+          <!-- Octava fila: Lengua materna -->
+          <div class="col-12">
+            <label class="form-label fw-semibold">Lengua Materna</label>
+            <select v-model="form.lengua_materna" class="form-select form-select-sm">
+              <option value="">Seleccionar lengua</option>
+              <option v-for="lengua in lenguas" :key="lengua.id" :value="lengua.id">{{ lengua.nombre }}</option>
+            </select>
+          </div>
         </div>
 
-        <input v-model="form.numero_identificacion" class="form-control mb-2" placeholder="Número de Identificación" required />
-        <input v-model="form.primer_nombre" class="form-control mb-2" placeholder="Primer Nombre" required />
-        <input v-model="form.segundo_nombre" class="form-control mb-2" placeholder="Segundo Nombre" />
-        <input v-model="form.primer_apellido" class="form-control mb-2" placeholder="Primer Apellido" required />
-        <input v-model="form.segundo_apellido" class="form-control mb-2" placeholder="Segundo Apellido" />
-        <input v-model="form.fecha_nacimiento" type="date" class="form-control mb-2" placeholder="Fecha de Nacimiento" required />
-
-        <select v-model="form.genero" class="form-select mb-2" required>
-          <option value="">Seleccione Género...</option>
-          <option value="M">Masculino</option>
-          <option value="F">Femenino</option>
-          <option value="O">Otro</option>
-        </select>
-
-        <input v-model="form.direccion" class="form-control mb-2" placeholder="Dirección" />
-
-        <div class="d-flex gap-2 mb-3">
-          <select v-model="form.nivel_educativo" class="form-select" required>
-            <option value="">Nivel Educativo</option>
-            <option v-for="nivel in nivelesEducativos" :key="nivel.id" :value="nivel.id">{{ nivel.nombre }}</option>
-          </select>
-
-          <select v-model="form.ocupacion" class="form-select" required>
-            <option value="">Ocupación</option>
-            <option v-for="ocup in ocupaciones" :key="ocup.id" :value="ocup.id">{{ ocup.nombre }}</option>
-          </select>
-        </div>
-
-        <div class="d-flex gap-2 mb-3">
-          <select v-model="form.grupo_familiar" class="form-select">
-            <option value="">Grupo Familiar</option>
-            <option v-for="grupo in gruposFamiliares" :key="grupo.id" :value="grupo.id">{{ grupo.nombre }}</option>
-          </select>
-
-          <select v-model="form.estado_civil" class="form-select">
-            <option value="">Estado Civil</option>
-            <option v-for="estado in estadosCiviles" :key="estado.id" :value="estado.id">{{ estado.nombre }}</option>
-          </select>
-        </div>
-
-        <select v-model="form.lengua_materna" class="form-select mb-3">
-          <option value="">Lengua Materna</option>
-          <option v-for="lengua in lenguas" :key="lengua.id" :value="lengua.id">{{ lengua.nombre }}</option>
-        </select>
-
-        <div class="text-end">
-          <button type="button" class="btn btn-secondary btn-sm me-2" @click="closeForm">Cancelar</button>
-          <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+          <button type="button" class="btn btn-outline-secondary btn-sm me-2" @click="closeForm">
+            <i class="bi bi-x-circle me-1"></i>Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary btn-sm">
+            <i class="bi bi-check-circle me-1"></i>{{ editIndex !== null ? 'Actualizar Individuo' : 'Crear Individuo' }}
+          </button>
         </div>
       </form>
     </div>
