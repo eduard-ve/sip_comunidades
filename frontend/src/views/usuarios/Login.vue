@@ -80,6 +80,7 @@
 import { useRouter } from 'vue-router';
 import { ref, computed } from 'vue';
 import { authService } from '../../services/api.js';
+import { useAuth } from '../../stores/auth.js';
 
 const router = useRouter();
 const username = ref('');
@@ -109,6 +110,10 @@ async function login() {
     // Guardar tokens
     localStorage.setItem('access_token', response.data.access);
     localStorage.setItem('refresh_token', response.data.refresh);
+
+    // Inicializar estado de autenticación con el rol del usuario
+    const { initAuth } = useAuth();
+    initAuth();
 
     // Redirigir al dashboard
     router.push('/dashboard');

@@ -15,14 +15,24 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
-              <i class="bi bi-person-circle me-1"></i> Admin
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="#">Perfil</a></li>
-              <li><a class="dropdown-item" href="#">Configuración</a></li>
+            <button class="nav-link dropdown-toggle text-white btn btn-link" style="border: none; background: none; text-decoration: none;" data-bs-toggle="dropdown" id="userDropdown">
+              <i class="bi bi-person-circle me-1"></i>
+              {{ user?.username || 'Usuario' }}
+              <span v-if="user?.rol" class="badge bg-light text-dark ms-2">{{ getRoleDisplay(user.rol) }}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="#" @click="goToProfile">
+                <i class="bi bi-person me-2"></i>Perfil
+              </a></li>
+              <li v-if="isAdmin"><a class="dropdown-item" href="#" @click="goToUsers">
+                <i class="bi bi-people me-2"></i>Gestión de Usuarios
+              </a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="#" @click="logout">Salir</a></li>
+              <li>
+                <button class="dropdown-item text-danger" @click="logout" style="border: none; background: none; width: 100%; text-align: left; padding: 0.375rem 0.75rem;">
+                  <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                </button>
+              </li>
             </ul>
           </li>
         </ul>
@@ -32,11 +42,47 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-const router = useRouter();
+import { useRouter } from 'vue-router'
+import { useAuth } from '../../stores/auth.js'
+import { onMounted } from 'vue'
+
+const router = useRouter()
+const { user, logout: authLogout, isAdmin } = useAuth()
+
+onMounted(() => {
+  // Asegurar que Bootstrap esté disponible y el dropdown funcione
+  const dropdownElement = document.getElementById('userDropdown')
+  if (dropdownElement) {
+    // Forzar inicialización del dropdown
+    if (typeof bootstrap !== 'undefined') {
+      new bootstrap.Dropdown(dropdownElement)
+    }
+  }
+})
+
+function getRoleDisplay(rol) {
+  const roles = {
+    'admin': 'Administrador',
+    'editor': 'Editor',
+    'invitado': 'Invitado'
+  }
+  return roles[rol] || rol
+}
+
+function goToProfile() {
+  // TODO: Implementar vista de perfil
+  console.log('Ir a perfil')
+}
+
+function goToUsers() {
+  router.push('/usuarios')
+}
 
 function logout() {
-  router.push('/login');
+  // Limpiar estado de autenticación
+  authLogout()
+  // Forzar recarga completa de la página para asegurar limpieza del estado
+  window.location.href = '/login'
 }
 </script>
 

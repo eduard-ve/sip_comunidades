@@ -48,7 +48,7 @@ def create_test_users():
         )
         print(f'✓ Usuario invitado creado: {invitado.username} (password: invitado123)')
 
-    print('\n📋 Credenciales de prueba:')
+    print('\nCredenciales de prueba:')
     print('=' * 40)
     print('Admin:     admin / admin123')
     print('Editor:    editor / editor123')

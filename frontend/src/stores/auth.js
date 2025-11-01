@@ -1,17 +1,41 @@
 import { ref, computed } from 'vue'
 import { authService } from '../services/api.js'
+import { jwtDecode } from 'jwt-decode'
 
 const user = ref(null)
 const isAuthenticated = ref(false)
 const loading = ref(false)
 
 export const useAuth = () => {
+  // Decodificar token JWT para obtener información del usuario
+  const decodeToken = (token) => {
+    try {
+      return jwtDecode(token)
+    } catch (error) {
+      console.error('Error decodificando token:', error)
+      return null
+    }
+  }
+
   // Inicializar estado desde localStorage
   const initAuth = () => {
+    // Limpiar estado inicial
+    user.value = null
+    isAuthenticated.value = false
+
     const token = localStorage.getItem('access_token')
     if (token) {
-      isAuthenticated.value = true
-      // Aquí podrías hacer una llamada para obtener el perfil del usuario
+      const decoded = decodeToken(token)
+      if (decoded && decoded.exp * 1000 > Date.now()) {
+        user.value = {
+          username: decoded.username,
+          rol: decoded.rol
+        }
+        isAuthenticated.value = true
+      } else {
+        // Token expirado o inválido, limpiar
+        logout()
+      }
     }
   }
 
@@ -21,6 +45,16 @@ export const useAuth = () => {
       const response = await authService.login(credentials)
       localStorage.setItem('access_token', response.data.access)
       localStorage.setItem('refresh_token', response.data.refresh)
+
+      // Decodificar token para obtener información del usuario
+      const decoded = decodeToken(response.data.access)
+      if (decoded) {
+        user.value = {
+          username: decoded.username,
+          rol: decoded.rol
+        }
+      }
+
       isAuthenticated.value = true
       return response.data
     } catch (error) {
@@ -49,6 +83,24 @@ export const useAuth = () => {
     }
   }
 
+  // Verificar si el usuario tiene un rol específico
+  const hasRole = (requiredRoles) => {
+    if (!user.value || !user.value.rol) return false
+    if (Array.isArray(requiredRoles)) {
+      return requiredRoles.includes(user.value.rol)
+    }
+    return user.value.rol === requiredRoles
+  }
+
+  // Verificar si es admin
+  const isAdmin = () => hasRole('admin')
+
+  // Verificar si es editor o superior
+  const isEditor = () => hasRole(['admin', 'editor'])
+
+  // Verificar si es invitado o superior
+  const isInvitado = () => hasRole(['admin', 'editor', 'invitado'])
+
   return {
     user: computed(() => user.value),
     isAuthenticated: computed(() => isAuthenticated.value),
@@ -56,6 +108,10 @@ export const useAuth = () => {
     login,
     logout,
     getProfile,
-    initAuth
+    initAuth,
+    hasRole,
+    isAdmin,
+    isEditor,
+    isInvitado
   }
 }
