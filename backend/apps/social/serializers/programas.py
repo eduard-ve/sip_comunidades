@@ -31,5 +31,6 @@ class ProgramaSocialSerializer(serializers.ModelSerializer):
             'fecha_inicio',
             'fecha_fin',
             'responsable',
-            'beneficiarios'
+            'beneficiarios',
+            'beneficiarios_count'
         ]

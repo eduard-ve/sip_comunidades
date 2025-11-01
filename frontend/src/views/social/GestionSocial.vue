@@ -93,8 +93,16 @@
         <input
           v-model="form.fecha_fin"
           type="date"
-          class="form-control mb-3"
+          class="form-control mb-2"
           placeholder="Fecha de Fin"
+        />
+        <input
+          v-model.number="form.beneficiarios_count"
+          type="number"
+          class="form-control mb-3"
+          placeholder="Cantidad de Beneficiarios"
+          min="0"
+          required
         />
         <div class="text-end">
           <button type="button" class="btn btn-secondary btn-sm me-2" @click="closeForm">Cancelar</button>
@@ -144,7 +152,7 @@ const error = ref(null)
 
 // Modal formulario
 const showForm = ref(false)
-const form = ref({ nombre: '', descripcion: '', estado_id: '', fecha_inicio: '', fecha_fin: '' })
+const form = ref({ nombre: '', descripcion: '', estado_id: '', fecha_inicio: '', fecha_fin: '', beneficiarios_count: 0 })
 const editIndex = ref(null)
 
 // Funciones para cargar datos del backend
@@ -154,7 +162,6 @@ async function loadProgramasSociales() {
     const response = await socialService.getProgramasSociales()
     programas.value = response.data.map(programa => ({
       ...programa,
-      beneficiarios_count: programa.beneficiarios ? programa.beneficiarios.length : 0,
       estado: programa.estado ? programa.estado.nombre : 'Sin estado'
     }))
 
@@ -220,7 +227,7 @@ onMounted(async () => {
 // Funciones del modal
 function closeForm() {
   showForm.value = false
-  form.value = { nombre: '', descripcion: '', estado_id: '', fecha_inicio: '', fecha_fin: '' }
+  form.value = { nombre: '', descripcion: '', estado_id: '', fecha_inicio: '', fecha_fin: '', beneficiarios_count: 0 }
   editIndex.value = null
 }
 
@@ -249,7 +256,8 @@ function editPrograma(row) {
     descripcion: row.descripcion || '',
     estado_id: row.estado_id || '',
     fecha_inicio: row.fecha_inicio || '',
-    fecha_fin: row.fecha_fin || ''
+    fecha_fin: row.fecha_fin || '',
+    beneficiarios_count: row.beneficiarios_count || 0
   }
   showForm.value = true
 }

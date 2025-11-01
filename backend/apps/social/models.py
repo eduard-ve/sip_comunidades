@@ -21,6 +21,7 @@ class ProgramaSocial(models.Model):  # modelo principal de programas sociales
     fecha_inicio = models.DateField(null=True, blank=True)
     fecha_fin = models.DateField(null=True, blank=True)
     beneficiarios = models.ManyToManyField(Persona, related_name='programas_sociales', blank=True)
+    beneficiarios_count = models.PositiveIntegerField(default=0, verbose_name="Cantidad de Beneficiarios")
     responsable = models.ForeignKey(Usuario, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
