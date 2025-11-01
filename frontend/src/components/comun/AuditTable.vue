@@ -31,15 +31,15 @@
     <!-- Tabla -->
     <div class="card border-0 shadow-sm">
       <div class="card-body table-responsive">
-        <table class="table table-sm align-middle">
-          <thead>
+        <table class="table table-hover table-striped align-middle">
+          <thead class="table-dark">
             <tr>
               <th>ID</th>
               <th>Módulo</th>
               <th>Usuario</th>
               <th>Acción</th>
               <th>Fecha</th>
-              <th></th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -47,7 +47,12 @@
               <td>{{ evento.id }}</td>
               <td>{{ evento.module }}</td>
               <td>{{ evento.user }}</td>
-              <td>{{ evento.action }}</td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <i :class="getActionIcon(evento.action)" class="me-2"></i>
+                  {{ evento.action }}
+                </div>
+              </td>
               <td>{{ evento.date }}</td>
               <td>
                 <button class="btn btn-sm btn-outline-info" @click="$emit('view-details', evento)">
@@ -89,5 +94,17 @@ const filteredEvents = computed(() => {
 
 function resetFilters() {
   filters.value = { module: "", user: "", date: "" }
+}
+
+function getActionIcon(action) {
+  if (action.toLowerCase().includes('creación') || action.toLowerCase().includes('creado')) {
+    return 'fas fa-plus-circle text-success'
+  } else if (action.toLowerCase().includes('eliminación') || action.toLowerCase().includes('eliminado')) {
+    return 'fas fa-trash text-danger'
+  } else if (action.toLowerCase().includes('modificación') || action.toLowerCase().includes('actualizado')) {
+    return 'fas fa-edit text-warning'
+  } else {
+    return 'fas fa-info-circle text-info'
+  }
 }
 </script>
