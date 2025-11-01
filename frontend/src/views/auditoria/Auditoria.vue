@@ -14,7 +14,7 @@
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0">
                 <div class="audit-kpi-icon bg-white bg-opacity-20 rounded-3 p-3">
-                  <i class="fas fa-list-alt text-white fs-4"></i>
+                  <i class="fas fa-chart-line text-white fs-4"></i>
                 </div>
               </div>
               <div class="flex-grow-1 ms-3 audit-kpi-content">
@@ -36,7 +36,7 @@
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0">
                 <div class="audit-kpi-icon bg-white bg-opacity-20 rounded-3 p-3">
-                  <i class="fas fa-users text-white fs-4"></i>
+                  <i class="fas fa-user-check text-white fs-4"></i>
                 </div>
               </div>
               <div class="flex-grow-1 ms-3 audit-kpi-content">
@@ -58,7 +58,7 @@
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0">
                 <div class="audit-kpi-icon bg-white bg-opacity-20 rounded-3 p-3">
-                  <i class="fas fa-cubes text-white fs-4"></i>
+                  <i class="fas fa-layer-group text-white fs-4"></i>
                 </div>
               </div>
               <div class="flex-grow-1 ms-3 audit-kpi-content">
@@ -80,7 +80,7 @@
             <div class="d-flex align-items-center">
               <div class="flex-shrink-0">
                 <div class="audit-kpi-icon bg-white bg-opacity-20 rounded-3 p-3">
-                  <i class="fas fa-exclamation-triangle text-white fs-4"></i>
+                  <i class="fas fa-exclamation-circle text-white fs-4"></i>
                 </div>
               </div>
               <div class="flex-grow-1 ms-3 audit-kpi-content">
@@ -352,7 +352,7 @@ const recentActivity = ref([
     time: 'hace 1 hora',
     status: 'Advertencia',
     statusClass: 'bg-warning',
-    icon: 'fas fa-file-times',
+    icon: 'fas fa-trash-alt',
     avatarClass: 'bg-warning bg-opacity-10 text-warning'
   },
   {
