@@ -17,5 +17,5 @@ router.register(r'coberturas', CoberturaProgramaViewSet, basename='cobertura')
 
 # Definición de las URLs del módulo social con namespace
 urlpatterns = [
-    path('api/social/', include((router.urls, 'social'), namespace='social'))
+    path('', include((router.urls, 'social'), namespace='social'))
 ]
