@@ -178,8 +178,8 @@ const charts = {
 // Columnas de la tabla con Acciones
 const tableColumns = [
    { key:'nombre_completo', label:'Nombre Completo' },
-   { key:'tipo_identificacion', label:'Tipo ID' },
-   { key:'numero_identificacion', label:'Número ID' },
+   { key:'tipo_identificacion', label:'Tipo Identificacion' },
+   { key:'numero_identificacion', label:'Número Identificacion' },
    { key:'fecha_nacimiento', label:'Fecha Nacimiento' },
    { key:'genero', label:'Género' },
    { key:'nivel_educativo', label:'Nivel Educativo' },
