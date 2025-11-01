@@ -11,6 +11,7 @@ import GestionPoblacional from '../views/poblacional/GestionPoblacional.vue'
 import GestionSalud from '../views/salud/GestionSalud.vue'
 import GestionSocial from '../views/social/GestionSocial.vue'
 import GestionEncuestas from '../views/encuestas/GestionEncuestas.vue'
+import ResponderEncuesta from '../views/encuestas/ResponderEncuesta.vue'
 import Reportes from '../views/reportes/Reportes.vue'
 import UsuariosRoles from '../views/usuarios/UsuariosRoles.vue'
 import Auditoria from '../views/auditoria/Auditoria.vue'
@@ -18,6 +19,7 @@ import Auditoria from '../views/auditoria/Auditoria.vue'
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', name: 'Login', component: Login },
+  { path: '/encuesta/:token', name: 'ResponderEncuesta', component: ResponderEncuesta },
 
   {
     path: '/',

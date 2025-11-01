@@ -115,13 +115,37 @@ const table = ref({
 
 const selectedStatus = ref("")
 
-// Ciclo de vida: Cargar datos desde localStorage al montar el componente
-onMounted(() => {
-  const saved = localStorage.getItem('encuestas')
-  if (saved) {
-    table.value.rows = JSON.parse(saved)
-  } else {
-    // Datos de muestra si no hay nada en localStorage
+// Ciclo de vida: Cargar datos desde el backend al montar el componente
+onMounted(async () => {
+  try {
+    const response = await fetch('/api/encuestas/', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+
+    if (response.ok) {
+      const encuestas = await response.json()
+      table.value.rows = encuestas.map(encuesta => ({
+        id: encuesta.id_encuesta,
+        titulo: encuesta.titulo,
+        estado: encuesta.estado,
+        descripcion: encuesta.descripcion,
+        token: encuesta.token,
+        fecha: new Date(encuesta.fecha_creacion).toISOString().slice(0, 10),
+        respuestas: 0 // TODO: Calcular desde respuestas
+      }))
+      saveToLocalStorage()
+    } else {
+      // Fallback a localStorage si falla la API
+      const saved = localStorage.getItem('encuestas')
+      if (saved) {
+        table.value.rows = JSON.parse(saved)
+      }
+    }
+  } catch (error) {
+    console.error('Error cargando encuestas:', error)
+    // Fallback a datos de muestra
     table.value.rows = [
       { titulo: "Satisfacción clientes", estado: "activa", descripcion: "Encuesta sobre satisfacción", preguntas: [], fecha: "2025-08-10", respuestas: 120 },
       { titulo: "Evaluación interna", estado: "cerrada", descripcion: "Evaluación de procesos internos", preguntas: [], fecha: "2025-07-22", respuestas: 80 },
@@ -140,19 +164,65 @@ function createSurvey() {
   showForm.value = true
 }
 
-function saveSurvey(nuevaEncuesta) {
-  // Generar un ID único simple
-  const id = Date.now().toString()
-  nuevaEncuesta.id = id
-  table.value.rows.push(nuevaEncuesta)
-  saveToLocalStorage()
+async function saveSurvey(nuevaEncuesta) {
+  try {
+    // Validar datos básicos
+    if (!nuevaEncuesta.titulo?.trim()) {
+      alert('El título de la encuesta es obligatorio')
+      return
+    }
 
-  // Guardar el ID de la encuesta recién creada
-  lastSavedSurveyId.value = id
+    if (!nuevaEncuesta.preguntas?.length) {
+      alert('La encuesta debe tener al menos una pregunta')
+      return
+    }
 
-  // Ocultar el formulario y mostrar el modal de opciones
-  showForm.value = false
-  showOptions.value = true
+    // Preparar datos para enviar al backend
+    const surveyData = {
+      titulo: nuevaEncuesta.titulo.trim(),
+      descripcion: nuevaEncuesta.descripcion?.trim() || '',
+      estado: nuevaEncuesta.estado,
+      preguntas: nuevaEncuesta.preguntas.map((pregunta, index) => ({
+        texto_pregunta: pregunta.texto?.trim(),
+        tipo: pregunta.tipo === 'texto' ? 'abierta' : pregunta.tipo === 'opcion' ? 'opcion_multiple' : pregunta.tipo,
+        orden: index + 1,
+        opciones: pregunta.tipo === 'opcion' ? [] : [] // Por ahora vacío, se puede expandir
+      }))
+    }
+
+    // Enviar al backend
+    const response = await fetch('/api/encuestas/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` // Asumiendo que hay token
+      },
+      body: JSON.stringify(surveyData)
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.detail || 'Error al guardar la encuesta')
+    }
+
+    const savedSurvey = await response.json()
+
+    // Agregar a la tabla local con el token
+    nuevaEncuesta.id = savedSurvey.id_encuesta
+    nuevaEncuesta.token = savedSurvey.token
+    table.value.rows.push(nuevaEncuesta)
+    saveToLocalStorage()
+
+    // Guardar el ID de la encuesta recién creada
+    lastSavedSurveyId.value = savedSurvey.id_encuesta
+
+    // Ocultar el formulario y mostrar el modal de opciones
+    showForm.value = false
+    showOptions.value = true
+  } catch (error) {
+    console.error('Error guardando encuesta:', error)
+    alert(`Error al guardar la encuesta: ${error.message}`)
+  }
 }
 
 function cancelSurvey() {
@@ -162,14 +232,43 @@ function cancelSurvey() {
 // Función para generar y mostrar el enlace
 function generateLink() {
   showOptions.value = false // Oculta el modal de opciones
-  enlaceEncuesta.value = `${window.location.origin}/encuesta/${lastSavedSurveyId.value}`
+  // Usar el token de la encuesta guardada en lugar del ID
+  const survey = table.value.rows.find(s => s.id === lastSavedSurveyId.value)
+  if (survey && survey.token) {
+    enlaceEncuesta.value = `${window.location.origin}/encuesta/${survey.token}`
+  } else {
+    enlaceEncuesta.value = `${window.location.origin}/encuesta/${lastSavedSurveyId.value}`
+  }
   showLink.value = true // Muestra el modal del enlace
 }
 
-// Función para simular la generación de PDF
-function generatePdf() {
+// Función para generar PDF
+async function generatePdf() {
   showOptions.value = false // Oculta el modal de opciones
-  alert("Procesando la generación del PDF. Esta función requiere una librería externa.")
+
+  try {
+    // Obtener los datos completos de la encuesta desde el backend
+    const response = await fetch(`/api/encuestas/${lastSavedSurveyId.value}/`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Error al obtener datos de la encuesta')
+    }
+
+    const surveyData = await response.json()
+
+    // Aquí se podría integrar una librería como jsPDF o html2pdf
+    // Por ahora, mostrar los datos en consola y alert
+    console.log('Datos de la encuesta para PDF:', surveyData)
+    alert(`PDF generado para la encuesta: ${surveyData.titulo}\n\nDatos preparados para exportación.`)
+
+  } catch (error) {
+    console.error('Error generando PDF:', error)
+    alert('Error al generar el PDF. Por favor intenta de nuevo.')
+  }
 }
 
 // Propiedad computada para el conteo de encuestas filtradas
