@@ -15,10 +15,8 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
-            <button class="nav-link dropdown-toggle text-white btn btn-link" style="border: none; background: none; text-decoration: none;" data-bs-toggle="dropdown" id="userDropdown">
-              <i class="bi bi-person-circle me-1"></i>
+            <button class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" id="userDropdown">
               {{ user?.username || 'Usuario' }}
-              <span v-if="user?.rol" class="badge bg-light text-dark ms-2">{{ getRoleDisplay(user.rol) }}</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><a class="dropdown-item" href="#" @click="goToProfile">
