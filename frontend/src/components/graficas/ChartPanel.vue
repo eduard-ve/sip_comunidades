@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, watch, ref } from 'vue'
 import Chart from 'chart.js/auto'
 
 const props = defineProps({
@@ -18,15 +18,40 @@ const props = defineProps({
   options: { type: Object, default: () => ({}) }
 })
 
+let chartInstance = null
+
 onMounted(() => {
-  new Chart(document.getElementById(props.chartId), {
-    type: props.type,
-    data: props.data,
-    options: Object.assign({
-      responsive: true,
-      plugins: { legend: { position: 'bottom' } }
-    }, props.options)
-  })
+  const ctx = document.getElementById(props.chartId)
+  if (ctx) {
+    chartInstance = new Chart(ctx, {
+      type: props.type,
+      data: props.data,
+      options: Object.assign({
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+      }, props.options)
+    })
+    console.log(`Chart ${props.chartId} created successfully`)
+  } else {
+    console.error(`Canvas element with id ${props.chartId} not found`)
+  }
+})
+
+// Watch for data changes and update chart
+watch(() => props.data, (newData) => {
+  if (chartInstance && newData) {
+    chartInstance.data = newData
+    chartInstance.update()
+    console.log(`Chart ${props.chartId} updated with new data`)
+  }
+}, { deep: true })
+
+// Cleanup on unmount
+import { onUnmounted } from 'vue'
+onUnmounted(() => {
+  if (chartInstance) {
+    chartInstance.destroy()
+  }
 })
 </script>
 
