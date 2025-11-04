@@ -87,6 +87,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import * as XLSX from 'xlsx'
 import BaseModule from '../../components/comun/BaseModule.vue'
 import UserForm from '../../components/formularios/UserForm.vue'
 import { userService } from '../../services/api.js'
@@ -176,7 +177,7 @@ const filteredUsers = computed(() => {
   return users.value.filter(u => u.rol === filterRole.value)
 })
 
-// Funciones
+// Funciones 
 async function fetchUsers() {
   loading.value = true
   error.value = ''
@@ -210,6 +211,7 @@ function closeForm() {
   selectedUser.value = null
 }
 
+// Función para manejar el envío del formulario
 async function handleSubmit(userData) {
   try {
     if (userData.id) {
@@ -233,6 +235,7 @@ async function handleSubmit(userData) {
   }
 }
 
+// Función eliminar usuario
 async function deleteUser(id) {
   if (confirm('¿Seguro que deseas eliminar este usuario?')) {
     try {
@@ -245,8 +248,27 @@ async function deleteUser(id) {
   }
 }
 
+// Función de exportación a Excel
 function onExport() {
-  alert('Exportar lista de usuarios - funcionalidad no implementada')
+  // Preparar los datos para exportar
+  const dataToExport = filteredUsers.value.map(user => ({
+    'Nombre': user.first_name,
+    'Usuario': user.username,
+    'Email': user.email,
+    'Rol': user.rol,
+    'Estado': user.is_active ? 'Activo' : 'Inactivo'
+  }))
+
+  // Crear una nueva hoja de trabajo
+  const ws = XLSX.utils.json_to_sheet(dataToExport)
+
+  // Crear un nuevo libro de trabajo
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Usuarios')
+
+  // Generar el archivo y descargarlo
+  const fileName = `usuarios_${new Date().toISOString().split('T')[0]}.xlsx`
+  XLSX.writeFile(wb, fileName)
 }
 
 // Cargar datos al montar el componente
