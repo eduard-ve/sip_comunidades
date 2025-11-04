@@ -81,9 +81,23 @@
         </select>
       </div>
 
+      <!-- Cuarta fila: Estado -->
+      <div class="col-md-6">
+        <label for="is_active" class="form-label fw-semibold">Estado</label>
+        <select
+          id="is_active"
+          v-model="form.is_active"
+          class="form-select form-select-sm"
+          required
+        >
+          <option :value="true">Activo</option>
+          <option :value="false">Inactivo</option>
+        </select>
+      </div>
+
       <!-- Campos de contraseña solo para nuevos usuarios -->
       <template v-if="!form.id">
-        <!-- Cuarta fila: Contraseñas -->
+        <!-- Quinta fila: Contraseñas -->
         <div class="col-md-6">
           <label for="password" class="form-label fw-semibold">Contraseña</label>
           <input
@@ -138,6 +152,7 @@ const props = defineProps({
       last_name: '',
       telefono: '',
       rol: 'invitado',
+      is_active: true,
       password: '',
       password2: ''
     })
