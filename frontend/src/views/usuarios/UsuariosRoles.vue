@@ -163,6 +163,7 @@ const charts = computed(() => ({
 const table = computed(() => ({
   columns: [
     { key: 'first_name', label: 'Nombre' },
+    { key: 'last_name', label: 'Apellido' },
     { key: 'username', label: 'Usuario' },
     { key: 'email', label: 'Email' },
     { key: 'rol', label: 'Rol' },
@@ -253,6 +254,7 @@ function onExport() {
   // Preparar los datos para exportar
   const dataToExport = filteredUsers.value.map(user => ({
     'Nombre': user.first_name,
+    'Apellido': user.last_name,
     'Usuario': user.username,
     'Email': user.email,
     'Rol': user.rol,
