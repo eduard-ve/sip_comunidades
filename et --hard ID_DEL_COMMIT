@@ -1,0 +1,100 @@
+[33m48aabe0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m, [m[1;31morigin/develop[m[33m)[m solucion de reportes agregar reporte
+[33m9d3d5b4[m conflicto resuelto
+[33m540072c[m cambios de reporte nuevo reporte
+[33md512cf2[m Finalizada feature de encuestas: migraciones, API y datos de prueba
+[33ma077cbd[m prubas tests ok
+[33m6d2acdd[m apps encuetas cree migraciones y nueva ruta lista para tests
+[33m415d1ee[m Permisos listos, panel admin agregado
+[33mcdaba70[m vistas y rutas configuradas
+[33m4bc5056[m serializer creado listo para pruebas
+[33md869d03[m models.py de la apps encuentas creada
+[33m96004e6[m conexion del backend del modulo reportes y salud aplicacion en main.js reportes vue, gestionsalud.vue setting
+[33m61f5b6d[m feat(social): fusiona módulo social tras resolución de conflictos
+[33m824ce76[m conflictos resueltos
+[33mce0726b[m Merge branch 'develop' into feature/social
+[33m1d9c4a7[m Corrige namespace en rutas y tests del módulo social
+[33m857edcf[m refactor(social): mejora la estructura del enrutamiento y simplifica las rutas
+[33m3a94823[m feat(social): implementar viewsets para gestión de programas y beneficiarios
+[33m87d98d6[m Agrega modelos y serializers del módulo social, ademas se aplicaron las migraciones del modulo social y poblacion (tests OK)
+[33mf307fdb[m panel admin ajustado
+[33m518fb4c[m Urls vistas modulo social  terminadas
+[33m6d956db[m modulos de salud y reportes
+[33mc45ac0f[m Modulo social vista beneficiorios.py
+[33m56f26c8[m modulo social Vista programas.py
+[33m2cd5532[m Serializers beneficios.py agregado
+[33m8904ce5[m Serializer programas.py agregado, verificar funcionamiento respectivo
+[33m092f7ba[m Modelo social creado, verificar y correr test
+[33m9c96d07[m auditoria front
+[33m8f43a20[m merge: integra módulo poblacional en rama develop
+[33mbd80c30[m[33m ([m[1;31morigin/feature/poblacional[m[33m)[m Test completados y rutas definidas de la app
+[33m4783ae7[m admin completado, modulos poblacion listo para aplicar las migraciones y realizar los respectivos tests verificando que si esta correcto la implementacion
+[33mb16fc1a[m Rutas agregadas app poblacion
+[33m1424f51[m Vistas catalogos, personas y relaciones completadas
+[33m0f7fc52[m Serializers relacion familiar agregado
+[33mc31c7b9[m Ajustar nombre de la clase modelo serializer catalogo y agreagr  serializserspersonas
+[33m0887c9a[m Ajuntar archivos serializers, agregar script al archivo catalogos con la clase correspondiente
+[33madc685b[m Modelo relaciones familiares
+[33m93c73a2[m Agregar modelo persona con sus respectivos campos
+[33m82e9a6d[m Agregar clase catálogos al modelo poblacional
+[33md8fdfe6[m Adjuntar archivos del models poblacion
+[33m36389e8[m Ajustes perimisos, son globales y reutilizables para evitar manejar cada archivo permissions.py en cada modulo
+[33md4c2dd1[m Test relacionadas modulo usuarios
+[33mbba2aec[m Ajustar la nueva ruta con su importacion correspondiente admin-superusuario
+[33mbf48cba[m Script en admin para crear superusuario, agregar ruta del superusuario
+[33m4db0dba[m Correcion de la ruta usuarios
+[33m78a0b67[m documentar codigo de modulo
+[33mcdca3e1[m Ajuste en PerfilView y UsuarioSerializer para permitir actualización segura de perfil
+[33mf974df8[m Permiso personalizado
+[33mba9b7f7[m Rutas del modelo
+[33mc998138[m vista agregada
+[33m4b90449[m serializers.py creado
+[33m8f0c4b8[m models.py terminado, mejoras posibles
+[33m49aad56[m Modelo de usuarios agragado y configuracion de modelo de usuario personalizado
+[33m1b3ba15[m Configuarcion db  MySQL
+[33m9b26421[m Agregar dependencias y configuracion para utilizar JWT
+[33m8d671de[m Merge branch 'develop' into feature/dashboard
+[33md8bcd9a[m[33m ([m[1;31morigin/feature/refactorizar_styles[m[33m, [m[1;32mfeature/refactorizar_styles[m[33m)[m mejoras auditoria
+[33m80cc673[m auditoria_css
+[33m57dc5d3[m reportes_css
+[33m75e0a87[m gestionencuestas_css
+[33mebcfbee[m gestionpoblacional_css
+[33mcd1e8be[m gestionsocial_css
+[33m8b1ec40[m gestionsalud_css
+[33m1f0f0f6[m[33m ([m[1;31morigin/feature/dashboard[m[33m)[m Prototipo de dashboard funcional con datos simulados y permisos
+[33m4f46e92[m Merge branch 'feature/modularizar-componentes' into develop
+[33m7b8a6cf[m Nuevas rutas terminadas esta todo funcional y modular.
+[33m5c67ff0[m Organizar las vistas por carpetas y subcarpetas componentes para que cada vsita tengan sus componentes propias a medida que escala mi aplicacion sera mucho mas facil trabajar.
+[33maf3145f[m Carpeta para las tarjetas, termine con la creacion y organizacion de carpetas en componentes
+[33mfb5d8e0[m Carpeta para los archivos de mapas
+[33m40550a3[m Carpeta para los archivos de diseño
+[33m38f7909[m Carpeta para archivos formularios
+[33mfd0d52f[m Carpeta que contendra los archvios de graficas.
+[33m4b3705e[m Crear carpeta comun en componentes e ingresar sus archivos correspondientes.
+[33ma788609[m Eliminar componentes de prueba vue.js
+[33m4e3b163[m Merge branch 'feature/Mejoras_vistas' into develop
+[33mae5c3ff[m Merge branch 'develop' of https://github.com/eduard-ve/sip_comunidades into feature/Mejoras_vistas
+[33m9c36f1a[m cambio de dashboard
+[33m4741a6a[m cambios del panel de control
+[33m00fb482[m Cambios: Agregar dashboard KPIs y filtros mejorados en vista auditoría. Implementar 4 KPIs principales con métricas del sistema. Añadir gráficos de actividad por módulo y distribución de acciones. Crear sección actividad reciente con timeline visual Implementar filtros funcionales (Todos, Completado, Advertencia, Crítico, Hoy). Corregir posicionamiento dropdown para evitar ruptura del diseño.
+[33m2d216d3[m dashboard actualizacion
+[33mc03bc75[m Merge branch 'feature/Ajustes' into develop
+[33m1865567[m Ajuste en Sidebar.vue para fijar ancho mínimo de 250px y corrección visual en vista GestiónSalud.vue
+[33mb891d6a[m ajustar BaseModule para renderizar cabeceras y mensaje vacío, permitiendo que la tabla de Gestión Poblacional se visualice aun sin registros
+[33m5176a20[m corregida estructura de tabla en BaseModule y ajustes en GestionSocial para columnas acciones
+[33ma004d43[m Mostrar botón Nuevo y eliminar breadcrumbs en Gestión Social
+[33me8273da[m Agregado filtro de búsqueda ,ajuste de botones en tabla de individuos y ajuste en el modal de nuevo regsistro en modulo gestion poblacional, en el modulo Reporte y UsuariosRoles se dejo visible el boton nuevo.
+[33ma14326e[m corrección en tipado de columnas, filas y props de tabla, actualización de tipado de la prop 'change' para aceptar string o number y por ultimo se elimino el boton de exportar lista no necesario por ahora.
+[33m8bb69da[m Nevo prop para controlar la vista del boton buscar
+[33mf43baac[m Ajuste en la nevegador de secciones
+[33m8d4d4f3[m Se ha refactorizado la interfaz de la tabla, reubicando las acciones exportación y eliminación en una nueva columna de acciones en cada fila, permitiendo la gestión individual de reportes en formatos PDF.
+[33mc8d4d82[m Se elimino  breadcrumbs no es necesario para la navegacion del pagina
+[33m8589c96[m El flujo de creación de encuestas se ajusto, se  implemento modales separados para el formulario y las opciones de guardado (enlace o PDF), ademas se creo un componente para manejar el formulario de la encuesta.
+[33m73a4758[m Se elimino el breadcrumbs no es necesario para la navegacion del pagina
+[33m96dd8e5[m Merge branch 'feature/modulos_faltantes' into develop
+[33mb1ad7f4[m Ajustes en el div de la acciones exportar y nueva encuesta
+[33m039a9b6[m Template Gestion Encuesta, se creo el componente para encuesta
+[33m8d2cd41[m Componente creado, se ajusto el template Reportes para utilizar el nuevo componente.
+[33m2a673dd[m Template Autoria con ajustables
+[33mdbdc670[m Ajustes general en el modulo Reportes, se creo un nuevo componente, se ajusto las dimensiones y posicones de la graficas y conponentes como export..
+[33mac63c8b[m Merge branch 'feature/usuarios_roles' into develop
+[33medf47db[m Ajuste a la tabla de usuarios se agrego una nuev
