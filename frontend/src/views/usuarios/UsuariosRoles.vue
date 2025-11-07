@@ -87,12 +87,19 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import * as XLSX from 'xlsx'
 import BaseModule from '../../components/comun/BaseModule.vue'
 import UserForm from '../../components/formularios/UserForm.vue'
 import { userService } from '../../services/api.js'
 import '../../assets/css/UsuariosRoles.css'
 
 const roles = ['admin', 'editor', 'invitado']
+
+// Breadcrumbs
+const breadcrumbs = [
+  { label: 'Dashboard', to: '/dashboard' },
+  { label: 'Usuarios y Roles' }
+]
 
 // Estado reactivo
 const users = ref([])
@@ -127,43 +134,88 @@ const kpis = computed(() => [
 ])
 
 // Charts
-const charts = computed(() => ({
-  left: {
-    id: 'rolesChart',
-    type: 'bar',
-    title: 'Usuarios por rol',
-    data: {
-      labels: ['admin', 'editor', 'invitado'],
-      datasets: [{
-        label: 'Usuarios',
-        data: [
-          users.value.filter(u => u.rol === 'admin').length,
-          users.value.filter(u => u.rol === 'editor').length,
-          users.value.filter(u => u.rol === 'invitado').length
-        ],
-        backgroundColor: '#0d6efd'
-      }]
+const charts = computed(() => {
+  const adminCount = users.value.filter(u => u.rol === 'admin').length
+  const editorCount = users.value.filter(u => u.rol === 'editor').length
+  const invitadoCount = users.value.filter(u => u.rol === 'invitado').length
+  const activosCount = users.value.filter(u => u.is_active).length
+  const inactivosCount = users.value.filter(u => !u.is_active).length
+
+  console.log('Charts data loaded:', {
+    totalUsers: users.value.length,
+    adminCount,
+    editorCount,
+    invitadoCount,
+    activosCount,
+    inactivosCount
+  })
+
+  return {
+    left: {
+      id: 'rolesChart',
+      type: 'bar',
+      title: 'Usuarios por rol',
+      data: {
+        labels: ['Admin', 'Editor', 'Invitado'],
+        datasets: [{
+          label: 'Usuarios',
+          data: [adminCount, editorCount, invitadoCount],
+          backgroundColor: ['#0d6efd', '#198754', '#ffc107']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
     },
-    options: { responsive: true, plugins: { legend: { display: false } } }
-  },
-  right: {
-    id: 'loginChart',
-    type: 'line',
-    title: 'Historial de inicio de sesión',
-    data: {
-      labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'],
-      datasets: [{ label: 'Inicios de sesión', data: [12, 15, 9, 20, 18], borderColor: '#198754', fill: false }]
-    },
-    options: { responsive: true }
+    right: {
+      id: 'loginChart',
+      type: 'bar',
+      title: 'Usuarios activos vs inactivos',
+      data: {
+        labels: ['Activos', 'Inactivos'],
+        datasets: [{
+          label: 'Usuarios',
+          data: [activosCount, inactivosCount],
+          backgroundColor: ['#198754', '#dc3545']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
+    }
   }
-}))
+})
 
 // Tabla
 const table = computed(() => ({
   columns: [
     { key: 'first_name', label: 'Nombre' },
+    { key: 'last_name', label: 'Apellido' },
     { key: 'username', label: 'Usuario' },
     { key: 'email', label: 'Email' },
+    { key: 'telefono', label: 'Teléfono' },
     { key: 'rol', label: 'Rol' },
     { key: 'is_active', label: 'Estado' },
     { key: 'acciones', label: 'Acciones' }
@@ -176,7 +228,7 @@ const filteredUsers = computed(() => {
   return users.value.filter(u => u.rol === filterRole.value)
 })
 
-// Funciones
+// Funciones 
 async function fetchUsers() {
   loading.value = true
   error.value = ''
@@ -210,6 +262,7 @@ function closeForm() {
   selectedUser.value = null
 }
 
+// Función para manejar el envío del formulario
 async function handleSubmit(userData) {
   try {
     if (userData.id) {
@@ -233,6 +286,7 @@ async function handleSubmit(userData) {
   }
 }
 
+// Función eliminar usuario
 async function deleteUser(id) {
   if (confirm('¿Seguro que deseas eliminar este usuario?')) {
     try {
@@ -245,8 +299,29 @@ async function deleteUser(id) {
   }
 }
 
+// Función de exportación a Excel
 function onExport() {
-  alert('Exportar lista de usuarios - funcionalidad no implementada')
+  // Preparar los datos para exportar
+  const dataToExport = filteredUsers.value.map(user => ({
+    'Nombre': user.first_name,
+    'Apellido': user.last_name,
+    'Usuario': user.username,
+    'Email': user.email,
+    'Teléfono': user.telefono,
+    'Rol': user.rol,
+    'Estado': user.is_active ? 'Activo' : 'Inactivo'
+  }))
+
+  // Crear una nueva hoja de trabajo
+  const ws = XLSX.utils.json_to_sheet(dataToExport)
+
+  // Crear un nuevo libro de trabajo
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Usuarios')
+
+  // Generar el archivo y descargarlo
+  const fileName = `usuarios_${new Date().toISOString().split('T')[0]}.xlsx`
+  XLSX.writeFile(wb, fileName)
 }
 
 // Cargar datos al montar el componente
