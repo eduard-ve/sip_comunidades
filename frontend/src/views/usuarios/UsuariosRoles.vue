@@ -95,12 +95,6 @@ import '../../assets/css/UsuariosRoles.css'
 
 const roles = ['admin', 'editor', 'invitado']
 
-// Breadcrumbs
-const breadcrumbs = [
-  { label: 'Dashboard', to: '/dashboard' },
-  { label: 'Usuarios y Roles' }
-]
-
 // Estado reactivo
 const users = ref([])
 const loading = ref(false)
