@@ -5,7 +5,7 @@
   overflow: hidden;
   transition: background-color 0.3s ease;
 }
-
+/* Tema modo claro */
 .login-container:not(.dark-theme) {
   background: #ffffff;
 }
@@ -110,7 +110,7 @@
 }
 
 .login-container:not(.dark-theme) .right-panel {
-  background: #ffffff;
+  background: #eaeaea;
 }
 
 .login-card {
@@ -125,7 +125,7 @@
 }
 
 .login-container:not(.dark-theme) .login-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: #c3d9eb;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
