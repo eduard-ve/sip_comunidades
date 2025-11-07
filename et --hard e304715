@@ -1,0 +1,61 @@
+[33me304715[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m)[m solucion de conflictos
+[33mf434ee5[m Merge branch 'develop' of https://github.com/eduard-ve/sip_comunidades into develop
+[33m1348ad7[m encuestas
+[33m08382f0[m[33m ([m[1;31morigin/develop[m[33m)[m Merge branch 'develop' into feature/ajustes_sip
+[33me9df76e[m feat: implementar exportación a Excel y mejorar gestión de usuarios -Agregar campo de estado (Activo/Inactivo) al formulario de edición de usuarios. -Agregar columnas de Apellido y Teléfono a la tabla de usuarios. -Mejorar componente ChartPanel para actualización reactiva de gráficas con Chart.js. -Corregir gráficas para mostrar datos reales: usuarios por rol y usuarios activos vs inactivos -Agregar breadcrumbs faltantes en vista de usuarios. Instalar librería xlsx para exportación de datos.
+[33m9c040a1[m Agregar campo apellido tabla usuarios
+[33m19fb1e5[m La funcionalidad para editar el estado del usuario ha sido implementada exitosamente
+[33mf97f850[m Funcionalidad exportar lista de usuarios terminada, ok para pruebas
+[33mf712e51[m auditoria funcionalidades y encuesta crear
+[33m42565c4[m  cambios aplicados en auditoria con fontAwesome de iocnos
+[33mf988e01[m He reorganizado completamente el formulario de usuarios y individuo mejoró organización visual y el espaciado, optimizando el uso del espacio disponible
+[33m6e68665[m -Ajusté el z-index del dropdown-menu para que aparezca por encima de otros elementos. -Mejoré el espaciado y alineación del botón de usuario.
+[33m0d622d8[m feat: refactorizar botón dropdown de navbar para mostrar solo username
+[33mf1aa29f[m Merge branch 'develop' into feature/ajustes_sip
+[33m0f5fd5a[m iconos de auditoria front y backend en reportes/encuestas
+[33m3d94a01[m feat: Implementar sistema de autenticación y roles (RBAC) - Agregar Sidebarview con navegación por roles - Implementar store de autenticación con Vuex - Crear guards de rutas y directivas de rol - Configurar permisos por rol (Admin, Editor, Invitado) - Actualizar main.js y router - Agregar índices y layouts"
+[33me900e98[m feat: Rediseñar login con estilos modernos y profesionales - Glassmorphism, gradientes y animaciones - Validación de formulario mejorada - Mejor manejo de errores y accesibilidad - Diseño responsivo"
+[33m8235c3a[m "fix: Corregir serializers y viewset de catálogos
+[33m6e7874a[m feat: Corregir rutas URL del módulo social - Implementar CRUD completo para programas sociales - Crear datos iniciales de estados de programa
+[33mb94e6e5[m Ajuates en la vista consumir datos de bakend
+[33mea4afdc[m Ajustar el array tableColumns vista GestionPoblacional frontend
+[33m76508ff[m feat: agregar estadísticas dinámicas de población a tarjetas KPI, agregar endpoint backend GET /api/poblacion/stats/ para estadísticas de población
+[33maf96b25[m fix: integrar módulo de población frontend-backend. Ajustar nombres de campos de claves foráneas en formulario frontend para coincidir con backend. Agregar datos iniciales en fixtures para todos los catálogos de población.
+[33m5072ef5[m validaciones de id y editar reporte
+[33m4e5d67a[m conflictos resueltos
+[33m8bfa2c6[m Merge feature/integracion into develop: Backend-Frontend integration with authentication
+[33mf71a798[m Integrar Django + Vue.js con autenticación de usuarios - Configurar encabezados CORS para comunicación localhost:5173 ↔ localhost:8000 - Crear tres usuarios de prueba con diferentes roles (admin, editor, invitado) - Implementar funcionalidad de login con manejo de tokens - Agregar operaciones CRUD para gestión de usuarios - Resolver errores 403 Forbidden con permisos apropiados
+[33mb21bb04[m Configurar CORS para frontend en puerto 5174 y quitar campo título del formulario de reportes
+[33m48aabe0[m solucion de reportes agregar reporte
+[33m9d3d5b4[m conflicto resuelto
+[33m540072c[m cambios de reporte nuevo reporte
+[33md512cf2[m Finalizada feature de encuestas: migraciones, API y datos de prueba
+[33ma077cbd[m prubas tests ok
+[33m6d2acdd[m apps encuetas cree migraciones y nueva ruta lista para tests
+[33m415d1ee[m Permisos listos, panel admin agregado
+[33mcdaba70[m vistas y rutas configuradas
+[33m4bc5056[m serializer creado listo para pruebas
+[33md869d03[m models.py de la apps encuentas creada
+[33m96004e6[m conexion del backend del modulo reportes y salud aplicacion en main.js reportes vue, gestionsalud.vue setting
+[33m61f5b6d[m feat(social): fusiona módulo social tras resolución de conflictos
+[33m824ce76[m conflictos resueltos
+[33mce0726b[m Merge branch 'develop' into feature/social
+[33m1d9c4a7[m Corrige namespace en rutas y tests del módulo social
+[33m857edcf[m refactor(social): mejora la estructura del enrutamiento y simplifica las rutas
+[33m3a94823[m feat(social): implementar viewsets para gestión de programas y beneficiarios
+[33m87d98d6[m Agrega modelos y serializers del módulo social, ademas se aplicaron las migraciones del modulo social y poblacion (tests OK)
+[33mf307fdb[m panel admin ajustado
+[33m518fb4c[m Urls vistas modulo social  terminadas
+[33m6d956db[m modulos de salud y reportes
+[33mc45ac0f[m Modulo social vista beneficiorios.py
+[33m56f26c8[m modulo social Vista programas.py
+[33m2cd5532[m Serializers beneficios.py agregado
+[33m8904ce5[m Serializer programas.py agregado, verificar funcionamiento respectivo
+[33m092f7ba[m Modelo social creado, verificar y correr test
+[33m9c96d07[m auditoria front
+[33m8f43a20[m merge: integra módulo poblacional en rama develop
+[33mbd80c30[m[33m ([m[1;31morigin/feature/poblacional[m[33m)[m Test completados y rutas definidas de la app
+[33m4783ae7[m admin completado, modulos poblacion listo para aplicar las migraciones y realizar los respectivos tests verificando que si esta correcto la implementacion
+[33mb16fc1a[m Rutas agregadas app poblacion
+[33m1424f51[m Vistas catalogos, personas y relaciones completadas
+[33m0f7fc52[m Serializers relacion familiar agregado

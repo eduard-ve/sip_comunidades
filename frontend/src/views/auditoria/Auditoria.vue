@@ -220,8 +220,8 @@
       </div>
     </div>
 
-    <!-- Componente de tabla --> 
-    <AuditTable :events="events" @view-details="showDetails" /> 
+    <!-- Componente de tabla -->
+    <AuditTable :events="events" @view-details="showDetails" />
  
     <!-- Modal detalle --> 
     <div v-if="selectedEvent" class="audit-modal"> 
@@ -254,39 +254,39 @@
   </div> 
 </template> 
  
-<script setup> 
-import { ref, computed } from "vue" 
+<script setup>
+import { ref, computed } from "vue"
 import AuditTable from "../../components/comun/AuditTable.vue"
-import '../../assets/css/Auditoria.css' 
- 
-const events = ref([ 
-  { 
-    id: 1, 
-    module: "usuarios", 
-    user: "admin", 
-    action: "Creación de usuario", 
-    date: "2025-08-15", 
-    changes: { nombre: { old: "-", new: "Juan" }, rol: { old: "-", new: "Editor" } } 
-  }, 
-  { 
-    id: 2, 
-    module: "reportes", 
-    user: "soporte", 
-    action: "Eliminación de reporte", 
-    date: "2025-08-14", 
-    changes: { reporte: { old: "Reporte A", new: "-" } } 
-  }, 
-  { 
-    id: 3, 
-    module: "encuestas", 
-    user: "usuario1", 
-    action: "Modificación de encuesta", 
-    date: "2025-08-13", 
-    changes: { titulo: { old: "Encuesta 2024", new: "Encuesta 2025" } } 
-  } 
-]) 
- 
-const selectedEvent = ref(null) 
+import '../../assets/css/Auditoria.css'
+
+const events = ref([
+  {
+    id: 1,
+    module: "usuarios",
+    user: "admin",
+    action: "Creación de usuario",
+    date: "2025-08-15",
+    changes: { nombre: { old: "-", new: "Juan" }, rol: { old: "-", new: "Editor" } }
+  },
+  {
+    id: 2,
+    module: "reportes",
+    user: "soporte",
+    action: "Eliminación de reporte",
+    date: "2025-08-14",
+    changes: { reporte: { old: "Reporte A", new: "-" } }
+  },
+  {
+    id: 3,
+    module: "encuestas",
+    user: "usuario1",
+    action: "Modificación de encuesta",
+    date: "2025-08-13",
+    changes: { titulo: { old: "Encuesta 2024", new: "Encuesta 2025" } }
+  }
+])
+
+const selectedEvent = ref(null)
 
 // Filtro states
 const dropdownOpen = ref(false)
@@ -402,16 +402,16 @@ const filteredRecentActivity = computed(() => {
 })
 
 // Methods
-function exportExcel() { 
-  alert("Exportando a Excel...") 
-} 
- 
-function exportPdf() { 
-  alert("Exportando a PDF...") 
-} 
- 
-function showDetails(event) { 
-  selectedEvent.value = event 
+function exportExcel() {
+  alert("Exportando a Excel...")
+}
+
+function exportPdf() {
+  alert("Exportando a PDF...")
+}
+
+function showDetails(event) {
+  selectedEvent.value = event
 }
 
 function filterEvents(filter) {

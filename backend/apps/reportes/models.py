@@ -11,6 +11,9 @@ class ReporteSalud(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ['persona', 'tipo_reporte', 'fecha_reporte']
+
     def __str__(self):
         return f"Reporte Salud de {self.persona} - {self.tipo_reporte} ({self.fecha_reporte})"
 
@@ -29,6 +32,9 @@ class ReporteSocial(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ['persona', 'tipo_reporte', 'fecha_reporte']
+
     def __str__(self):
         return f"Reporte Social de {self.persona} - {self.tipo_reporte} ({self.fecha_reporte})"
 
@@ -46,6 +52,9 @@ class ReporteEncuestas(models.Model):
     generado_por = models.CharField(max_length=100, help_text="Usuario que generó el reporte")
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['persona', 'tipo_reporte', 'fecha_reporte']
 
     def __str__(self):
         return f"Reporte Encuestas de {self.persona} - {self.tipo_reporte} ({self.fecha_reporte})"

@@ -158,7 +158,6 @@ onMounted(async () => {
 async function saveReporte(newReporte) {
   try {
     console.log('Datos del reporte a guardar:', newReporte)
-
     // Determinar si es creación o edición
     const isEditing = editingReporte.value !== null
 
@@ -187,7 +186,11 @@ async function saveReporte(newReporte) {
       await storeMethod(editingReporte.value.id, newReporte)
     } else {
       await storeMethod(newReporte)
+
     }
+
+    console.log('Método del store a usar:', storeMethod.name)
+    await storeMethod(newReporte)
 
     // Recargar datos
     await Promise.all([
@@ -211,11 +214,13 @@ async function saveReporte(newReporte) {
       categoria: reporte.categoria
     }))
 
+
     alert(isEditing ? "Reporte actualizado con éxito" : "Reporte generado con éxito")
     closeForm()
   } catch (error) {
     console.error('Error al guardar reporte:', error)
     alert(`Error al ${editingReporte.value ? 'actualizar' : 'generar'} el reporte: ${error.response?.data?.error || error.response?.data?.detail || error.message}`)
+
   }
 }
 
