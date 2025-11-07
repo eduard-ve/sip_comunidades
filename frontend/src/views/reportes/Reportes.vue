@@ -159,6 +159,7 @@ async function saveReporte(newReporte) {
   try {
     console.log('Datos del reporte a guardar:', newReporte)
 
+<<<<<<< Updated upstream
     // Determinar si es creación o edición
     const isEditing = editingReporte.value !== null
 
@@ -187,7 +188,29 @@ async function saveReporte(newReporte) {
       await storeMethod(editingReporte.value.id, newReporte)
     } else {
       await storeMethod(newReporte)
+=======
+    // Determinar el tipo de reporte basado en el valor seleccionado
+    let storeMethod
+    if (newReporte.tipo_reporte === 'resumen_salud' || newReporte.tipo_reporte === 'indicadores_salud') {
+      storeMethod = reportesStore.createReporteSalud
+    } else if (newReporte.tipo_reporte === 'reporte_social' || newReporte.tipo_reporte === 'condiciones_sociales') {
+      storeMethod = reportesStore.createReporteSocial
+    } else if (newReporte.tipo_reporte === 'resultados_encuesta' || newReporte.tipo_reporte === 'analisis_encuesta') {
+      storeMethod = reportesStore.createReporteEncuestas
+    } else {
+      // Fallback: si no coincide exactamente, usar lógica anterior
+      if (newReporte.tipo_reporte.includes('salud')) {
+        storeMethod = reportesStore.createReporteSalud
+      } else if (newReporte.tipo_reporte.includes('social')) {
+        storeMethod = reportesStore.createReporteSocial
+      } else {
+        storeMethod = reportesStore.createReporteEncuestas
+      }
+>>>>>>> Stashed changes
     }
+
+    console.log('Método del store a usar:', storeMethod.name)
+    await storeMethod(newReporte)
 
     // Recargar datos
     await Promise.all([
@@ -211,11 +234,13 @@ async function saveReporte(newReporte) {
       categoria: reporte.categoria
     }))
 
+
     alert(isEditing ? "Reporte actualizado con éxito" : "Reporte generado con éxito")
     closeForm()
   } catch (error) {
     console.error('Error al guardar reporte:', error)
     alert(`Error al ${editingReporte.value ? 'actualizar' : 'generar'} el reporte: ${error.response?.data?.error || error.response?.data?.detail || error.message}`)
+
   }
 }
 

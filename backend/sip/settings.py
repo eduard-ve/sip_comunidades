@@ -48,10 +48,12 @@ INSTALLED_APPS = [
     'apps.usuarios',
     'apps.poblacion',
     'apps.salud',
+
     'apps.reportes',
     'apps.encuestas',
     'apps.social',
     'apps.auditoria',
+
 ]
 
 MIDDLEWARE = [
