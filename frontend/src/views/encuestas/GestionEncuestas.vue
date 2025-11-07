@@ -47,13 +47,21 @@
     </div>
   </div>
 
-  <!-- Modal para mostrar el enlace único (sin cambios) -->
+  <!-- Modal para mostrar el enlace único con botón copiar -->
   <div v-if="showLink" class="modal-backdrop">
     <div class="modal-card modal-link">
       <h5>Encuesta creada</h5>
       <div class="mb-2">Comparte este enlace con los usuarios:</div>
       <div class="mb-3">
-        <input :value="enlaceEncuesta" class="form-control" readonly />
+        <div class="input-group">
+          <input :value="enlaceEncuesta" class="form-control" readonly id="survey-link" />
+          <button class="btn btn-outline-primary" @click="copyToClipboard" id="copy-btn">
+            <i class="bi bi-clipboard"></i> Copiar
+          </button>
+        </div>
+      </div>
+      <div v-if="copySuccess" class="alert alert-success py-2 mb-3">
+        <i class="bi bi-check-circle"></i> ¡Enlace copiado al portapapeles!
       </div>
       <button class="btn btn-primary btn-sm" @click="showLink = false">Cerrar</button>
     </div>
@@ -72,6 +80,7 @@ const showLink = ref(false)
 const showOptions = ref(false) // NUEVO: Estado para el modal de opciones
 const enlaceEncuesta = ref("")
 const lastSavedSurveyId = ref(null) // NUEVO: Para guardar el ID de la última encuesta guardada
+const copySuccess = ref(false) // Para mostrar notificación de copiado
 
 // Datos de la interfaz
 const kpis = ref([
@@ -117,15 +126,34 @@ const selectedStatus = ref("")
 
 // Ciclo de vida: Cargar datos desde el backend al montar el componente
 onMounted(async () => {
+  await loadSurveys()
+})
+
+async function loadSurveys() {
   try {
+    const token = localStorage.getItem('access_token')
+    if (!token) {
+      console.warn('No hay token de autenticación - usando datos de muestra')
+      // Fallback a datos de muestra cuando no hay token
+      table.value.rows = [
+        { titulo: "Satisfacción clientes", estado: "activa", descripcion: "Encuesta sobre satisfacción", preguntas: [], fecha: "2025-08-10", respuestas: 120 },
+        { titulo: "Evaluación interna", estado: "cerrada", descripcion: "Evaluación de procesos internos", preguntas: [], fecha: "2025-07-22", respuestas: 80 },
+        { titulo: "Clima laboral", estado: "activa", descripcion: "Encuesta sobre clima laboral", preguntas: [], fecha: "2025-08-05", respuestas: 200 },
+        { titulo: "Mejoras 2026", estado: "borrador", descripcion: "Sugerencias para mejoras", preguntas: [], fecha: "-", respuestas: 0 }
+      ]
+      return
+    }
+
     const response = await fetch('/api/encuestas/', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     })
 
     if (response.ok) {
       const encuestas = await response.json()
+      console.log('Encuestas cargadas desde backend:', encuestas.length)
       table.value.rows = encuestas.map(encuesta => ({
         id: encuesta.id_encuesta,
         titulo: encuesta.titulo,
@@ -135,13 +163,26 @@ onMounted(async () => {
         fecha: new Date(encuesta.fecha_creacion).toISOString().slice(0, 10),
         respuestas: 0 // TODO: Calcular desde respuestas
       }))
+      console.log('Tabla actualizada con', table.value.rows.length, 'encuestas')
       saveToLocalStorage()
+    } else if (response.status === 401) {
+      console.warn('Token expirado o inválido - usando datos de muestra')
+      // Fallback a datos de muestra
+      table.value.rows = [
+        { titulo: "Satisfacción clientes", estado: "activa", descripcion: "Encuesta sobre satisfacción", preguntas: [], fecha: "2025-08-10", respuestas: 120 },
+        { titulo: "Evaluación interna", estado: "cerrada", descripcion: "Evaluación de procesos internos", preguntas: [], fecha: "2025-07-22", respuestas: 80 },
+        { titulo: "Clima laboral", estado: "activa", descripcion: "Encuesta sobre clima laboral", preguntas: [], fecha: "2025-08-05", respuestas: 200 },
+        { titulo: "Mejoras 2026", estado: "borrador", descripcion: "Sugerencias para mejoras", preguntas: [], fecha: "-", respuestas: 0 }
+      ]
     } else {
-      // Fallback a localStorage si falla la API
-      const saved = localStorage.getItem('encuestas')
-      if (saved) {
-        table.value.rows = JSON.parse(saved)
-      }
+      console.error('Error del servidor:', response.status)
+      // Fallback a datos de muestra
+      table.value.rows = [
+        { titulo: "Satisfacción clientes", estado: "activa", descripcion: "Encuesta sobre satisfacción", preguntas: [], fecha: "2025-08-10", respuestas: 120 },
+        { titulo: "Evaluación interna", estado: "cerrada", descripcion: "Evaluación de procesos internos", preguntas: [], fecha: "2025-07-22", respuestas: 80 },
+        { titulo: "Clima laboral", estado: "activa", descripcion: "Encuesta sobre clima laboral", preguntas: [], fecha: "2025-08-05", respuestas: 200 },
+        { titulo: "Mejoras 2026", estado: "borrador", descripcion: "Sugerencias para mejoras", preguntas: [], fecha: "-", respuestas: 0 }
+      ]
     }
   } catch (error) {
     console.error('Error cargando encuestas:', error)
@@ -153,7 +194,7 @@ onMounted(async () => {
       { titulo: "Mejoras 2026", estado: "borrador", descripcion: "Sugerencias para mejoras", preguntas: [], fecha: "-", respuestas: 0 }
     ]
   }
-})
+}
 
 // Funciones de lógica
 function saveToLocalStorage() {
@@ -164,65 +205,19 @@ function createSurvey() {
   showForm.value = true
 }
 
-async function saveSurvey(nuevaEncuesta) {
-  try {
-    // Validar datos básicos
-    if (!nuevaEncuesta.titulo?.trim()) {
-      alert('El título de la encuesta es obligatorio')
-      return
-    }
+function saveSurvey(nuevaEncuesta) {
+  // Generar un ID único simple
+  const id = Date.now().toString()
+  nuevaEncuesta.id = id
+  table.value.rows.push(nuevaEncuesta)
+  saveToLocalStorage()
 
-    if (!nuevaEncuesta.preguntas?.length) {
-      alert('La encuesta debe tener al menos una pregunta')
-      return
-    }
+  // Guardar el ID de la encuesta recién creada
+  lastSavedSurveyId.value = id
 
-    // Preparar datos para enviar al backend
-    const surveyData = {
-      titulo: nuevaEncuesta.titulo.trim(),
-      descripcion: nuevaEncuesta.descripcion?.trim() || '',
-      estado: nuevaEncuesta.estado,
-      preguntas: nuevaEncuesta.preguntas.map((pregunta, index) => ({
-        texto_pregunta: pregunta.texto?.trim(),
-        tipo: pregunta.tipo === 'texto' ? 'abierta' : pregunta.tipo === 'opcion' ? 'opcion_multiple' : pregunta.tipo,
-        orden: index + 1,
-        opciones: pregunta.tipo === 'opcion' ? [] : [] // Por ahora vacío, se puede expandir
-      }))
-    }
-
-    // Enviar al backend
-    const response = await fetch('/api/encuestas/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}` // Asumiendo que hay token
-      },
-      body: JSON.stringify(surveyData)
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.detail || 'Error al guardar la encuesta')
-    }
-
-    const savedSurvey = await response.json()
-
-    // Agregar a la tabla local con el token
-    nuevaEncuesta.id = savedSurvey.id_encuesta
-    nuevaEncuesta.token = savedSurvey.token
-    table.value.rows.push(nuevaEncuesta)
-    saveToLocalStorage()
-
-    // Guardar el ID de la encuesta recién creada
-    lastSavedSurveyId.value = savedSurvey.id_encuesta
-
-    // Ocultar el formulario y mostrar el modal de opciones
-    showForm.value = false
-    showOptions.value = true
-  } catch (error) {
-    console.error('Error guardando encuesta:', error)
-    alert(`Error al guardar la encuesta: ${error.message}`)
-  }
+  // Ocultar el formulario y mostrar el modal de opciones
+  showForm.value = false
+  showOptions.value = true
 }
 
 function cancelSurvey() {
@@ -232,14 +227,35 @@ function cancelSurvey() {
 // Función para generar y mostrar el enlace
 function generateLink() {
   showOptions.value = false // Oculta el modal de opciones
-  // Usar el token de la encuesta guardada en lugar del ID
-  const survey = table.value.rows.find(s => s.id === lastSavedSurveyId.value)
-  if (survey && survey.token) {
-    enlaceEncuesta.value = `${window.location.origin}/encuesta/${survey.token}`
-  } else {
-    enlaceEncuesta.value = `${window.location.origin}/encuesta/${lastSavedSurveyId.value}`
-  }
+  // Usar el ID de la encuesta guardada
+  enlaceEncuesta.value = `${window.location.origin}/encuesta/${lastSavedSurveyId.value}`
+  copySuccess.value = false // Reset copy success state
   showLink.value = true // Muestra el modal del enlace
+}
+
+// Función para copiar enlace al portapapeles
+async function copyToClipboard() {
+  try {
+    await navigator.clipboard.writeText(enlaceEncuesta.value)
+    copySuccess.value = true
+    // Ocultar notificación después de 3 segundos
+    setTimeout(() => {
+      copySuccess.value = false
+    }, 3000)
+  } catch (err) {
+    console.error('Error copiando al portapapeles:', err)
+    // Fallback para navegadores que no soportan clipboard API
+    const textArea = document.createElement('textarea')
+    textArea.value = enlaceEncuesta.value
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textArea)
+    copySuccess.value = true
+    setTimeout(() => {
+      copySuccess.value = false
+    }, 3000)
+  }
 }
 
 // Función para generar PDF
@@ -250,7 +266,7 @@ async function generatePdf() {
     // Obtener los datos completos de la encuesta desde el backend
     const response = await fetch(`/api/encuestas/${lastSavedSurveyId.value}/`, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
       }
     })
 

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'apps.reportes',
     'apps.encuestas',
     'apps.social',
+    'apps.auditoria',
 ]
 
 MIDDLEWARE = [

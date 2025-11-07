@@ -71,24 +71,6 @@
                     </div>
                   </div>
 
-                  <!-- Pregunta de escala -->
-                  <div v-else-if="pregunta.tipo === 'escala'" class="mb-3">
-                    <div class="scale-options">
-                      <div v-for="opcion in pregunta.opciones" :key="opcion.id_opcion" class="form-check form-check-inline">
-                        <input
-                          v-model="respuestas[pregunta.id_pregunta]"
-                          :value="opcion.id_opcion"
-                          class="form-check-input"
-                          type="radio"
-                          :name="'pregunta_' + pregunta.id_pregunta"
-                          required
-                        />
-                        <label class="form-check-label">
-                          {{ opcion.texto_opcion }} ({{ opcion.valor }})
-                        </label>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 <div class="d-flex justify-content-between">

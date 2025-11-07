@@ -54,6 +54,7 @@ class Respuesta(models.Model):
     id_respuesta = models.BigAutoField(primary_key=True)
     encuesta = models.ForeignKey(Encuesta, related_name='respuestas', on_delete=models.CASCADE)
     pregunta = models.ForeignKey(Pregunta, related_name='respuestas', on_delete=models.CASCADE)
+    persona = models.ForeignKey('poblacion.Persona', on_delete=models.CASCADE, related_name='respuestas_encuestas', null=True, blank=True)
     opcion = models.ForeignKey(Opcion, blank=True, null=True, on_delete=models.SET_NULL)
     respuesta_texto = models.TextField(blank=True, null=True)
     fecha_respuesta = models.DateTimeField(auto_now_add=True)

@@ -22,7 +22,7 @@ def create_test_users():
             last_name='Sistema',
             rol='admin'
         )
-        print(f'✓ Superusuario creado: {admin.username} (password: admin123)')
+        print(f'[OK] Superusuario creado: {admin.username} (password: admin123)')
 
     # Crear usuario editor
     if not Usuario.objects.filter(username='editor').exists():
@@ -34,7 +34,7 @@ def create_test_users():
             last_name='Sistema',
             rol='editor'
         )
-        print(f'✓ Usuario editor creado: {editor.username} (password: editor123)')
+        print(f'[OK] Usuario editor creado: {editor.username} (password: editor123)')
 
     # Crear usuario invitado
     if not Usuario.objects.filter(username='invitado').exists():
@@ -46,7 +46,7 @@ def create_test_users():
             last_name='Sistema',
             rol='invitado'
         )
-        print(f'✓ Usuario invitado creado: {invitado.username} (password: invitado123)')
+        print(f'[OK] Usuario invitado creado: {invitado.username} (password: invitado123)')
 
     print('\nCredenciales de prueba:')
     print('=' * 40)
