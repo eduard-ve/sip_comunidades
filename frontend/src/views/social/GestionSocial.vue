@@ -161,9 +161,27 @@
       </div>
     </template>
 
-    <!-- Mapas de cobertura de programas -->
+    <!-- Gráfico de distribución por tipo de actividad -->
     <template #left>
-      <MapPanel :programas="mapProgramas" />
+      <ChartPanel
+        chart-id="actividadesTipoChart"
+        type="doughnut"
+        :data="actividadesTipoData"
+        :options="{
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                padding: 20,
+                usePointStyle: true
+              }
+            }
+          }
+        }"
+      >
+        <template #title>Distribución por Tipo de Actividad</template>
+      </ChartPanel>
     </template>
 
     <!-- ChartPanel de estadísticas de impacto social -->
@@ -172,7 +190,51 @@
         chart-id="impactoSocialChart"
         type="bar"
         :data="impactoData"
-        :options="{ responsive: true }"
+        :options="{
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              titleColor: '#fff',
+              bodyColor: '#fff',
+              callbacks: {
+                label: function(context) {
+                  return context.parsed.y + ' beneficiarios'
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0,0,0,0.1)'
+              },
+              ticks: {
+                color: '#666'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: '#666',
+                maxRotation: 45,
+                minRotation: 45
+              }
+            }
+          },
+          elements: {
+            bar: {
+              borderRadius: 4,
+              borderSkipped: false
+            }
+          }
+        }"
       >
         <template #title>Estadísticas de impacto social</template>
       </ChartPanel>
@@ -494,7 +556,65 @@ const kpis = ref([
 const actividades = ref([])
 const impactoData = ref({
   labels: [],
-  datasets: [{ label: 'Beneficiarios', data: [], backgroundColor: '#0d6efd' }]
+  datasets: [{
+    label: 'Beneficiarios',
+    data: [],
+    backgroundColor: [
+      '#007bff', // Azul
+      '#28a745', // Verde
+      '#ffc107', // Amarillo
+      '#dc3545', // Rojo
+      '#6f42c1', // Morado
+      '#fd7e14', // Naranja
+      '#20c997', // Verde agua
+      '#e83e8c', // Rosa
+      '#17a2b8', // Cyan
+      '#6c757d'  // Gris
+    ],
+    borderColor: [
+      '#0056b3', // Azul oscuro
+      '#1e7e34', // Verde oscuro
+      '#d39e00', // Amarillo oscuro
+      '#bd2130', // Rojo oscuro
+      '#5a2d82', // Morado oscuro
+      '#e8680f', // Naranja oscuro
+      '#17a2b8', // Verde agua oscuro
+      '#c2185b', // Rosa oscuro
+      '#117a8b', // Cyan oscuro
+      '#545b62'  // Gris oscuro
+    ],
+    borderWidth: 2,
+    hoverBackgroundColor: [
+      '#3395ff', // Azul claro
+      '#5cb85c', // Verde claro
+      '#ffdb4d', // Amarillo claro
+      '#ff6b75', // Rojo claro
+      '#9c6ade', // Morado claro
+      '#ff8c42', // Naranja claro
+      '#6dd5c3', // Verde agua claro
+      '#ff6b9d', // Rosa claro
+      '#5bc0de', // Cyan claro
+      '#9ca3a7'  // Gris claro
+    ]
+  }]
+})
+const actividadesTipoData = ref({
+  labels: [],
+  datasets: [{
+    label: 'Actividades',
+    data: [],
+    backgroundColor: [
+      '#28a745', // Verde para Cultural
+      '#007bff', // Azul para Deportiva
+      '#ffc107', // Amarillo para Educativa
+      '#dc3545', // Rojo para Comunitaria
+      '#6f42c1', // Morado para otros tipos
+      '#fd7e14', // Naranja para otros tipos
+      '#20c997', // Verde agua para otros tipos
+      '#e83e8c'  // Rosa para otros tipos
+    ],
+    borderWidth: 2
+  }]
 })
 
 const tableColumns = [
@@ -704,10 +824,26 @@ async function loadActividadesComunitarias() {
     actividadesComunitarias.value = response.data
     console.log('Actividades comunitarias cargadas:', actividadesComunitarias.value.length, 'elementos')
     console.log('Primeras actividades:', actividadesComunitarias.value.slice(0, 2))
+
+    // Actualizar gráfico de distribución por tipo
+    updateActividadesTipoChart()
   } catch (err) {
     console.error('Error loading actividades comunitarias:', err)
     actividadesComunitarias.value = []
   }
+}
+
+function updateActividadesTipoChart() {
+  // Contar actividades por tipo
+  const tipoCount = {}
+  actividadesComunitarias.value.forEach(actividad => {
+    const tipoNombre = actividad.tipo_actividad?.nombre || 'Sin tipo'
+    tipoCount[tipoNombre] = (tipoCount[tipoNombre] || 0) + 1
+  })
+
+  // Actualizar datos del gráfico
+  actividadesTipoData.value.labels = Object.keys(tipoCount)
+  actividadesTipoData.value.datasets[0].data = Object.values(tipoCount)
 }
 
 async function buscarPersonaPorCedula() {
@@ -753,6 +889,7 @@ onMounted(async () => {
 
     // Cargar actividades comunitarias primero para asegurar que estén disponibles
     await loadActividadesComunitarias()
+    updateActividadesTipoChart()
 
     // Luego cargar el resto de datos
     await Promise.all([
