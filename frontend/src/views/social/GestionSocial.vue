@@ -36,21 +36,51 @@
           </button>
         </div>
         <div class="row">
-          <div v-for="autoridad in autoridadesActivas" :key="autoridad.id" class="col-md-6 mb-2">
-            <div class="card">
-              <div class="card-body p-2">
-                <h6 class="card-title mb-1">{{ autoridad.persona.nombre_completo }}</h6>
-                <p class="card-text small mb-1">
-                  <strong>Rol:</strong> {{ autoridad.rol.nombre }}<br>
-                  <strong>Tipo:</strong> {{ autoridad.tipo_autoridad.nombre }}<br>
-                  <strong>Contacto:</strong> {{ autoridad.telefono_contacto || 'N/A' }}
-                </p>
-                <div class="d-flex gap-1">
-                  <button class="btn btn-outline-primary btn-sm" @click="editAutoridad(autoridad)">
-                    <i class="bi bi-pencil"></i>
+          <div v-for="autoridad in autoridadesActivas" :key="autoridad.id" class="col-lg-4 col-md-6 mb-3">
+            <div class="card border-primary shadow-sm h-100">
+              <div class="card-header bg-primary text-white d-flex align-items-center">
+                <i class="bi bi-person-badge-fill me-2"></i>
+                <span class="fw-bold">{{ autoridad.rol.nombre }}</span>
+              </div>
+              <div class="card-body">
+                <h6 class="card-title text-primary mb-2">
+                  <i class="bi bi-person-circle me-1"></i>
+                  {{ autoridad.persona.nombre_completo }}
+                </h6>
+                <div class="row g-2">
+                  <div class="col-12">
+                    <span class="badge bg-info mb-2">
+                      <i class="bi bi-tag-fill me-1"></i>
+                      {{ autoridad.tipo_autoridad.nombre }}
+                    </span>
+                  </div>
+                  <div class="col-12">
+                    <small class="text-muted d-block">
+                      <i class="bi bi-calendar-event me-1"></i>
+                      Desde: {{ new Date(autoridad.fecha_inicio_mandato).toLocaleDateString() }}
+                    </small>
+                  </div>
+                  <div class="col-12">
+                    <small class="text-muted d-block">
+                      <i class="bi bi-telephone me-1"></i>
+                      {{ autoridad.telefono_contacto || 'Sin teléfono' }}
+                    </small>
+                  </div>
+                  <div class="col-12">
+                    <small class="text-muted d-block">
+                      <i class="bi bi-envelope me-1"></i>
+                      {{ autoridad.email_contacto || 'Sin email' }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer bg-light">
+                <div class="d-flex gap-1 justify-content-end">
+                  <button class="btn btn-outline-primary btn-sm" @click="editAutoridad(autoridad)" title="Editar">
+                    <i class="bi bi-pencil-square"></i>
                   </button>
-                  <button class="btn btn-outline-danger btn-sm" @click="deleteAutoridad(autoridad)">
-                    <i class="bi bi-trash"></i>
+                  <button class="btn btn-outline-danger btn-sm" @click="deleteAutoridad(autoridad)" title="Eliminar">
+                    <i class="bi bi-trash3"></i>
                   </button>
                 </div>
               </div>
@@ -67,22 +97,61 @@
           </button>
         </div>
         <div class="row">
-          <div v-for="actividad in actividadesComunitarias" :key="actividad.id" class="col-md-6 mb-2">
-            <div class="card">
-              <div class="card-body p-2">
-                <h6 class="card-title mb-1">{{ actividad.titulo }}</h6>
-                <p class="card-text small mb-1">
-                  <strong>Tipo:</strong> {{ actividad.tipo_actividad.nombre }}<br>
-                  <strong>Fecha:</strong> {{ new Date(actividad.fecha_inicio).toLocaleDateString() }}<br>
-                  <strong>Asistentes:</strong> {{ actividad.asistentes_confirmados }}/{{ actividad.capacidad_maxima || '∞' }}<br>
-                  <strong>Organizador:</strong> {{ actividad.organizador || 'No especificado' }}
-                </p>
-                <div class="d-flex gap-1">
-                  <button class="btn btn-outline-primary btn-sm" @click="editActividad(actividad)">
-                    <i class="bi bi-pencil"></i>
+          <div v-for="actividad in actividadesComunitarias" :key="actividad.id" class="col-lg-4 col-md-6 mb-3">
+            <div class="card border-success shadow-sm h-100">
+              <div class="card-header bg-success text-white d-flex align-items-center">
+                <i class="bi bi-calendar-event-fill me-2"></i>
+                <span class="fw-bold">{{ actividad.tipo_actividad.nombre }}</span>
+                <span class="badge bg-light text-success ms-auto">{{ actividad.estado.nombre }}</span>
+              </div>
+              <div class="card-body">
+                <h6 class="card-title text-success mb-2">
+                  <i class="bi bi-flag-fill me-1"></i>
+                  {{ actividad.titulo }}
+                </h6>
+                <div class="row g-2">
+                  <div class="col-12">
+                    <small class="text-muted d-block">
+                      <i class="bi bi-calendar-date me-1"></i>
+                      {{ new Date(actividad.fecha_inicio).toLocaleDateString() }}
+                      <span v-if="actividad.fecha_fin" class="ms-2">
+                        - {{ new Date(actividad.fecha_fin).toLocaleDateString() }}
+                      </span>
+                    </small>
+                  </div>
+                  <div class="col-12">
+                    <small class="text-muted d-block">
+                      <i class="bi bi-geo-alt me-1"></i>
+                      {{ actividad.ubicacion || 'Ubicación no especificada' }}
+                    </small>
+                  </div>
+                  <div class="col-6">
+                    <div class="text-center p-2 bg-light rounded">
+                      <div class="fw-bold text-success">{{ actividad.asistentes_confirmados }}</div>
+                      <small class="text-muted">Confirmados</small>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="text-center p-2 bg-light rounded">
+                      <div class="fw-bold text-info">{{ actividad.capacidad_maxima || '∞' }}</div>
+                      <small class="text-muted">Capacidad</small>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <small class="text-muted d-block">
+                      <i class="bi bi-person me-1"></i>
+                      <strong>Organizador:</strong> {{ actividad.organizador || 'No especificado' }}
+                    </small>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer bg-light">
+                <div class="d-flex gap-1 justify-content-end">
+                  <button class="btn btn-outline-success btn-sm" @click="editActividad(actividad)" title="Editar">
+                    <i class="bi bi-pencil-square"></i>
                   </button>
-                  <button class="btn btn-outline-danger btn-sm" @click="deleteActividad(actividad)">
-                    <i class="bi bi-trash"></i>
+                  <button class="btn btn-outline-danger btn-sm" @click="deleteActividad(actividad)" title="Eliminar">
+                    <i class="bi bi-trash3"></i>
                   </button>
                 </div>
               </div>
@@ -107,13 +176,6 @@
       >
         <template #title>Estadísticas de impacto social</template>
       </ChartPanel>
-    </template>
-
-    <!-- Tabla de beneficiarios por programa -->
-    <template #table-footer>
-      <div class="mt-3">
-        <h6>Beneficiarios por programa</h6>
-      </div>
     </template>
   </BaseModule>
 
