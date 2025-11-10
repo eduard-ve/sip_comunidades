@@ -79,7 +79,8 @@
                 <p class="card-text small mb-1">
                   <strong>Tipo:</strong> {{ actividad.tipo_actividad.nombre }}<br>
                   <strong>Fecha:</strong> {{ new Date(actividad.fecha_inicio).toLocaleDateString() }}<br>
-                  <strong>Asistentes:</strong> {{ actividad.asistentes_confirmados }}/{{ actividad.capacidad_maxima || '∞' }}
+                  <strong>Asistentes:</strong> {{ actividad.asistentes_confirmados }}/{{ actividad.capacidad_maxima || '∞' }}<br>
+                  <strong>Organizador:</strong> {{ actividad.organizador || 'No especificado' }}
                 </p>
                 <div class="d-flex gap-1">
                   <button class="btn btn-outline-primary btn-sm" @click="editActividad(actividad)">
@@ -205,7 +206,7 @@
 
         <!-- Información de la persona encontrada -->
         <div v-if="personaSeleccionada" class="alert alert-success mb-3">
-          <h6 class="alert-heading mb-2">✅ Persona Encontrada</h6>
+          <h6 class="alert-heading mb-2"> Persona Encontrada</h6>
           <p class="mb-1"><strong>Nombre:</strong> {{ personaSeleccionada.nombre_completo }}</p>
           <p class="mb-1"><strong>ID:</strong> {{ personaSeleccionada.numero_identificacion }}</p>
           <p class="mb-0"><strong>Tipo ID:</strong> {{ personaSeleccionada.tipo_identificacion }}</p>
@@ -549,9 +550,13 @@ async function loadActividadesSociales() {
     kpis.value[2].value = 0
   }
 
-  // Siempre mostrar actividades comunitarias como respaldo
+  // Siempre mostrar actividades comunitarias como respaldo principal
   if (actividadesComunitarias.value.length > 0) {
     actividades.value = actividadesComunitarias.value.map(act => act.titulo)
+    kpis.value[2].value = actividades.value.length
+  } else {
+    // Si no hay actividades comunitarias, intentar usar las sociales
+    actividades.value = actividades.value || []
     kpis.value[2].value = actividades.value.length
   }
 }
@@ -689,6 +694,9 @@ onMounted(async () => {
     ])
     console.log('Tipos y estados cargados:', tiposActividad.value.length, estadosActividad.value.length)
 
+    // Cargar actividades comunitarias primero para asegurar que estén disponibles
+    await loadActividadesComunitarias()
+
     // Luego cargar el resto de datos
     await Promise.all([
       loadProgramasSociales(),
@@ -698,8 +706,7 @@ onMounted(async () => {
       loadAutoridadesComunitarias(),
       loadTiposAutoridad(),
       loadRolesAutoridad(),
-      loadPersonasDisponibles(),
-      loadActividadesComunitarias()
+      loadPersonasDisponibles()
     ])
   } catch (error) {
     console.error('Error en carga inicial:', error)
@@ -707,6 +714,7 @@ onMounted(async () => {
   console.log('Carga de datos completada')
   console.log('Estado final - tiposActividad:', tiposActividad.value)
   console.log('Estado final - estadosActividad:', estadosActividad.value)
+  console.log('Actividades comunitarias cargadas:', actividadesComunitarias.value.length)
 })
 
 // Funciones del modal
