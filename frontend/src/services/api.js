@@ -113,5 +113,22 @@ export const poblacionService = {
     createCoberturaPrograma: (coberturaData) => api.post('/social/coberturas/', coberturaData),
     updateCoberturaPrograma: (id, coberturaData) => api.put(`/social/coberturas/${id}/`, coberturaData),
     deleteCoberturaPrograma: (id) => api.delete(`/social/coberturas/${id}/`),
+
+    // Autoridades comunitarias
+    getTiposAutoridad: () => api.get('/social/tipos-autoridad/'),
+    createTipoAutoridad: (tipoData) => api.post('/social/tipos-autoridad/', tipoData),
+    updateTipoAutoridad: (id, tipoData) => api.put(`/social/tipos-autoridad/${id}/`, tipoData),
+    deleteTipoAutoridad: (id) => api.delete(`/social/tipos-autoridad/${id}/`),
+
+    getRolesAutoridad: () => api.get('/social/roles-autoridad/'),
+    createRolAutoridad: (rolData) => api.post('/social/roles-autoridad/', rolData),
+    updateRolAutoridad: (id, rolData) => api.put(`/social/roles-autoridad/${id}/`, rolData),
+    deleteRolAutoridad: (id) => api.delete(`/social/roles-autoridad/${id}/`),
+
+    getAutoridadesComunitarias: () => api.get('/social/autoridades/'),
+    createAutoridadComunitaria: (autoridadData) => api.post('/social/autoridades/', autoridadData),
+    updateAutoridadComunitaria: (id, autoridadData) => api.put(`/social/autoridades/${id}/`, autoridadData),
+    deleteAutoridadComunitaria: (id) => api.delete(`/social/autoridades/${id}/`),
+    buscarPersonaPorCedula: (numeroIdentificacion) => api.get(`/social/autoridades/buscar-persona/?numero_identificacion=${numeroIdentificacion}`),
   }
   export default api

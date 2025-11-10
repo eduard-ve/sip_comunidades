@@ -6,6 +6,11 @@ from .views.beneficiarios import (
     ActividadSocialViewSet,
     CoberturaProgramaViewSet
 )
+from .views.autoridades import (
+    TipoAutoridadViewSet,
+    RolAutoridadViewSet,
+    AutoridadComunitariaViewSet
+)
 
 # Configuración del router para las vistas del módulo social
 router = DefaultRouter()
@@ -14,6 +19,9 @@ router.register(r'programas', ProgramaSocialViewSet, basename='programa')
 router.register(r'beneficiarios', ProgramaBeneficiarioViewSet, basename='beneficiario')
 router.register(r'actividades', ActividadSocialViewSet, basename='actividad')
 router.register(r'coberturas', CoberturaProgramaViewSet, basename='cobertura')
+router.register(r'tipos-autoridad', TipoAutoridadViewSet, basename='tipo_autoridad')
+router.register(r'roles-autoridad', RolAutoridadViewSet, basename='rol_autoridad')
+router.register(r'autoridades', AutoridadComunitariaViewSet, basename='autoridad')
 
 # Definición de las URLs del módulo social con namespace
 urlpatterns = [

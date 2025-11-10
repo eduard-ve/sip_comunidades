@@ -77,7 +77,7 @@
               class="btn btn-primary btn-lg w-100 mb-3"
               :disabled="loading || !username || !password"
             >
-              <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              <output v-if="loading" class="spinner-border spinner-border-sm me-2" aria-live="polite"></output>
               <i v-else class="bi bi-box-arrow-in-right me-2"></i>
               {{ loading ? 'Signing in...' : 'Iniciar sesión' }}
             </button>
@@ -132,20 +132,20 @@ const isFormValid = computed(() => {
 
 // Cambiar tema según preferencia guardada en localStorage
 onMounted(() => {
-  const savedTheme = localStorage.getItem('theme');
+  const savedTheme = globalThis.localStorage.getItem('theme');
   if (savedTheme) {
     isDarkTheme.value = savedTheme === 'dark';
   } else {
     // Tema por defecto oscuro
     isDarkTheme.value = true;
-    localStorage.setItem('theme', 'dark');
+    globalThis.localStorage.setItem('theme', 'dark');
   }
 });
 
 // Alternar tema claro/oscuro
 function toggleTheme() {
   isDarkTheme.value = !isDarkTheme.value;
-  localStorage.setItem('theme', isDarkTheme.value ? 'dark' : 'light');
+  globalThis.localStorage.setItem('theme', isDarkTheme.value ? 'dark' : 'light');
 }
 
 // Mostrar formulario de login

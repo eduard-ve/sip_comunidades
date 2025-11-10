@@ -2,6 +2,54 @@ from django.db import models
 from apps.poblacion.models.personas import Persona
 from apps.usuarios.models import Usuario
 
+# Constantes para textos repetitivos
+VERBOSE_NAME_DESCRIPCION = "Descripción"
+
+# Modelos para gestión de autoridades y líderes comunitarios
+class TipoAutoridad(models.Model):
+    nombre = models.CharField(max_length=100, unique=True, verbose_name="Tipo de Autoridad")
+    descripcion = models.TextField(blank=True, verbose_name=VERBOSE_NAME_DESCRIPCION)
+
+    class Meta:
+        verbose_name = "Tipo de Autoridad"
+        verbose_name_plural = "Tipos de Autoridad"
+
+    def __str__(self):
+        return self.nombre
+
+
+class RolAutoridad(models.Model):
+    nombre = models.CharField(max_length=100, unique=True, verbose_name="Rol")
+    descripcion = models.TextField(blank=True, verbose_name=VERBOSE_NAME_DESCRIPCION)
+
+    class Meta:
+        verbose_name = "Rol de Autoridad"
+        verbose_name_plural = "Roles de Autoridad"
+
+    def __str__(self):
+        return self.nombre
+
+
+class AutoridadComunitaria(models.Model):
+    persona = models.OneToOneField(Persona, on_delete=models.CASCADE, verbose_name="Persona")
+    tipo_autoridad = models.ForeignKey(TipoAutoridad, on_delete=models.PROTECT, verbose_name="Tipo de Autoridad")
+    rol = models.ForeignKey(RolAutoridad, on_delete=models.PROTECT, verbose_name="Rol")
+    fecha_inicio_mandato = models.DateField(verbose_name="Fecha Inicio Mandato")
+    fecha_fin_mandato = models.DateField(null=True, blank=True, verbose_name="Fecha Fin Mandato")
+    telefono_contacto = models.CharField(max_length=20, blank=True, verbose_name="Teléfono de Contacto")
+    email_contacto = models.EmailField(blank=True, verbose_name="Email de Contacto")
+    observaciones = models.TextField(blank=True, verbose_name="Observaciones")
+    activo = models.BooleanField(default=True, verbose_name="Activo")
+
+    class Meta:
+        verbose_name = "Autoridad Comunitaria"
+        verbose_name_plural = "Autoridades Comunitarias"
+        ordering = ['persona__primer_apellido', 'persona__primer_nombre']
+
+    def __str__(self):
+        return f"{self.persona} - {self.rol} ({self.tipo_autoridad})"
+
+
 # Modelo para gestionar programas sociales y sus beneficiarios
 class EstadoPrograma(models.Model):
     nombre = models.CharField(max_length=50, unique=True)
