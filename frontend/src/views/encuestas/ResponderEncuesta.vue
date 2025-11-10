@@ -47,27 +47,43 @@
 
                   <!-- Pregunta Sí/No -->
                   <div v-else-if="pregunta.tipo === 'si_no'" class="mb-3">
-                    <div class="form-check form-check-inline">
+                    <div v-for="opcion in pregunta.opciones" :key="opcion.id_opcion" class="form-check">
                       <input
                         v-model="respuestas[pregunta.id_pregunta]"
-                        value="si"
+                        :value="opcion.id_opcion"
                         class="form-check-input"
                         type="radio"
                         :name="'pregunta_' + pregunta.id_pregunta"
                         required
                       />
-                      <label class="form-check-label">Sí</label>
+                      <label class="form-check-label">
+                        {{ opcion.texto_opcion }}
+                      </label>
                     </div>
-                    <div class="form-check form-check-inline">
-                      <input
-                        v-model="respuestas[pregunta.id_pregunta]"
-                        value="no"
-                        class="form-check-input"
-                        type="radio"
-                        :name="'pregunta_' + pregunta.id_pregunta"
-                        required
-                      />
-                      <label class="form-check-label">No</label>
+                    <div v-if="!pregunta.opciones || pregunta.opciones.length === 0" class="text-muted">
+                      No hay opciones disponibles para esta pregunta.
+                    </div>
+                  </div>
+
+                  <!-- Pregunta de escala -->
+                  <div v-else-if="pregunta.tipo === 'escala'" class="mb-3">
+                    <div class="scale-options">
+                      <div v-for="opcion in pregunta.opciones" :key="opcion.id_opcion" class="form-check">
+                        <input
+                          v-model="respuestas[pregunta.id_pregunta]"
+                          :value="opcion.id_opcion"
+                          class="form-check-input"
+                          type="radio"
+                          :name="'pregunta_' + pregunta.id_pregunta"
+                          required
+                        />
+                        <label class="form-check-label">
+                          {{ opcion.texto_opcion }} ({{ opcion.valor }})
+                        </label>
+                      </div>
+                    </div>
+                    <div v-if="!pregunta.opciones || pregunta.opciones.length === 0" class="text-muted">
+                      No hay opciones disponibles para esta pregunta.
                     </div>
                   </div>
 
@@ -91,7 +107,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '../../services/api.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -109,7 +125,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.get(`/api/encuestas/by_token/?token=${token}`)
+    const response = await api.get(`/encuestas/by_token/?token=${token}`)
     if (response.data) {
       encuesta.value = response.data
     } else {
@@ -144,7 +160,7 @@ const submitRespuesta = async () => {
     }))
 
     // Enviar respuestas al backend
-    const response = await axios.post('/api/respuestas/', respuestasData)
+    const response = await api.post('/encuestas/respuestas/', respuestasData)
 
     if (response.status === 201) {
       alert('¡Gracias por tu respuesta! La encuesta ha sido enviada correctamente.')

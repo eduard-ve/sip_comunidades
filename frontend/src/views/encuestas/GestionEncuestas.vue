@@ -29,58 +29,26 @@
   </EncuestaBase>
 
   <!-- Modal para el formulario de la encuesta -->
-  <div v-if="showForm" class="modal-backdrop">
-    <div class="modal-card">
+  <div v-if="showForm" class="modal-backdrop" @click="cancelSurvey">
+    <div class="modal-card" @click.stop>
       <EncuestaForm @save="saveSurvey" @cancel="cancelSurvey" />
     </div>
   </div>
 
-  <!-- NUEVO: Modal para elegir entre Enlace y PDF -->
-  <div v-if="showOptions" class="modal-backdrop">
-    <div class="modal-card modal-options">
-      <h5>Encuesta guardada</h5>
-      <div class="mb-3">¿Qué acción deseas realizar?</div>
-      <div class="d-flex">
-        <button class="btn btn-primary" @click="generateLink">Generar Enlace</button>
-        <button class="btn btn-secondary" @click="generatePdf">Generar PDF</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal para mostrar el enlace único con botón copiar -->
-  <div v-if="showLink" class="modal-backdrop">
-    <div class="modal-card modal-link">
-      <h5>Encuesta creada</h5>
-      <div class="mb-2">Comparte este enlace con los usuarios:</div>
-      <div class="mb-3">
-        <div class="input-group">
-          <input :value="enlaceEncuesta" class="form-control" readonly id="survey-link" />
-          <button class="btn btn-outline-primary" @click="copyToClipboard" id="copy-btn">
-            <i class="bi bi-clipboard"></i> Copiar
-          </button>
-        </div>
-      </div>
-      <div v-if="copySuccess" class="alert alert-success py-2 mb-3">
-        <i class="bi bi-check-circle"></i> ¡Enlace copiado al portapapeles!
-      </div>
-      <button class="btn btn-primary btn-sm" @click="showLink = false">Cerrar</button>
-    </div>
-  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue"
+import { useRouter } from 'vue-router'
 import EncuestaBase from "./components/EncuestaBase.vue"
 import EncuestaForm from "../../components/formularios/EncuestaForm.vue"
+import api from '../../services/api.js'
 import '../../assets/css/GestionEncuestas.css'
+
+const router = useRouter()
 
 // Variables de estado
 const showForm = ref(false)
-const showLink = ref(false)
-const showOptions = ref(false) // NUEVO: Estado para el modal de opciones
-const enlaceEncuesta = ref("")
-const lastSavedSurveyId = ref(null) // NUEVO: Para guardar el ID de la última encuesta guardada
-const copySuccess = ref(false) // Para mostrar notificación de copiado
 
 // Datos de la interfaz
 const kpis = ref([
@@ -144,24 +112,18 @@ async function loadSurveys() {
       return
     }
 
-    const response = await fetch('/api/encuestas/', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
+    const response = await api.get('/encuestas/')
 
-    if (response.ok) {
-      const encuestas = await response.json()
+    if (response.status === 200) {
+      const encuestas = response.data
       console.log('Encuestas cargadas desde backend:', encuestas.length)
       table.value.rows = encuestas.map(encuesta => ({
         id: encuesta.id_encuesta,
         titulo: encuesta.titulo,
         estado: encuesta.estado,
         descripcion: encuesta.descripcion,
-        token: encuesta.token,
         fecha: new Date(encuesta.fecha_creacion).toISOString().slice(0, 10),
-        respuestas: 0 // TODO: Calcular desde respuestas
+        respuestas: encuesta.respuestas_count || 0
       }))
       console.log('Tabla actualizada con', table.value.rows.length, 'encuestas')
       saveToLocalStorage()
@@ -205,86 +167,22 @@ function createSurvey() {
   showForm.value = true
 }
 
-function saveSurvey(nuevaEncuesta) {
-  // Generar un ID único simple
-  const id = Date.now().toString()
-  nuevaEncuesta.id = id
-  table.value.rows.push(nuevaEncuesta)
-  saveToLocalStorage()
-
-  // Guardar el ID de la encuesta recién creada
-  lastSavedSurveyId.value = id
-
-  // Ocultar el formulario y mostrar el modal de opciones
-  showForm.value = false
-  showOptions.value = true
+async function saveSurvey(nuevaEncuesta) {
+  try {
+    console.log('Enviando encuesta:', nuevaEncuesta)
+    const response = await api.post('/encuestas/', nuevaEncuesta)
+    console.log('Encuesta guardada:', response.data)
+    await loadSurveys() // Recargar la lista de encuestas
+    showForm.value = false
+  } catch (error) {
+    console.error('Error guardando encuesta:', error)
+    console.error('Detalles del error:', error.response?.data)
+    alert('Error al guardar la encuesta. Por favor intenta de nuevo.')
+  }
 }
 
 function cancelSurvey() {
   showForm.value = false
-}
-
-// Función para generar y mostrar el enlace
-function generateLink() {
-  showOptions.value = false // Oculta el modal de opciones
-  // Usar el ID de la encuesta guardada
-  enlaceEncuesta.value = `${window.location.origin}/encuesta/${lastSavedSurveyId.value}`
-  copySuccess.value = false // Reset copy success state
-  showLink.value = true // Muestra el modal del enlace
-}
-
-// Función para copiar enlace al portapapeles
-async function copyToClipboard() {
-  try {
-    await navigator.clipboard.writeText(enlaceEncuesta.value)
-    copySuccess.value = true
-    // Ocultar notificación después de 3 segundos
-    setTimeout(() => {
-      copySuccess.value = false
-    }, 3000)
-  } catch (err) {
-    console.error('Error copiando al portapapeles:', err)
-    // Fallback para navegadores que no soportan clipboard API
-    const textArea = document.createElement('textarea')
-    textArea.value = enlaceEncuesta.value
-    document.body.appendChild(textArea)
-    textArea.select()
-    document.execCommand('copy')
-    document.body.removeChild(textArea)
-    copySuccess.value = true
-    setTimeout(() => {
-      copySuccess.value = false
-    }, 3000)
-  }
-}
-
-// Función para generar PDF
-async function generatePdf() {
-  showOptions.value = false // Oculta el modal de opciones
-
-  try {
-    // Obtener los datos completos de la encuesta desde el backend
-    const response = await fetch(`/api/encuestas/${lastSavedSurveyId.value}/`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Error al obtener datos de la encuesta')
-    }
-
-    const surveyData = await response.json()
-
-    // Aquí se podría integrar una librería como jsPDF o html2pdf
-    // Por ahora, mostrar los datos en consola y alert
-    console.log('Datos de la encuesta para PDF:', surveyData)
-    alert(`PDF generado para la encuesta: ${surveyData.titulo}\n\nDatos preparados para exportación.`)
-
-  } catch (error) {
-    console.error('Error generando PDF:', error)
-    alert('Error al generar el PDF. Por favor intenta de nuevo.')
-  }
 }
 
 // Propiedad computada para el conteo de encuestas filtradas
@@ -294,6 +192,8 @@ const filteredCount = computed(() => {
 })
 
 function openSurvey(row) {
-  alert("Abrir encuesta: " + row.titulo)
+  // Redirigir a la página de respuesta de la encuesta usando el id_encuesta
+  router.push(`/encuesta/${row.id}`)
 }
 </script>
+

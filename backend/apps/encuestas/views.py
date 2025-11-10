@@ -81,7 +81,7 @@ class OpcionViewSet(viewsets.ModelViewSet):
 class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]  # Permitir respuestas públicas
 
     def get_queryset(self):
         """Filtrar respuestas por encuesta si se especifica"""

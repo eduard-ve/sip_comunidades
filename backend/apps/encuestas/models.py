@@ -18,6 +18,10 @@ class Encuesta(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_cierre = models.DateTimeField(blank=True, null=True)
 
+    @property
+    def respuestas_count(self):
+        return self.respuestas.count()
+
     def __str__(self):
         return self.titulo
 
