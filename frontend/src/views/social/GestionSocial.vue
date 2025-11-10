@@ -301,8 +301,9 @@
         <!-- Búsqueda por cédula -->
         <div class="row mb-3">
           <div class="col-md-8">
-            <label class="form-label fw-semibold">Buscar por Número de Identificación</label>
+            <label for="numero_identificacion" class="form-label fw-semibold">Buscar por Número de Identificación</label>
             <input
+              id="numero_identificacion"
               v-model="autoridadForm.numero_identificacion"
               type="text"
               class="form-control"
@@ -333,8 +334,8 @@
 
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Tipo de Autoridad</label>
-            <select v-model="autoridadForm.tipo_autoridad_id" class="form-control" required>
+            <label for="tipo_autoridad_id" class="form-label fw-semibold">Tipo de Autoridad</label>
+            <select id="tipo_autoridad_id" v-model="autoridadForm.tipo_autoridad_id" class="form-control" required>
               <option disabled value="">Seleccione tipo</option>
               <option v-for="tipo in tiposAutoridad" :key="tipo.id" :value="tipo.id">
                 {{ tipo.nombre }}
@@ -342,8 +343,8 @@
             </select>
           </div>
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Rol</label>
-            <select v-model="autoridadForm.rol_id" class="form-control" required>
+            <label for="rol_id" class="form-label fw-semibold">Rol</label>
+            <select id="rol_id" v-model="autoridadForm.rol_id" class="form-control" required>
               <option disabled value="">Seleccione rol</option>
               <option v-for="rol in rolesAutoridad" :key="rol.id" :value="rol.id">
                 {{ rol.nombre }}
@@ -353,8 +354,9 @@
         </div>
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Fecha Inicio Mandato</label>
+            <label for="fecha_inicio_mandato" class="form-label fw-semibold">Fecha Inicio Mandato</label>
             <input
+              id="fecha_inicio_mandato"
               v-model="autoridadForm.fecha_inicio_mandato"
               type="date"
               class="form-control"
@@ -362,8 +364,9 @@
             />
           </div>
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Fecha Fin Mandato (Opcional)</label>
+            <label for="fecha_fin_mandato" class="form-label fw-semibold">Fecha Fin Mandato (Opcional)</label>
             <input
+              id="fecha_fin_mandato"
               v-model="autoridadForm.fecha_fin_mandato"
               type="date"
               class="form-control"
@@ -372,8 +375,9 @@
         </div>
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Teléfono de Contacto</label>
+            <label for="telefono_contacto" class="form-label fw-semibold">Teléfono de Contacto</label>
             <input
+              id="telefono_contacto"
               v-model="autoridadForm.telefono_contacto"
               type="tel"
               class="form-control"
@@ -381,8 +385,9 @@
             />
           </div>
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Email de Contacto</label>
+            <label for="email_contacto" class="form-label fw-semibold">Email de Contacto</label>
             <input
+              id="email_contacto"
               v-model="autoridadForm.email_contacto"
               type="email"
               class="form-control"
@@ -391,8 +396,9 @@
           </div>
         </div>
         <div class="mb-3">
-          <label class="form-label fw-semibold">Observaciones</label>
+          <label for="observaciones_autoridad" class="form-label fw-semibold">Observaciones</label>
           <textarea
+            id="observaciones_autoridad"
             v-model="autoridadForm.observaciones"
             class="form-control"
             rows="3"
@@ -425,8 +431,9 @@
       <form @submit.prevent="saveActividad">
         <div class="row">
           <div class="col-md-8 mb-3">
-            <label class="form-label fw-semibold">Título de la Actividad</label>
+            <label for="titulo_actividad" class="form-label fw-semibold">Título de la Actividad</label>
             <input
+              id="titulo_actividad"
               v-model="actividadForm.titulo"
               type="text"
               class="form-control"
@@ -435,8 +442,8 @@
             />
           </div>
           <div class="col-md-4 mb-3">
-            <label class="form-label fw-semibold">Tipo de Actividad</label>
-            <select v-model="actividadForm.tipo_actividad_id" class="form-control" required>
+            <label for="tipo_actividad_id" class="form-label fw-semibold">Tipo de Actividad</label>
+            <select id="tipo_actividad_id" v-model="actividadForm.tipo_actividad_id" class="form-control" required>
               <option disabled value="">Seleccione tipo</option>
               <option v-for="tipo in tiposActividad" :key="tipo.id" :value="tipo.id">
                 {{ tipo.nombre }}
@@ -446,8 +453,9 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-semibold">Descripción</label>
+          <label for="descripcion_actividad" class="form-label fw-semibold">Descripción</label>
           <textarea
+            id="descripcion_actividad"
             v-model="actividadForm.descripcion"
             class="form-control"
             rows="3"
@@ -457,8 +465,8 @@
 
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Estado</label>
-            <select v-model="actividadForm.estado_id" class="form-control" required>
+            <label for="estado_actividad_id" class="form-label fw-semibold">Estado</label>
+            <select id="estado_actividad_id" v-model="actividadForm.estado_id" class="form-control" required>
               <option disabled value="">Seleccione estado</option>
               <option v-for="estado in estadosActividad" :key="estado.id" :value="estado.id">
                 {{ estado.nombre }}
@@ -466,8 +474,9 @@
             </select>
           </div>
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Ubicación</label>
+            <label for="ubicacion_actividad" class="form-label fw-semibold">Ubicación</label>
             <input
+              id="ubicacion_actividad"
               v-model="actividadForm.ubicacion"
               type="text"
               class="form-control"
@@ -478,8 +487,9 @@
 
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Fecha y Hora de Inicio</label>
+            <label for="fecha_inicio_actividad" class="form-label fw-semibold">Fecha y Hora de Inicio</label>
             <input
+              id="fecha_inicio_actividad"
               v-model="actividadForm.fecha_inicio"
               type="datetime-local"
               class="form-control"
@@ -487,8 +497,9 @@
             />
           </div>
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Fecha y Hora de Fin (Opcional)</label>
+            <label for="fecha_fin_actividad" class="form-label fw-semibold">Fecha y Hora de Fin (Opcional)</label>
             <input
+              id="fecha_fin_actividad"
               v-model="actividadForm.fecha_fin"
               type="datetime-local"
               class="form-control"
@@ -498,8 +509,9 @@
 
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Capacidad Máxima</label>
+            <label for="capacidad_maxima" class="form-label fw-semibold">Capacidad Máxima</label>
             <input
+              id="capacidad_maxima"
               v-model.number="actividadForm.capacidad_maxima"
               type="number"
               class="form-control"
@@ -508,8 +520,9 @@
             />
           </div>
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-semibold">Organizador</label>
+            <label for="organizador_actividad" class="form-label fw-semibold">Organizador</label>
             <input
+              id="organizador_actividad"
               v-model="actividadForm.organizador"
               type="text"
               class="form-control"
@@ -519,8 +532,9 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-semibold">Observaciones</label>
+          <label for="observaciones_actividad" class="form-label fw-semibold">Observaciones</label>
           <textarea
+            id="observaciones_actividad"
             v-model="actividadForm.observaciones"
             class="form-control"
             rows="3"
@@ -540,7 +554,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import BaseModule from '../../components/comun/BaseModule.vue'
-import MapPanel from '../../components/mapas/MapPanel.vue'
 import ChartPanel from '../../components/graficas/ChartPanel.vue'
 import { socialService } from '../../services/api.js'
 import '../../assets/css/GestionSocial.css'
@@ -836,10 +849,11 @@ async function loadActividadesComunitarias() {
 function updateActividadesTipoChart() {
   // Contar actividades por tipo
   const tipoCount = {}
-  actividadesComunitarias.value.forEach(actividad => {
+  const lista = actividadesComunitarias.value || []
+  for ( const actividad of lista ) {
     const tipoNombre = actividad.tipo_actividad?.nombre || 'Sin tipo'
     tipoCount[tipoNombre] = (tipoCount[tipoNombre] || 0) + 1
-  })
+  }
 
   // Actualizar datos del gráfico
   actividadesTipoData.value.labels = Object.keys(tipoCount)
@@ -920,7 +934,8 @@ function closeForm() {
 
 async function savePrograma() {
   try {
-    if (editIndex.value !== null) {
+    const isEditing = editIndex.value !== null
+    if (isEditing) {
       // Actualizar programa existente
       const programa = programas.value[editIndex.value]
       await socialService.updateProgramaSocial(programa.id, form.value)
@@ -950,7 +965,7 @@ function editPrograma(row) {
 }
 
 async function deletePrograma(row) {
-  if (window.confirm('¿Seguro que deseas eliminar este programa?')) {
+  if (globalThis.confirm('¿Seguro que deseas eliminar este programa?')) {
     try {
       await socialService.deleteProgramaSocial(row.id)
       await loadProgramasSociales() // Recargar datos
@@ -986,7 +1001,8 @@ async function saveAutoridad() {
     const dataToSend = { ...autoridadForm.value }
     delete dataToSend.numero_identificacion
 
-    if (editAutoridadIndex.value !== null) {
+    const isEditing = editAutoridadIndex.value !== null
+    if (isEditing) {
       // Actualizar autoridad existente
       const autoridad = autoridadesActivas.value[editAutoridadIndex.value]
       await socialService.updateAutoridadComunitaria(autoridad.id, dataToSend)
@@ -998,7 +1014,8 @@ async function saveAutoridad() {
     await loadAutoridadesComunitarias()
     await loadPersonasDisponibles() // Recargar personas disponibles
     // Mostrar mensaje de éxito
-    alert(editAutoridadIndex.value !== null ? 'Autoridad actualizada exitosamente' : 'Autoridad creada exitosamente')
+    const mensaje = isEditing ? 'Autoridad actualizada exitosamente' : 'Autoridad creada exitosamente'
+    alert(mensaje)
   } catch (err) {
     console.error('Error saving autoridad:', err)
     alert('Error al guardar la autoridad. Verifica los datos e intenta nuevamente.')
@@ -1072,7 +1089,8 @@ async function saveActividad() {
 
     console.log('Enviando datos de actividad:', dataToSend)
 
-    if (editActividadIndex.value !== null) {
+    const isEditing = editActividadIndex.value !== null
+    if (isEditing) {
       // Actualizar actividad existente
       const actividad = actividadesComunitarias.value[editActividadIndex.value]
       await socialService.updateActividadComunitaria(actividad.id, dataToSend)
@@ -1083,7 +1101,8 @@ async function saveActividad() {
     closeActividadForm()
     await loadActividadesComunitarias()
     // Mostrar mensaje de éxito
-    alert(editActividadIndex.value !== null ? 'Actividad actualizada exitosamente' : 'Actividad creada exitosamente')
+    const mensaje = isEditing ? 'Actividad actualizada exitosamente' : 'Actividad creada exitosamente'
+    alert(mensaje)
   } catch (err) {
     console.error('Error saving actividad:', err)
     alert('Error al guardar la actividad. Verifica los datos e intenta nuevamente.')
