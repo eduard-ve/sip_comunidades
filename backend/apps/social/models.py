@@ -108,7 +108,94 @@ class ProgramaBeneficiario(models.Model):  # intermediario para gestionar benefi
         return f"{self.persona} - {self.programa}"
 
 
-class ActividadSocial(models.Model):  # modelo para actividades relacionadas con programas sociales
+# Modelos para gestión de actividades y eventos comunitarios
+class TipoActividad(models.Model):
+    nombre = models.CharField(max_length=100, unique=True, verbose_name="Tipo de Actividad")
+    descripcion = models.TextField(blank=True, verbose_name=VERBOSE_NAME_DESCRIPCION)
+    icono = models.CharField(max_length=50, blank=True, verbose_name="Icono (Bootstrap)")
+
+    class Meta:
+        verbose_name = "Tipo de Actividad"
+        verbose_name_plural = "Tipos de Actividad"
+
+    def __str__(self):
+        return self.nombre
+
+
+class EstadoActividad(models.Model):
+    nombre = models.CharField(max_length=50, unique=True, verbose_name="Estado")
+    descripcion = models.TextField(blank=True, verbose_name=VERBOSE_NAME_DESCRIPCION)
+    color = models.CharField(max_length=20, blank=True, verbose_name="Color (Hex/CSS)")
+
+    class Meta:
+        verbose_name = "Estado de Actividad"
+        verbose_name_plural = "Estados de Actividad"
+
+    def __str__(self):
+        return self.nombre
+
+
+class ActividadComunitaria(models.Model):
+    titulo = models.CharField(max_length=200, verbose_name="Título")
+    descripcion = models.TextField(blank=True, verbose_name=VERBOSE_NAME_DESCRIPCION)
+    tipo_actividad = models.ForeignKey(TipoActividad, on_delete=models.PROTECT, verbose_name="Tipo de Actividad")
+    estado = models.ForeignKey(EstadoActividad, on_delete=models.PROTECT, verbose_name="Estado")
+
+    fecha_inicio = models.DateTimeField(verbose_name="Fecha y Hora de Inicio")
+    fecha_fin = models.DateTimeField(null=True, blank=True, verbose_name="Fecha y Hora de Fin")
+    ubicacion = models.CharField(max_length=200, blank=True, verbose_name="Ubicación")
+
+    capacidad_maxima = models.PositiveIntegerField(null=True, blank=True, verbose_name="Capacidad Máxima")
+    asistentes_confirmados = models.PositiveIntegerField(default=0, verbose_name="Asistentes Confirmados")
+    asistentes_registrados = models.ManyToManyField(Persona, related_name='actividades_registradas', blank=True, verbose_name="Asistentes Registrados")
+
+    organizador = models.CharField(max_length=200, blank=True, null=True, verbose_name="Organizador")
+    presupuesto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Presupuesto")
+    costo_real = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Costo Real")
+
+    observaciones = models.TextField(blank=True, verbose_name="Observaciones")
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion = models.DateTimeField(auto_now=True)
+
+    @property
+    def tasa_participacion(self):
+        """Calcula la tasa de participación basada en capacidad máxima"""
+        if self.capacidad_maxima and self.capacidad_maxima > 0:
+            return (self.asistentes_confirmados / self.capacidad_maxima) * 100
+        return 0
+
+    @property
+    def asistentes_pendientes(self):
+        """Calcula asistentes pendientes de confirmación"""
+        return self.asistentes_registrados.count() - self.asistentes_confirmados
+
+    class Meta:
+        verbose_name = "Actividad Comunitaria"
+        verbose_name_plural = "Actividades Comunitarias"
+        ordering = ['-fecha_inicio']
+
+    def __str__(self):
+        return f"{self.titulo} - {self.fecha_inicio.strftime('%d/%m/%Y %H:%M')}"
+
+
+class AsistenciaActividad(models.Model):
+    actividad = models.ForeignKey(ActividadComunitaria, on_delete=models.CASCADE, verbose_name="Actividad")
+    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, verbose_name="Persona")
+    fecha_registro = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Registro")
+    confirmado = models.BooleanField(default=False, verbose_name="Asistencia Confirmada")
+    fecha_confirmacion = models.DateTimeField(null=True, blank=True, verbose_name="Fecha de Confirmación")
+    observaciones = models.TextField(blank=True, verbose_name="Observaciones")
+
+    class Meta:
+        verbose_name = "Asistencia a Actividad"
+        verbose_name_plural = "Asistencias a Actividades"
+        unique_together = ('actividad', 'persona')
+
+    def __str__(self):
+        return f"{self.persona.nombre_completo} - {self.actividad.titulo}"
+
+
+class ActividadSocial(models.Model):  # modelo para actividades relacionadas con programas sociales (LEGACY)
     programa = models.ForeignKey(ProgramaSocial, null=True, blank=True, on_delete=models.SET_NULL)
     titulo = models.CharField(max_length=150)
     descripcion = models.TextField(blank=True)
@@ -116,8 +203,8 @@ class ActividadSocial(models.Model):  # modelo para actividades relacionadas con
     ubicacion = models.CharField(max_length=150, blank=True)
 
     class Meta:
-        verbose_name = "Actividad Social"
-        verbose_name_plural = "Actividades Sociales"
+        verbose_name = "Actividad Social (Legacy)"
+        verbose_name_plural = "Actividades Sociales (Legacy)"
 
     def __str__(self):
         return self.titulo

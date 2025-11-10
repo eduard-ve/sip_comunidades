@@ -130,5 +130,33 @@ export const poblacionService = {
     updateAutoridadComunitaria: (id, autoridadData) => api.put(`/social/autoridades/${id}/`, autoridadData),
     deleteAutoridadComunitaria: (id) => api.delete(`/social/autoridades/${id}/`),
     buscarPersonaPorCedula: (numeroIdentificacion) => api.get(`/social/autoridades/buscar-persona/?numero_identificacion=${numeroIdentificacion}`),
+
+    // Actividades comunitarias
+    getTiposActividad: () => api.get('/social/tipos-actividad/'),
+    createTipoActividad: (tipoData) => api.post('/social/tipos-actividad/', tipoData),
+    updateTipoActividad: (id, tipoData) => api.put(`/social/tipos-actividad/${id}/`, tipoData),
+    deleteTipoActividad: (id) => api.delete(`/social/tipos-actividad/${id}/`),
+
+    getEstadosActividad: () => api.get('/social/estados-actividad/'),
+    createEstadoActividad: (estadoData) => api.post('/social/estados-actividad/', estadoData),
+    updateEstadoActividad: (id, estadoData) => api.put(`/social/estados-actividad/${id}/`, estadoData),
+    deleteEstadoActividad: (id) => api.delete(`/social/estados-actividad/${id}/`),
+
+    getActividadesComunitarias: () => api.get('/social/actividades-comunitarias/'),
+    createActividadComunitaria: (actividadData) => api.post('/social/actividades-comunitarias/', actividadData),
+    updateActividadComunitaria: (id, actividadData) => api.put(`/social/actividades-comunitarias/${id}/`, actividadData),
+    deleteActividadComunitaria: (id) => api.delete(`/social/actividades-comunitarias/${id}/`),
+
+    // Funciones especiales para actividades
+    registrarAsistencia: (actividadId, asistenciaData) => api.post(`/social/actividades-comunitarias/${actividadId}/registrar-asistencia/`, asistenciaData),
+    getEstadisticasActividad: (actividadId) => api.get(`/social/actividades-comunitarias/${actividadId}/estadisticas/`),
+    getCalendarioActividades: (params) => api.get('/social/actividades-comunitarias/calendario/', { params }),
+
+    // Asistencias
+    getAsistencias: () => api.get('/social/asistencias-actividad/'),
+    getAsistenciasPorActividad: (actividadId) => api.get('/social/asistencias-actividad/por-actividad/', { params: { actividad_id: actividadId } }),
+    createAsistencia: (asistenciaData) => api.post('/social/asistencias-actividad/', asistenciaData),
+    updateAsistencia: (id, asistenciaData) => api.put(`/social/asistencias-actividad/${id}/`, asistenciaData),
+    deleteAsistencia: (id) => api.delete(`/social/asistencias-actividad/${id}/`),
   }
   export default api

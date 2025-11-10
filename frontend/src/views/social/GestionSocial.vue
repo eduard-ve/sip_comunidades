@@ -28,7 +28,6 @@
     <!-- Extra contenido encima de charts -->
     <template #extra>
       <div class="mb-3">
-        <h5>Actividades culturales/comunitarias recientes</h5>
         <ul>
           <li v-for="(act, idx) in actividades" :key="idx">{{ act }}</li>
         </ul>
@@ -36,7 +35,7 @@
       <div class="mb-3">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5>Autoridades Comunitarias Activas</h5>
-          <button class="btn btn-primary btn-sm" @click="showAutoridadForm = true">
+          <button class="btn btn-success btn-sm" @click="showAutoridadForm = true">
             <i class="bi bi-plus-circle me-1"></i>
             Nueva Autoridad
           </button>
@@ -56,6 +55,37 @@
                     <i class="bi bi-pencil"></i>
                   </button>
                   <button class="btn btn-outline-danger btn-sm" @click="deleteAutoridad(autoridad)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5>Actividades Comunitarias</h5>
+          <button class="btn btn-primary btn-sm" @click="showActividadForm = true">
+            <i class="bi bi-plus-circle me-1"></i>
+            Nueva Actividad
+          </button>
+        </div>
+        <div class="row">
+          <div v-for="actividad in actividadesComunitarias" :key="actividad.id" class="col-md-6 mb-2">
+            <div class="card">
+              <div class="card-body p-2">
+                <h6 class="card-title mb-1">{{ actividad.titulo }}</h6>
+                <p class="card-text small mb-1">
+                  <strong>Tipo:</strong> {{ actividad.tipo_actividad.nombre }}<br>
+                  <strong>Fecha:</strong> {{ new Date(actividad.fecha_inicio).toLocaleDateString() }}<br>
+                  <strong>Asistentes:</strong> {{ actividad.asistentes_confirmados }}/{{ actividad.capacidad_maxima || '∞' }}
+                </p>
+                <div class="d-flex gap-1">
+                  <button class="btn btn-outline-primary btn-sm" @click="editActividad(actividad)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" @click="deleteActividad(actividad)">
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>
@@ -267,6 +297,124 @@
       </form>
     </div>
   </div>
+
+  <!-- Modal para crear/editar actividad -->
+  <div v-if="showActividadForm" class="modal-backdrop">
+    <div class="modal-card">
+      <h5 class="mb-3">{{ editActividadIndex !== null ? 'Editar Actividad' : 'Nueva Actividad' }}</h5>
+      <form @submit.prevent="saveActividad">
+        <div class="row">
+          <div class="col-md-8 mb-3">
+            <label class="form-label fw-semibold">Título de la Actividad</label>
+            <input
+              v-model="actividadForm.titulo"
+              type="text"
+              class="form-control"
+              placeholder="Ingrese el título..."
+              required
+            />
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label fw-semibold">Tipo de Actividad</label>
+            <select v-model="actividadForm.tipo_actividad_id" class="form-control" required>
+              <option disabled value="">Seleccione tipo</option>
+              <option v-for="tipo in tiposActividad" :key="tipo.id" :value="tipo.id">
+                {{ tipo.nombre }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Descripción</label>
+          <textarea
+            v-model="actividadForm.descripcion"
+            class="form-control"
+            rows="3"
+            placeholder="Descripción de la actividad..."
+          ></textarea>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">Estado</label>
+            <select v-model="actividadForm.estado_id" class="form-control" required>
+              <option disabled value="">Seleccione estado</option>
+              <option v-for="estado in estadosActividad" :key="estado.id" :value="estado.id">
+                {{ estado.nombre }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">Ubicación</label>
+            <input
+              v-model="actividadForm.ubicacion"
+              type="text"
+              class="form-control"
+              placeholder="Lugar donde se realiza..."
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">Fecha y Hora de Inicio</label>
+            <input
+              v-model="actividadForm.fecha_inicio"
+              type="datetime-local"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">Fecha y Hora de Fin (Opcional)</label>
+            <input
+              v-model="actividadForm.fecha_fin"
+              type="datetime-local"
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">Capacidad Máxima</label>
+            <input
+              v-model.number="actividadForm.capacidad_maxima"
+              type="number"
+              class="form-control"
+              placeholder="0"
+              min="0"
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">Organizador</label>
+            <input
+              v-model="actividadForm.organizador"
+              type="text"
+              class="form-control"
+              placeholder="Nombre del organizador..."
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Observaciones</label>
+          <textarea
+            v-model="actividadForm.observaciones"
+            class="form-control"
+            rows="3"
+            placeholder="Observaciones adicionales..."
+          ></textarea>
+        </div>
+
+        <div class="text-end">
+          <button type="button" class="btn btn-secondary btn-sm me-2" @click="closeActividadForm">Cancelar</button>
+          <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -282,7 +430,7 @@ const kpis = ref([
   { title: 'Programas activos', value: 0, change: '+0', icon: 'bi-people' },
   { title: 'Beneficiarios totales', value: 0, change: '+0', icon: 'bi-person-check' },
   { title: 'Actividades culturales', value: 0, change: '+0', icon: 'bi-music-note-beamed' },
-  { title: 'Autoridades comunitarias', value: 0, change: '+0', icon: 'bi-person-badge' }
+  { title: 'Autoridades activas', value: 0, change: '+0', icon: 'bi-person-badge' }
 ])
 
 const actividades = ref([])
@@ -302,6 +450,7 @@ const programas = ref([])
 const mapProgramas = ref([])
 const estados = ref([])
 const autoridadesActivas = ref([])
+const actividadesComunitarias = ref([])
 
 // Estados de carga
 const loading = ref(false)
@@ -328,11 +477,36 @@ const autoridadForm = ref({
 })
 const editAutoridadIndex = ref(null)
 
+// Modal formulario actividades
+const showActividadForm = ref(false)
+const actividadForm = ref({
+  titulo: '',
+  descripcion: '',
+  tipo_actividad_id: '',
+  estado_id: '',
+  fecha_inicio: '',
+  fecha_fin: '',
+  ubicacion: '',
+  capacidad_maxima: '',
+  organizador: '',
+  observaciones: ''
+})
+const editActividadIndex = ref(null)
+
 // Datos para autoridades
 const tiposAutoridad = ref([])
 const rolesAutoridad = ref([])
 const personaSeleccionada = ref(null)
 const buscandoPersona = ref(false)
+
+// Datos para actividades comunitarias
+const tiposActividad = ref([])
+const estadosActividad = ref([])
+
+// Agregar console.log para debugging
+console.log('Componente GestionSocial montado')
+console.log('tiposActividad inicial:', tiposActividad.value)
+console.log('estadosActividad inicial:', estadosActividad.value)
 
 // Funciones para cargar datos del backend
 async function loadProgramasSociales() {
@@ -370,7 +544,15 @@ async function loadActividadesSociales() {
     actividades.value = response.data.map(act => act.titulo)
     kpis.value[2].value = actividades.value.length
   } catch (err) {
-    console.error('Error loading actividades:', err)
+    console.error('Error loading actividades sociales:', err)
+    actividades.value = []
+    kpis.value[2].value = 0
+  }
+
+  // Siempre mostrar actividades comunitarias como respaldo
+  if (actividadesComunitarias.value.length > 0) {
+    actividades.value = actividadesComunitarias.value.map(act => act.titulo)
+    kpis.value[2].value = actividades.value.length
   }
 }
 
@@ -426,6 +608,46 @@ async function loadRolesAutoridad() {
   }
 }
 
+// Funciones para cargar datos de actividades comunitarias
+async function loadTiposActividad() {
+  try {
+    console.log('Cargando tipos de actividad...')
+    const response = await socialService.getTiposActividad()
+    tiposActividad.value = response.data
+    console.log('Tipos de actividad cargados:', tiposActividad.value.length, 'elementos')
+    console.log('Primeros tipos:', tiposActividad.value.slice(0, 3))
+  } catch (err) {
+    console.error('Error loading tipos actividad:', err)
+    tiposActividad.value = []
+  }
+}
+
+async function loadEstadosActividad() {
+  try {
+    console.log('Cargando estados de actividad...')
+    const response = await socialService.getEstadosActividad()
+    estadosActividad.value = response.data
+    console.log('Estados de actividad cargados:', estadosActividad.value.length, 'elementos')
+    console.log('Primeros estados:', estadosActividad.value.slice(0, 3))
+  } catch (err) {
+    console.error('Error loading estados actividad:', err)
+    estadosActividad.value = []
+  }
+}
+
+async function loadActividadesComunitarias() {
+  try {
+    console.log('Cargando actividades comunitarias...')
+    const response = await socialService.getActividadesComunitarias()
+    actividadesComunitarias.value = response.data
+    console.log('Actividades comunitarias cargadas:', actividadesComunitarias.value.length, 'elementos')
+    console.log('Primeras actividades:', actividadesComunitarias.value.slice(0, 2))
+  } catch (err) {
+    console.error('Error loading actividades comunitarias:', err)
+    actividadesComunitarias.value = []
+  }
+}
+
 async function buscarPersonaPorCedula() {
   if (!autoridadForm.value.numero_identificacion.trim()) {
     alert('Por favor ingrese un número de identificación')
@@ -458,16 +680,33 @@ async function buscarPersonaPorCedula() {
 
 // Cargar todos los datos al montar el componente
 onMounted(async () => {
-  await Promise.all([
-    loadProgramasSociales(),
-    loadActividadesSociales(),
-    loadCoberturasProgramas(),
-    loadEstadosProgramas(),
-    loadAutoridadesComunitarias(),
-    loadTiposAutoridad(),
-    loadRolesAutoridad(),
-    loadPersonasDisponibles()
-  ])
+  console.log('Iniciando carga de datos...')
+  try {
+    // Cargar primero los tipos y estados que necesita el formulario
+    await Promise.all([
+      loadTiposActividad(),
+      loadEstadosActividad()
+    ])
+    console.log('Tipos y estados cargados:', tiposActividad.value.length, estadosActividad.value.length)
+
+    // Luego cargar el resto de datos
+    await Promise.all([
+      loadProgramasSociales(),
+      loadActividadesSociales(),
+      loadCoberturasProgramas(),
+      loadEstadosProgramas(),
+      loadAutoridadesComunitarias(),
+      loadTiposAutoridad(),
+      loadRolesAutoridad(),
+      loadPersonasDisponibles(),
+      loadActividadesComunitarias()
+    ])
+  } catch (error) {
+    console.error('Error en carga inicial:', error)
+  }
+  console.log('Carga de datos completada')
+  console.log('Estado final - tiposActividad:', tiposActividad.value)
+  console.log('Estado final - estadosActividad:', estadosActividad.value)
 })
 
 // Funciones del modal
@@ -556,6 +795,8 @@ async function saveAutoridad() {
     closeAutoridadForm()
     await loadAutoridadesComunitarias()
     await loadPersonasDisponibles() // Recargar personas disponibles
+    // Mostrar mensaje de éxito
+    alert(editAutoridadIndex.value !== null ? 'Autoridad actualizada exitosamente' : 'Autoridad creada exitosamente')
   } catch (err) {
     console.error('Error saving autoridad:', err)
     alert('Error al guardar la autoridad. Verifica los datos e intenta nuevamente.')
@@ -585,10 +826,92 @@ async function deleteAutoridad(autoridad) {
   if (globalThis.confirm('¿Seguro que deseas eliminar esta autoridad?')) {
     try {
       await socialService.deleteAutoridadComunitaria(autoridad.id)
-      await loadAutoridadesComunitarias()
+      await loadActividadesComunitarias()
       await loadPersonasDisponibles() // Recargar personas disponibles
     } catch (err) {
       console.error('Error deleting autoridad:', err)
+    }
+  }
+}
+
+// Funciones para actividades comunitarias
+function closeActividadForm() {
+  showActividadForm.value = false
+  actividadForm.value = {
+    titulo: '',
+    descripcion: '',
+    tipo_actividad_id: '',
+    estado_id: '',
+    fecha_inicio: '',
+    fecha_fin: '',
+    ubicacion: '',
+    capacidad_maxima: '',
+    organizador: '',
+    observaciones: ''
+  }
+  editActividadIndex.value = null
+}
+
+async function saveActividad() {
+  try {
+    // Preparar datos para enviar
+    const dataToSend = {
+      titulo: actividadForm.value.titulo,
+      descripcion: actividadForm.value.descripcion,
+      tipo_actividad_id: actividadForm.value.tipo_actividad_id,
+      estado_id: actividadForm.value.estado_id,
+      fecha_inicio: actividadForm.value.fecha_inicio,
+      fecha_fin: actividadForm.value.fecha_fin || null,
+      ubicacion: actividadForm.value.ubicacion,
+      capacidad_maxima: actividadForm.value.capacidad_maxima || null,
+      organizador: actividadForm.value.organizador || null,
+      observaciones: actividadForm.value.observaciones
+    }
+
+    console.log('Enviando datos de actividad:', dataToSend)
+
+    if (editActividadIndex.value !== null) {
+      // Actualizar actividad existente
+      const actividad = actividadesComunitarias.value[editActividadIndex.value]
+      await socialService.updateActividadComunitaria(actividad.id, dataToSend)
+    } else {
+      // Crear nueva actividad
+      await socialService.createActividadComunitaria(dataToSend)
+    }
+    closeActividadForm()
+    await loadActividadesComunitarias()
+    // Mostrar mensaje de éxito
+    alert(editActividadIndex.value !== null ? 'Actividad actualizada exitosamente' : 'Actividad creada exitosamente')
+  } catch (err) {
+    console.error('Error saving actividad:', err)
+    alert('Error al guardar la actividad. Verifica los datos e intenta nuevamente.')
+  }
+}
+
+function editActividad(actividad) {
+  editActividadIndex.value = actividadesComunitarias.value.indexOf(actividad)
+  actividadForm.value = {
+    titulo: actividad.titulo,
+    descripcion: actividad.descripcion || '',
+    tipo_actividad_id: actividad.tipo_actividad ? actividad.tipo_actividad.id : '',
+    estado_id: actividad.estado ? actividad.estado.id : '',
+    fecha_inicio: actividad.fecha_inicio,
+    fecha_fin: actividad.fecha_fin || '',
+    ubicacion: actividad.ubicacion || '',
+    capacidad_maxima: actividad.capacidad_maxima || '',
+    organizador: actividad.organizador || '',
+    observaciones: actividad.observaciones || ''
+  }
+  showActividadForm.value = true
+}
+
+async function deleteActividad(actividad) {
+  if (globalThis.confirm('¿Seguro que deseas eliminar esta actividad?')) {
+    try {
+      await socialService.deleteActividadComunitaria(actividad.id)
+      await loadActividadesComunitarias()
+    } catch (err) {
+      console.error('Error deleting actividad:', err)
     }
   }
 }
