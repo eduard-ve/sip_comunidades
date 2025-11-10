@@ -95,35 +95,6 @@ class RespuestaViewSet(viewsets.ModelViewSet):
         return queryset
 
     def create(self, request, *args, **kwargs):
-        """Crear respuesta con validaciones adicionales"""
-        try:
-            # Validar que la encuesta existe y está activa
-            encuesta_id = request.data.get('encuesta')
-            if encuesta_id:
-                try:
-                    encuesta = Encuesta.objects.get(id_encuesta=encuesta_id, estado='activa')
-                except Encuesta.DoesNotExist:
-                    return Response({
-                        'error': 'Encuesta no válida',
-                        'message': 'La encuesta no existe o no está disponible'
-                    }, status=status.HTTP_400_BAD_REQUEST)
-
-            return super().create(request, *args, **kwargs)
-        except ValidationError as e:
-            return Response({
-                'error': 'Datos de respuesta inválidos',
-                'details': e.detail
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-    def get_queryset(self):
-        """Filtrar respuestas por encuesta si se especifica"""
-        queryset = Respuesta.objects.all()
-        encuesta_id = self.request.query_params.get('encuesta', None)
-        if encuesta_id:
-            queryset = queryset.filter(encuesta_id=encuesta_id)
-        return queryset
-
-    def create(self, request, *args, **kwargs):
         """Crear respuestas en bulk con validaciones adicionales"""
         try:
             # Verificar si es una lista de respuestas (bulk create)
@@ -144,14 +115,14 @@ class RespuestaViewSet(viewsets.ModelViewSet):
         encuesta_id = request.data.get('encuesta')
         if encuesta_id:
             try:
-                encuesta = Encuesta.objects.get(id_encuesta=encuesta_id, estado='activa')
+                Encuesta.objects.get(id_encuesta=encuesta_id, estado='activa')
             except Encuesta.DoesNotExist:
                 return Response({
                     'error': 'Encuesta no válida',
                     'message': 'La encuesta no existe o no está disponible'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-        return super().create(request, *args, **kwargs)
+        return super().create(request)
 
     def bulk_create(self, request):
         """Crear múltiples respuestas en una sola transacción"""
@@ -182,7 +153,7 @@ class RespuestaViewSet(viewsets.ModelViewSet):
 
         encuesta_id = list(encuesta_ids)[0]
         try:
-            encuesta = Encuesta.objects.get(id_encuesta=encuesta_id, estado='activa')
+            Encuesta.objects.get(id_encuesta=encuesta_id, estado='activa')
         except Encuesta.DoesNotExist:
             return Response({
                 'error': 'Encuesta no válida',
