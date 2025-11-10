@@ -124,22 +124,80 @@ class RespuestaViewSet(viewsets.ModelViewSet):
         return queryset
 
     def create(self, request, *args, **kwargs):
-        """Crear respuesta con validaciones adicionales"""
+        """Crear respuestas en bulk con validaciones adicionales"""
         try:
-            # Validar que la encuesta existe y está activa
-            encuesta_id = request.data.get('encuesta')
-            if encuesta_id:
-                try:
-                    encuesta = Encuesta.objects.get(id=encuesta_id, estado='activa')
-                except Encuesta.DoesNotExist:
-                    return Response({
-                        'error': 'Encuesta no válida',
-                        'message': 'La encuesta no existe o no está disponible'
-                    }, status=status.HTTP_400_BAD_REQUEST)
-
-            return super().create(request, *args, **kwargs)
+            # Verificar si es una lista de respuestas (bulk create)
+            if isinstance(request.data, list):
+                return self.bulk_create(request)
+            else:
+                # Crear respuesta individual
+                return self.create_single(request)
         except ValidationError as e:
             return Response({
                 'error': 'Datos de respuesta inválidos',
                 'details': e.detail
             }, status=status.HTTP_400_BAD_REQUEST)
+
+    def create_single(self, request):
+        """Crear una respuesta individual"""
+        # Validar que la encuesta existe y está activa
+        encuesta_id = request.data.get('encuesta')
+        if encuesta_id:
+            try:
+                encuesta = Encuesta.objects.get(id_encuesta=encuesta_id, estado='activa')
+            except Encuesta.DoesNotExist:
+                return Response({
+                    'error': 'Encuesta no válida',
+                    'message': 'La encuesta no existe o no está disponible'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+        return super().create(request, *args, **kwargs)
+
+    def bulk_create(self, request):
+        """Crear múltiples respuestas en una sola transacción"""
+        respuestas_data = request.data
+
+        if not respuestas_data:
+            return Response({
+                'error': 'Datos requeridos',
+                'message': 'Se requieren datos de respuestas'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validar que todas las respuestas pertenezcan a la misma encuesta activa
+        encuesta_ids = set()
+        for respuesta_data in respuestas_data:
+            encuesta_id = respuesta_data.get('encuesta')
+            if not encuesta_id:
+                return Response({
+                    'error': 'Encuesta requerida',
+                    'message': 'Cada respuesta debe incluir el ID de la encuesta'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            encuesta_ids.add(encuesta_id)
+
+        if len(encuesta_ids) != 1:
+            return Response({
+                'error': 'Encuesta única requerida',
+                'message': 'Todas las respuestas deben pertenecer a la misma encuesta'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        encuesta_id = list(encuesta_ids)[0]
+        try:
+            encuesta = Encuesta.objects.get(id_encuesta=encuesta_id, estado='activa')
+        except Encuesta.DoesNotExist:
+            return Response({
+                'error': 'Encuesta no válida',
+                'message': 'La encuesta no existe o no está disponible'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Crear respuestas en bulk
+        respuestas_creadas = []
+        with transaction.atomic():
+            for respuesta_data in respuestas_data:
+                serializer = self.get_serializer(data=respuesta_data)
+                serializer.is_valid(raise_exception=True)
+                respuesta = serializer.save()
+                respuestas_creadas.append(respuesta)
+
+        # Serializar las respuestas creadas
+        result_serializer = self.get_serializer(respuestas_creadas, many=True)
+        return Response(result_serializer.data, status=status.HTTP_201_CREATED)
