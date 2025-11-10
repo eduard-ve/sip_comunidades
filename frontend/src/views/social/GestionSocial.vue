@@ -30,9 +30,13 @@
       <div class="mb-3">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5>Autoridades Comunitarias Activas</h5>
-          <button class="btn btn-success btn-sm" @click="showAutoridadForm = true">
+          <button
+            class="btn btn-success btn-sm nueva-autoridad-btn"
+            style="background-color: #198754 !important; border-color: #198754 !important; color: white !important;"
+            @click="showAutoridadForm = true"
+          >
             <i class="bi bi-plus-circle me-1"></i>
-            Nueva Autoridad
+            NUEVA AUTORIDAD
           </button>
         </div>
         <div class="row">
@@ -91,7 +95,11 @@
       <div class="mb-3">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5>Actividades Comunitarias</h5>
-          <button class="btn btn-primary btn-sm" @click="showActividadForm = true">
+          <button
+            class="btn btn-primary btn-sm nueva-actividad-btn"
+            style="background-color: #198754 !important; border-color: #198754 !important; color: white !important;"
+            @click="showActividadForm = true"
+          >
             <i class="bi bi-plus-circle me-1"></i>
             Nueva Actividad
           </button>
@@ -243,51 +251,83 @@
 
   <!-- Modal para crear/editar programa -->
   <div v-if="showForm" class="modal-backdrop">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width: 600px;">
       <h5 class="mb-3">{{ editIndex !== null ? 'Editar Programa' : 'Nuevo Programa' }}</h5>
       <form @submit.prevent="savePrograma">
-        <input
-          v-model="form.nombre"
-          class="form-control mb-2"
-          placeholder="Nombre del Programa"
-          required
-        />
-        <textarea
-          v-model="form.descripcion"
-          class="form-control mb-2"
-          placeholder="Descripción del Programa"
-          rows="3"
-        ></textarea>
-        <!-- Select de estado alineado -->
-        <select v-model="form.estado_id" class="form-control mb-2" required>
-          <option disabled value="">Seleccione un estado</option>
-          <option v-for="estado in estados" :key="estado.id" :value="estado.id">
-            {{ estado.nombre }}
-          </option>
-        </select>
-        <input
-          v-model="form.fecha_inicio"
-          type="date"
-          class="form-control mb-2"
-          placeholder="Fecha de Inicio"
-        />
-        <input
-          v-model="form.fecha_fin"
-          type="date"
-          class="form-control mb-2"
-          placeholder="Fecha de Fin"
-        />
-        <input
-          v-model.number="form.beneficiarios_count"
-          type="number"
-          class="form-control mb-3"
-          placeholder="Cantidad de Beneficiarios"
-          min="0"
-          required
-        />
-        <div class="text-end">
-          <button type="button" class="btn btn-secondary btn-sm me-2" @click="closeForm">Cancelar</button>
-          <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        <div class="mb-2">
+          <label for="nombre_programa" class="form-label small fw-semibold">Nombre</label>
+          <input
+            id="nombre_programa"
+            v-model="form.nombre"
+            class="form-control form-control-sm"
+            placeholder="Nombre del programa..."
+            required
+          />
+        </div>
+
+        <div class="mb-2">
+          <label for="descripcion_programa" class="form-label small fw-semibold">Descripción</label>
+          <textarea
+            id="descripcion_programa"
+            v-model="form.descripcion"
+            class="form-control form-control-sm"
+            placeholder="Descripción del programa..."
+            rows="2"
+          ></textarea>
+        </div>
+
+        <div class="mb-2">
+          <label for="estado_programa" class="form-label small fw-semibold">Estado</label>
+          <select id="estado_programa" v-model="form.estado_id" class="form-control form-control-sm" required>
+            <option disabled value="">Seleccione estado</option>
+            <option v-for="estado in estados" :key="estado.id" :value="estado.id">
+              {{ estado.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col-6">
+            <label for="fecha_inicio_programa" class="form-label small fw-semibold">Fecha Inicio</label>
+            <input
+              id="fecha_inicio_programa"
+              v-model="form.fecha_inicio"
+              type="date"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div class="col-6">
+            <label for="fecha_fin_programa" class="form-label small fw-semibold">Fecha Fin</label>
+            <input
+              id="fecha_fin_programa"
+              v-model="form.fecha_fin"
+              type="date"
+              class="form-control form-control-sm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <label for="beneficiarios_count" class="form-label small fw-semibold">Beneficiarios</label>
+          <input
+            id="beneficiarios_count"
+            v-model.number="form.beneficiarios_count"
+            type="number"
+            class="form-control form-control-sm"
+            placeholder="0"
+            min="0"
+            required
+            style="max-width: 120px;"
+          />
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 pt-2 border-top mt-3">
+          <button type="button" class="btn btn-outline-secondary btn-sm px-3" @click="closeForm">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary btn-sm px-3">
+            Guardar
+          </button>
         </div>
       </form>
     </div>
@@ -295,130 +335,144 @@
 
   <!-- Modal para crear/editar autoridad -->
   <div v-if="showAutoridadForm" class="modal-backdrop">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width: 600px;">
       <h5 class="mb-3">{{ editAutoridadIndex !== null ? 'Editar Autoridad' : 'Nueva Autoridad' }}</h5>
       <form @submit.prevent="saveAutoridad">
         <!-- Búsqueda por cédula -->
-        <div class="row mb-3">
-          <div class="col-md-8">
-            <label for="numero_identificacion" class="form-label fw-semibold">Buscar por Número de Identificación</label>
+        <div class="row mb-2">
+          <div class="col-8">
+            <label for="numero_identificacion" class="form-label small fw-semibold">Buscar por ID</label>
             <input
               id="numero_identificacion"
               v-model="autoridadForm.numero_identificacion"
               type="text"
-              class="form-control"
-              placeholder="Ingrese número de cédula..."
+              class="form-control form-control-sm"
+              placeholder="Número de cédula..."
               :disabled="buscandoPersona"
             />
           </div>
-          <div class="col-md-4 d-flex align-items-end">
+          <div class="col-4 d-flex align-items-end">
             <button
               type="button"
-              class="btn btn-outline-primary w-100"
+              class="btn btn-outline-primary btn-sm w-100"
               @click="buscarPersonaPorCedula"
               :disabled="!autoridadForm.numero_identificacion.trim() || buscandoPersona"
             >
-              <span v-if="buscandoPersona" class="spinner-border spinner-border-sm me-2"></span>
+              <span v-if="buscandoPersona" class="spinner-border spinner-border-sm me-1"></span>
               Buscar
             </button>
           </div>
         </div>
 
         <!-- Información de la persona encontrada -->
-        <div v-if="personaSeleccionada" class="alert alert-success mb-3">
-          <h6 class="alert-heading mb-2"> Persona Encontrada</h6>
-          <p class="mb-1"><strong>Nombre:</strong> {{ personaSeleccionada.nombre_completo }}</p>
-          <p class="mb-1"><strong>ID:</strong> {{ personaSeleccionada.numero_identificacion }}</p>
-          <p class="mb-0"><strong>Tipo ID:</strong> {{ personaSeleccionada.tipo_identificacion }}</p>
+        <div v-if="personaSeleccionada" class="alert alert-success mb-2 py-2">
+          <div class="row">
+            <div class="col-8">
+              <small class="fw-semibold">{{ personaSeleccionada.nombre_completo }}</small>
+            </div>
+            <div class="col-4 text-end">
+              <small>ID: {{ personaSeleccionada.numero_identificacion }}</small>
+            </div>
+          </div>
         </div>
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="tipo_autoridad_id" class="form-label fw-semibold">Tipo de Autoridad</label>
-            <select id="tipo_autoridad_id" v-model="autoridadForm.tipo_autoridad_id" class="form-control" required>
-              <option disabled value="">Seleccione tipo</option>
+        <!-- Tipo y Rol en fila -->
+        <div class="row mb-2">
+          <div class="col-6">
+            <label for="tipo_autoridad_id" class="form-label small fw-semibold">Tipo</label>
+            <select id="tipo_autoridad_id" v-model="autoridadForm.tipo_autoridad_id" class="form-control form-control-sm" required>
+              <option disabled value="">Tipo</option>
               <option v-for="tipo in tiposAutoridad" :key="tipo.id" :value="tipo.id">
                 {{ tipo.nombre }}
               </option>
             </select>
           </div>
-          <div class="col-md-6 mb-3">
-            <label for="rol_id" class="form-label fw-semibold">Rol</label>
-            <select id="rol_id" v-model="autoridadForm.rol_id" class="form-control" required>
-              <option disabled value="">Seleccione rol</option>
+          <div class="col-6">
+            <label for="rol_id" class="form-label small fw-semibold">Rol</label>
+            <select id="rol_id" v-model="autoridadForm.rol_id" class="form-control form-control-sm" required>
+              <option disabled value="">Rol</option>
               <option v-for="rol in rolesAutoridad" :key="rol.id" :value="rol.id">
                 {{ rol.nombre }}
               </option>
             </select>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="fecha_inicio_mandato" class="form-label fw-semibold">Fecha Inicio Mandato</label>
+        <!-- Fechas en fila -->
+        <div class="row mb-2">
+          <div class="col-6">
+            <label for="fecha_inicio_mandato" class="form-label small fw-semibold">Fecha Inicio</label>
             <input
               id="fecha_inicio_mandato"
               v-model="autoridadForm.fecha_inicio_mandato"
               type="date"
-              class="form-control"
+              class="form-control form-control-sm"
               required
             />
           </div>
-          <div class="col-md-6 mb-3">
-            <label for="fecha_fin_mandato" class="form-label fw-semibold">Fecha Fin Mandato (Opcional)</label>
+          <div class="col-6">
+            <label for="fecha_fin_mandato" class="form-label small fw-semibold">Fecha Fin</label>
             <input
               id="fecha_fin_mandato"
               v-model="autoridadForm.fecha_fin_mandato"
               type="date"
-              class="form-control"
+              class="form-control form-control-sm"
             />
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="telefono_contacto" class="form-label fw-semibold">Teléfono de Contacto</label>
+        <!-- Contacto en fila -->
+        <div class="row mb-2">
+          <div class="col-6">
+            <label for="telefono_contacto" class="form-label small fw-semibold">Teléfono</label>
             <input
               id="telefono_contacto"
               v-model="autoridadForm.telefono_contacto"
               type="tel"
-              class="form-control"
+              class="form-control form-control-sm"
               placeholder="3001234567"
             />
           </div>
-          <div class="col-md-6 mb-3">
-            <label for="email_contacto" class="form-label fw-semibold">Email de Contacto</label>
+          <div class="col-6">
+            <label for="email_contacto" class="form-label small fw-semibold">Email</label>
             <input
               id="email_contacto"
               v-model="autoridadForm.email_contacto"
               type="email"
-              class="form-control"
+              class="form-control form-control-sm"
               placeholder="autoridad@example.com"
             />
           </div>
         </div>
-        <div class="mb-3">
-          <label for="observaciones_autoridad" class="form-label fw-semibold">Observaciones</label>
+        <!-- Observaciones -->
+        <div class="mb-2">
+          <label for="observaciones_autoridad" class="form-label small fw-semibold">Observaciones</label>
           <textarea
             id="observaciones_autoridad"
             v-model="autoridadForm.observaciones"
-            class="form-control"
-            rows="3"
-            placeholder="Observaciones adicionales..."
+            class="form-control form-control-sm"
+            rows="2"
+            placeholder="Observaciones..."
           ></textarea>
         </div>
-        <div class="mb-3 form-check">
+        <!-- Checkbox activo -->
+        <div class="mb-2 form-check">
           <input
             v-model="autoridadForm.activo"
             class="form-check-input"
             type="checkbox"
             id="activoCheck"
           />
-          <label class="form-check-label fw-semibold" for="activoCheck">
+          <label class="form-check-label small fw-semibold" for="activoCheck">
             Autoridad Activa
           </label>
         </div>
-        <div class="text-end">
-          <button type="button" class="btn btn-secondary btn-sm me-2" @click="closeAutoridadForm">Cancelar</button>
-          <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        <!-- Botones -->
+        <div class="d-flex justify-content-end gap-2 pt-2 border-top mt-3">
+          <button type="button" class="btn btn-outline-secondary btn-sm px-3" @click="closeAutoridadForm">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary btn-sm px-3">
+            Guardar
+          </button>
         </div>
       </form>
     </div>
@@ -426,25 +480,25 @@
 
   <!-- Modal para crear/editar actividad -->
   <div v-if="showActividadForm" class="modal-backdrop">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width: 600px;">
       <h5 class="mb-3">{{ editActividadIndex !== null ? 'Editar Actividad' : 'Nueva Actividad' }}</h5>
       <form @submit.prevent="saveActividad">
-        <div class="row">
-          <div class="col-md-8 mb-3">
-            <label for="titulo_actividad" class="form-label fw-semibold">Título de la Actividad</label>
+        <div class="row mb-2">
+          <div class="col-8">
+            <label for="titulo_actividad" class="form-label small fw-semibold">Título</label>
             <input
               id="titulo_actividad"
               v-model="actividadForm.titulo"
               type="text"
-              class="form-control"
-              placeholder="Ingrese el título..."
+              class="form-control form-control-sm"
+              placeholder="Título de la actividad..."
               required
             />
           </div>
-          <div class="col-md-4 mb-3">
-            <label for="tipo_actividad_id" class="form-label fw-semibold">Tipo de Actividad</label>
-            <select id="tipo_actividad_id" v-model="actividadForm.tipo_actividad_id" class="form-control" required>
-              <option disabled value="">Seleccione tipo</option>
+          <div class="col-4">
+            <label for="tipo_actividad_id" class="form-label small fw-semibold">Tipo</label>
+            <select id="tipo_actividad_id" v-model="actividadForm.tipo_actividad_id" class="form-control form-control-sm" required>
+              <option disabled value="">Tipo</option>
               <option v-for="tipo in tiposActividad" :key="tipo.id" :value="tipo.id">
                 {{ tipo.nombre }}
               </option>
@@ -452,99 +506,104 @@
           </div>
         </div>
 
-        <div class="mb-3">
-          <label for="descripcion_actividad" class="form-label fw-semibold">Descripción</label>
+        <div class="mb-2">
+          <label for="descripcion_actividad" class="form-label small fw-semibold">Descripción</label>
           <textarea
             id="descripcion_actividad"
             v-model="actividadForm.descripcion"
-            class="form-control"
-            rows="3"
-            placeholder="Descripción de la actividad..."
+            class="form-control form-control-sm"
+            rows="2"
+            placeholder="Descripción..."
           ></textarea>
         </div>
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="estado_actividad_id" class="form-label fw-semibold">Estado</label>
-            <select id="estado_actividad_id" v-model="actividadForm.estado_id" class="form-control" required>
-              <option disabled value="">Seleccione estado</option>
+        <div class="row mb-2">
+          <div class="col-6">
+            <label for="estado_actividad_id" class="form-label small fw-semibold">Estado</label>
+            <select id="estado_actividad_id" v-model="actividadForm.estado_id" class="form-control form-control-sm" required>
+              <option disabled value="">Estado</option>
               <option v-for="estado in estadosActividad" :key="estado.id" :value="estado.id">
                 {{ estado.nombre }}
               </option>
             </select>
           </div>
-          <div class="col-md-6 mb-3">
-            <label for="ubicacion_actividad" class="form-label fw-semibold">Ubicación</label>
+          <div class="col-6">
+            <label for="ubicacion_actividad" class="form-label small fw-semibold">Ubicación</label>
             <input
               id="ubicacion_actividad"
               v-model="actividadForm.ubicacion"
               type="text"
-              class="form-control"
-              placeholder="Lugar donde se realiza..."
+              class="form-control form-control-sm"
+              placeholder="Lugar..."
             />
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="fecha_inicio_actividad" class="form-label fw-semibold">Fecha y Hora de Inicio</label>
+        <div class="row mb-2">
+          <div class="col-6">
+            <label for="fecha_inicio_actividad" class="form-label small fw-semibold">Fecha Inicio</label>
             <input
               id="fecha_inicio_actividad"
               v-model="actividadForm.fecha_inicio"
               type="datetime-local"
-              class="form-control"
+              class="form-control form-control-sm"
               required
             />
           </div>
-          <div class="col-md-6 mb-3">
-            <label for="fecha_fin_actividad" class="form-label fw-semibold">Fecha y Hora de Fin (Opcional)</label>
+          <div class="col-6">
+            <label for="fecha_fin_actividad" class="form-label small fw-semibold">Fecha Fin</label>
             <input
               id="fecha_fin_actividad"
               v-model="actividadForm.fecha_fin"
               type="datetime-local"
-              class="form-control"
+              class="form-control form-control-sm"
             />
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="capacidad_maxima" class="form-label fw-semibold">Capacidad Máxima</label>
+        <div class="row mb-2">
+          <div class="col-6">
+            <label for="capacidad_maxima" class="form-label small fw-semibold">Capacidad</label>
             <input
               id="capacidad_maxima"
               v-model.number="actividadForm.capacidad_maxima"
               type="number"
-              class="form-control"
+              class="form-control form-control-sm"
               placeholder="0"
               min="0"
+              style="max-width: 100px;"
             />
           </div>
-          <div class="col-md-6 mb-3">
-            <label for="organizador_actividad" class="form-label fw-semibold">Organizador</label>
+          <div class="col-6">
+            <label for="organizador_actividad" class="form-label small fw-semibold">Organizador</label>
             <input
               id="organizador_actividad"
               v-model="actividadForm.organizador"
               type="text"
-              class="form-control"
-              placeholder="Nombre del organizador..."
+              class="form-control form-control-sm"
+              placeholder="Nombre..."
             />
           </div>
         </div>
 
-        <div class="mb-3">
-          <label for="observaciones_actividad" class="form-label fw-semibold">Observaciones</label>
+        <div class="mb-2">
+          <label for="observaciones_actividad" class="form-label small fw-semibold">Observaciones</label>
           <textarea
             id="observaciones_actividad"
             v-model="actividadForm.observaciones"
-            class="form-control"
-            rows="3"
-            placeholder="Observaciones adicionales..."
+            class="form-control form-control-sm"
+            rows="2"
+            placeholder="Observaciones..."
           ></textarea>
         </div>
 
-        <div class="text-end">
-          <button type="button" class="btn btn-secondary btn-sm me-2" @click="closeActividadForm">Cancelar</button>
-          <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        <div class="d-flex justify-content-end gap-2 pt-2 border-top mt-3">
+          <button type="button" class="btn btn-outline-secondary btn-sm px-3" @click="closeActividadForm">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary btn-sm px-3">
+            Guardar
+          </button>
         </div>
       </form>
     </div>

@@ -25,8 +25,13 @@
       <!-- Acciones -->
       <div class="d-flex align-items-center gap-2">
         <slot name="actions">
-          <button v-if="showCreate" class="btn btn-primary btn-sm" @click="$emit('create')">
-            <i class="bi bi-plus-lg me-1"></i> Nuevo
+          <button
+            v-if="showCreate"
+            class="btn btn-primary btn-sm nuevo-programa-btn"
+            style="background-color: #198754 !important; border-color: #198754 !important; color: white !important;"
+            @click="$emit('create')"
+          >
+            <i class="bi bi-plus-lg me-1"></i> Nuevo Programa
           </button>
 
           <button v-if="showExport" class="btn btn-outline-secondary btn-sm" @click="$emit('export')">
