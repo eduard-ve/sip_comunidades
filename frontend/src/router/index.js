@@ -20,7 +20,7 @@ const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', name: 'Login', component: Login },
   {
-    path: '/encuesta/:token',
+    path: '/encuesta/:id',
     name: 'ResponderEncuesta',
     component: ResponderEncuesta,
     meta: { requiresAuth: false }, // No requiere autenticación

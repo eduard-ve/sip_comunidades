@@ -51,12 +51,15 @@ class EncuestaViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            encuesta = Encuesta.objects.select_related().prefetch_related(
-                'preguntas__opciones'
-            ).get(id=int(token), estado='activa')
+            # Convertir token a entero para buscar por ID
+            encuesta_id = int(token)
+            encuesta = Encuesta.objects.get(id_encuesta=encuesta_id, estado='activa')
 
+            # Usar el serializador estándar que ya incluye las preguntas
             serializer = self.get_serializer(encuesta)
-            return Response(serializer.data)
+            data = serializer.data
+
+            return Response(data)
         except (Encuesta.DoesNotExist, ValueError):
             return Response({
                 'error': 'Encuesta no encontrada',
@@ -65,7 +68,7 @@ class EncuestaViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({
                 'error': 'Error interno',
-                'message': 'Error al cargar la encuesta'
+                'message': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class PreguntaViewSet(viewsets.ModelViewSet):
@@ -82,6 +85,35 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
     permission_classes = [permissions.AllowAny]  # Permitir respuestas públicas
+
+    def get_queryset(self):
+        """Filtrar respuestas por encuesta si se especifica"""
+        queryset = Respuesta.objects.all()
+        encuesta_id = self.request.query_params.get('encuesta', None)
+        if encuesta_id:
+            queryset = queryset.filter(encuesta_id=encuesta_id)
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        """Crear respuesta con validaciones adicionales"""
+        try:
+            # Validar que la encuesta existe y está activa
+            encuesta_id = request.data.get('encuesta')
+            if encuesta_id:
+                try:
+                    encuesta = Encuesta.objects.get(id_encuesta=encuesta_id, estado='activa')
+                except Encuesta.DoesNotExist:
+                    return Response({
+                        'error': 'Encuesta no válida',
+                        'message': 'La encuesta no existe o no está disponible'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+            return super().create(request, *args, **kwargs)
+        except ValidationError as e:
+            return Response({
+                'error': 'Datos de respuesta inválidos',
+                'details': e.detail
+            }, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         """Filtrar respuestas por encuesta si se especifica"""
