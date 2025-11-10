@@ -35,6 +35,34 @@
     </div>
   </div>
 
+  <!-- Modal para compartir enlace -->
+  <div v-if="showLink" class="modal-backdrop" @click="closeLinkModal">
+    <div class="modal-card" @click.stop>
+      <div class="modal-link">
+        <h5>¡Encuesta creada exitosamente!</h5>
+        <p class="mb-3">Comparte este enlace para que las personas puedan responder la encuesta:</p>
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            class="form-control"
+            :value="shareLink"
+            readonly
+            ref="linkInput"
+          />
+          <button class="btn btn-outline-primary" @click="copyLink">
+            <i class="bi bi-clipboard"></i> Copiar
+          </button>
+        </div>
+        <div class="d-flex justify-content-between">
+          <button class="btn btn-outline-secondary" @click="openSurveyLink">
+            <i class="bi bi-eye"></i> Ver encuesta
+          </button>
+          <button class="btn btn-primary" @click="closeLinkModal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <script setup>
@@ -49,6 +77,9 @@ const router = useRouter()
 
 // Variables de estado
 const showForm = ref(false)
+const showLink = ref(false)
+const shareLink = ref('')
+const linkInput = ref(null)
 
 // Datos de la interfaz
 const kpis = ref([
@@ -172,6 +203,14 @@ async function saveSurvey(nuevaEncuesta) {
     console.log('Enviando encuesta:', nuevaEncuesta)
     const response = await api.post('/encuestas/', nuevaEncuesta)
     console.log('Encuesta guardada:', response.data)
+
+    // Generar enlace para compartir
+    const surveyId = response.data.id_encuesta
+    const shareLink = `${window.location.origin}/encuesta/${surveyId}`
+
+    // Mostrar modal con el enlace
+    showLinkModal(shareLink)
+
     await loadSurveys() // Recargar la lista de encuestas
     showForm.value = false
   } catch (error) {
@@ -183,6 +222,33 @@ async function saveSurvey(nuevaEncuesta) {
 
 function cancelSurvey() {
   showForm.value = false
+}
+
+function showLinkModal(link) {
+  shareLink.value = link
+  showLink.value = true
+}
+
+function closeLinkModal() {
+  showLink.value = false
+  shareLink.value = ''
+}
+
+function copyLink() {
+  if (linkInput.value) {
+    linkInput.value.select()
+    navigator.clipboard.writeText(shareLink.value).then(() => {
+      alert('Enlace copiado al portapapeles')
+    }).catch(() => {
+      // Fallback para navegadores antiguos
+      document.execCommand('copy')
+      alert('Enlace copiado al portapapeles')
+    })
+  }
+}
+
+function openSurveyLink() {
+  window.open(shareLink.value, '_blank')
 }
 
 // Propiedad computada para el conteo de encuestas filtradas
