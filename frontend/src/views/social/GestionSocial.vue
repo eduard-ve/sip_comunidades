@@ -28,11 +28,6 @@
     <!-- Extra contenido encima de charts -->
     <template #extra>
       <div class="mb-3">
-        <ul>
-          <li v-for="(act, idx) in actividades" :key="idx">{{ act }}</li>
-        </ul>
-      </div>
-      <div class="mb-3">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5>Autoridades Comunitarias Activas</h5>
           <button class="btn btn-success btn-sm" @click="showAutoridadForm = true">
