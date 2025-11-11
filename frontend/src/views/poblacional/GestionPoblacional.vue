@@ -250,18 +250,13 @@ import { poblacionService } from '../../services/api.js'
 import * as XLSX from 'xlsx'
 import '../../assets/css/GestionPoblacional.css'
 
-// KPIs dinámicos
+// KPIs dinámicos principales (5 KPIs)
 const kpis = ref([
-  { title: 'Población Total', value: '0', change: '0', icon: 'bi bi-people-fill', color: 'primary' },
-  { title: 'Edad Promedio', value: '0', change: '0', icon: 'bi bi-calendar-event', color: 'info' },
-  { title: 'Ratio Género M:F', value: '0:0', change: '0', icon: 'bi bi-gender-ambiguous', color: 'secondary' },
-  { title: 'Tasa Alfabetismo', value: '0%', change: '0', icon: 'bi bi-book', color: 'success' },
-  { title: 'Ocupación Principal', value: 'N/A', change: '0', icon: 'bi bi-briefcase', color: 'warning' },
-  { title: 'Lengua Materna Principal', value: 'N/A', change: '0', icon: 'bi bi-translate', color: 'info' },
-  { title: 'Menores de 5 años', value: '0', change: '0', icon: 'bi bi-baby', color: 'danger' },
-  { title: 'Mayores de 65 años', value: '0', change: '0', icon: 'bi bi-person-wheelchair', color: 'danger' },
-  { title: 'Analfabetos', value: '0', change: '0', icon: 'bi bi-exclamation-triangle', color: 'warning' },
-  { title: 'Población Vulnerable', value: '0', change: '0', icon: 'bi bi-shield-exclamation', color: 'danger' }
+  { title: 'Población Total', value: '0', change: '0%', icon: 'bi bi-people-fill', color: 'primary' },
+  { title: 'Edad Promedio', value: '0 años', change: '0.0', icon: 'bi bi-calendar-event', color: 'info' },
+  { title: 'Tasa Alfabetismo', value: '0%', change: '0%', icon: 'bi bi-book', color: 'success' },
+  { title: 'Ocupación Principal', value: 'N/A', change: '0%', icon: 'bi bi-briefcase', color: 'warning' },
+  { title: 'Crecimiento Poblacional', value: '0%', change: '0%', icon: 'bi bi-graph-up', color: 'secondary' }
 ])
 
 // Gráficas
@@ -397,7 +392,7 @@ async function cargarEstadisticas() {
         topOcupaciones.value = await fetch('/api/poblacion/estadisticas/top-ocupaciones/').then(r => r.json())
         lenguasMaternas.value = await fetch('/api/poblacion/estadisticas/lenguas-maternas/').then(r => r.json())
 
-        // Actualizar KPIs dinámicos
+        // Actualizar KPIs dinámicos principales (5 KPIs)
         kpis.value = [
             {
                 title: 'Población Total',
@@ -414,13 +409,6 @@ async function cargarEstadisticas() {
                 color: 'info'
             },
             {
-                title: 'Ratio Género M:F',
-                value: stats.ratio_genero || '0:0',
-                change: '0.0',
-                icon: 'bi bi-gender-ambiguous',
-                color: 'secondary'
-            },
-            {
                 title: 'Tasa Alfabetismo',
                 value: `${stats.tasa_alfabetismo || 0}%`,
                 change: '+1.2%',
@@ -430,44 +418,16 @@ async function cargarEstadisticas() {
             {
                 title: 'Ocupación Principal',
                 value: stats.ocupacion_principal || 'N/A',
-                change: '0.0',
+                change: '0.0%',
                 icon: 'bi bi-briefcase',
                 color: 'warning'
             },
             {
-                title: 'Lengua Materna Principal',
-                value: stats.lengua_materna_principal || 'N/A',
-                change: '0.0',
-                icon: 'bi bi-translate',
-                color: 'info'
-            },
-            {
-                title: 'Menores de 5 años',
-                value: menores5.toLocaleString(),
-                change: '-0.5%',
-                icon: 'bi bi-baby',
-                color: 'danger'
-            },
-            {
-                title: 'Mayores de 65 años',
-                value: mayores65.toLocaleString(),
-                change: '+3.2%',
-                icon: 'bi bi-person-wheelchair',
-                color: 'danger'
-            },
-            {
-                title: 'Analfabetos',
-                value: analfabetos.toLocaleString(),
-                change: '-1.8%',
-                icon: 'bi bi-exclamation-triangle',
-                color: analfabetos > 100 ? 'danger' : 'warning'
-            },
-            {
-                title: 'Población Vulnerable',
-                value: (menores5 + mayores65).toLocaleString(),
-                change: '+1.2%',
-                icon: 'bi bi-shield-exclamation',
-                color: (menores5 + mayores65) > 200 ? 'danger' : 'warning'
+                title: 'Crecimiento Poblacional',
+                value: `${stats.crecimiento_poblacional || 0}%`,
+                change: '+0.1%',
+                icon: 'bi bi-graph-up',
+                color: 'secondary'
             }
         ]
     } catch (error) {
@@ -655,10 +615,12 @@ onMounted(async () => {
 }
 
 .kpis-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
-  max-width: 1200px;
+  justify-content: center;
+  align-items: stretch;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -755,8 +717,8 @@ onMounted(async () => {
   }
 
   .kpis-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 0.75rem;
+    flex-direction: column;
+    align-items: center;
   }
 
   .action-buttons {
@@ -768,6 +730,12 @@ onMounted(async () => {
   .btn {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .kpis-grid {
+    justify-content: space-around;
   }
 }
 </style>

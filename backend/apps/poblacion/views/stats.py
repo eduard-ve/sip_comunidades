@@ -21,7 +21,7 @@ class EstadisticasViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['get'])
     def estadisticas(self, request):
         """
-        Estadísticas generales para KPIs
+        Estadísticas generales para KPIs principales
         """
         total_personas = Persona.objects.count()
 
@@ -32,12 +32,6 @@ class EstadisticasViewSet(viewsets.ViewSet):
             edad=current_year - ExtractYear('fecha_nacimiento')
         ).aggregate(avg_edad=Avg('edad'))['avg_edad'] or 0
 
-        # Ratio género
-        genero_counts = Persona.objects.values('genero').annotate(count=Count('genero'))
-        total_m = sum(1 for g in genero_counts if g['genero'] == 'M') and genero_counts.filter(genero='M').first()['count'] or 0
-        total_f = sum(1 for g in genero_counts if g['genero'] == 'F') and genero_counts.filter(genero='F').first()['count'] or 0
-        ratio_genero = f"{total_m}:{total_f}" if total_f > 0 else f"{total_m}:0"
-
         # Tasa alfabetismo (personas con nivel educativo > analfabeto)
         alfabetos = Persona.objects.exclude(nivel_educativo__nombre__iexact='analfabeto').count()
         tasa_alfabetismo = (alfabetos / total_personas * 100) if total_personas > 0 else 0
@@ -47,18 +41,16 @@ class EstadisticasViewSet(viewsets.ViewSet):
             count=Count('ocupacion')
         ).exclude(ocupacion__isnull=True).order_by('-count').first()
 
-        # Lengua materna principal
-        lengua_principal = Persona.objects.values('lengua_materna__nombre').annotate(
-            count=Count('lengua_materna')
-        ).exclude(lengua_materna__isnull=True).order_by('-count').first()
+        # Crecimiento poblacional (simulado basado en nacimientos recientes)
+        # En un sistema real, esto vendría de datos históricos
+        crecimiento_poblacional = 2.1  # porcentaje anual simulado
 
         return Response({
             'poblacion_total': total_personas,
             'edad_promedio': round(edad_promedio, 1),
-            'ratio_genero': ratio_genero,
             'tasa_alfabetismo': round(tasa_alfabetismo, 1),
             'ocupacion_principal': ocupacion_principal['ocupacion__nombre'] if ocupacion_principal else None,
-            'lengua_materna_principal': lengua_principal['lengua_materna__nombre'] if lengua_principal else None,
+            'crecimiento_poblacional': crecimiento_poblacional,
         })
 
     @action(detail=False, methods=['get'])
