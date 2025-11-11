@@ -29,12 +29,15 @@
                 <td>{{ persona.numero_identificacion }}</td>
                 <td>{{ persona.fecha_nacimiento }}</td>
                 <td>{{ persona.genero }}</td>
-                <td>{{ persona.nivel_educativo?.nombre || 'N/A' }}</td>
-                <td>{{ persona.ocupacion?.nombre || 'N/A' }}</td>
-                <td>{{ persona.estado_civil?.nombre || 'N/A' }}</td>
+                <td>{{ persona.nivel_educativo_nombre || 'N/A' }}</td>
+                <td>{{ persona.ocupacion_nombre || 'N/A' }}</td>
+                <td>{{ persona.estado_civil_nombre || 'N/A' }}</td>
                 <td>
                   <button @click="verDetalle(persona)" class="btn btn-sm btn-outline-primary">
                     👁️ Ver
+                  </button>
+                  <button @click="editarPersona(persona)" class="btn btn-sm btn-outline-warning ms-1">
+                    ✏️ Editar
                   </button>
                 </td>
               </tr>
