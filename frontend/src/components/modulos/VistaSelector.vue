@@ -32,6 +32,8 @@
                 <td>{{ persona.nivel_educativo_nombre || 'N/A' }}</td>
                 <td>{{ persona.ocupacion_nombre || 'N/A' }}</td>
                 <td>{{ persona.estado_civil_nombre || 'N/A' }}</td>
+                <td>{{ persona.direccion || 'N/A' }}</td>
+                <td>{{ persona.lengua_materna_nombre || 'N/A' }}</td>
                 <td>
                   <button @click="editarPersona(persona)" class="btn btn-sm btn-outline-warning">
                     ✏️ Editar
@@ -180,6 +182,8 @@ export default {
         { key: 'nivel_educativo', label: 'Educación' },
         { key: 'ocupacion', label: 'Ocupación' },
         { key: 'estado_civil', label: 'Estado Civil' },
+        { key: 'direccion', label: 'Dirección' },
+        { key: 'lengua_materna', label: 'Lengua Materna' },
         { key: 'acciones', label: 'Acciones' }
       ]
     }
