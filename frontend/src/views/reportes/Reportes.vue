@@ -168,19 +168,19 @@ async function saveReporte(newReporte) {
     let storeMethod
     if (newReporte.tipo_reporte === 'resumen_salud' || newReporte.tipo_reporte === 'indicadores_salud') {
 <<<<<<< Updated upstream
-      storeMethod = isEditing ? reportesStore.updateReporteSalud : reportesStore.createReporteSalud
+      storeMethod = reportesStore.createReporteSalud
     } else if (newReporte.tipo_reporte === 'reporte_social' || newReporte.tipo_reporte === 'condiciones_sociales') {
-      storeMethod = isEditing ? reportesStore.updateReporteSocial : reportesStore.createReporteSocial
+      storeMethod = reportesStore.createReporteSocial
     } else if (newReporte.tipo_reporte === 'resultados_encuesta' || newReporte.tipo_reporte === 'analisis_encuesta') {
-      storeMethod = isEditing ? reportesStore.updateReporteEncuestas : reportesStore.createReporteEncuestas
+      storeMethod = reportesStore.createReporteEncuestas
     } else {
       // Fallback: si no coincide exactamente, usar lógica anterior
       if (newReporte.tipo_reporte.includes('salud')) {
-        storeMethod = isEditing ? reportesStore.updateReporteSalud : reportesStore.createReporteSalud
+        storeMethod = reportesStore.createReporteSalud
       } else if (newReporte.tipo_reporte.includes('social')) {
-        storeMethod = isEditing ? reportesStore.updateReporteSocial : reportesStore.createReporteSocial
+        storeMethod = reportesStore.createReporteSocial
       } else {
-        storeMethod = isEditing ? reportesStore.updateReporteEncuestas : reportesStore.createReporteEncuestas
+        storeMethod = reportesStore.createReporteEncuestas
 =======
       storeMethod = reportesStore.createReporteSalud
     } else if (newReporte.tipo_reporte === 'reporte_social' || newReporte.tipo_reporte === 'condiciones_sociales') {
@@ -242,7 +242,7 @@ async function saveReporte(newReporte) {
     closeForm()
   } catch (error) {
     console.error('Error al guardar reporte:', error)
-    alert(`Error al ${editingReporte.value ? 'actualizar' : 'generar'} el reporte: ${error.response?.data?.error || error.response?.data?.detail || error.message}`)
+    alert(`Error al generar el reporte: ${error.response?.data?.detail || error.message}`)
 
 =======
     alert("Reporte generado con éxito")
