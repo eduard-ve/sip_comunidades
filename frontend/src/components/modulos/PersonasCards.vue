@@ -200,19 +200,10 @@
         </div>
 
         <div class="modal-footer">
-          <div class="footer-left">
-            <button @click="imprimirDatos" class="btn-secondary">
-              🖨️ Imprimir
-            </button>
-            <button @click="exportarIndividual" class="btn-secondary">
-              📄 Exportar PDF
-            </button>
-          </div>
           <div class="footer-right">
             <button @click="verArbolFamiliar" class="btn-info">🌳 Árbol Familiar</button>
             <button @click="editarPersona" class="btn-warning">✏️ Editar</button>
             <button @click="eliminarPersona" class="btn-danger">🗑️ Eliminar</button>
-            <button @click="cerrarModal" class="btn-secondary">❌ Cerrar</button>
           </div>
         </div>
       </div>
