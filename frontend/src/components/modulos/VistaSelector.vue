@@ -216,6 +216,11 @@ export default {
       if (confirm(`¿Seguro que deseas eliminar a ${persona.nombre_completo}?`)) {
         this.$emit('eliminar-persona', persona)
       }
+    },
+
+    personaEliminada(persona) {
+      // Este método será llamado desde el componente padre para actualizar la vista
+      // La lógica de eliminación se maneja en GestionPoblacional.vue
     }
   }
 }

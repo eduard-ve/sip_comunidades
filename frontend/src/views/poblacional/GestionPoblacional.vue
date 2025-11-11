@@ -46,6 +46,7 @@
           @ver-detalle="verDetallePersona"
           @ver-arbol-familiar="verArbolFamiliar"
           @editar-persona="editarPersona"
+          @eliminar-persona="eliminarPersona"
           @filtrar-ocupacion="filtrarPorOcupacion"
         />
 
@@ -334,19 +335,34 @@ function closeForm(){
 }
 
 async function savePerson(){
-   try {
-      if(editIndex.value!==null) {
-         const response = await poblacionService.updatePersona(form.value.id, form.value)
-         people.value[editIndex.value] = response.data
-      } else {
-         const response = await poblacionService.createPersona(form.value)
-         people.value.push(response.data)
-      }
-      closeForm()
-   } catch (error) {
-      console.error('Error saving person:', error)
-      alert('Error al guardar la persona')
-   }
+    try {
+       if(editIndex.value!==null) {
+          const response = await poblacionService.updatePersona(form.value.id, form.value)
+          // Actualizar la persona en el array
+          const index = people.value.findIndex(p => p.id === form.value.id)
+          if (index !== -1) {
+              people.value[index] = response.data
+          }
+          // Actualizar también en personasFiltradas si existe
+          const filteredIndex = personasFiltradas.value.findIndex(p => p.id === form.value.id)
+          if (filteredIndex !== -1) {
+              personasFiltradas.value[filteredIndex] = response.data
+          }
+       } else {
+          const response = await poblacionService.createPersona(form.value)
+          people.value.push(response.data)
+          // Agregar también a personasFiltradas si no hay filtros activos
+          if (Object.keys(filtrosActuales.value).length === 0) {
+              personasFiltradas.value.push(response.data)
+          }
+       }
+       // Recargar estadísticas después de guardar
+       await cargarEstadisticas()
+       closeForm()
+    } catch (error) {
+       console.error('Error saving person:', error)
+       alert('Error al guardar la persona')
+    }
 }
 
 function editPersonByRow(row){
@@ -356,16 +372,24 @@ function editPersonByRow(row){
 }
 
 async function deletePersonByRow(row){
-   if(confirm('¿Seguro que deseas eliminar este registro?')) {
-      try {
-         await poblacionService.deletePersona(row.id)
-         const idx = people.value.indexOf(row)
-         if(idx !== -1) people.value.splice(idx, 1)
-      } catch (error) {
-         console.error('Error deleting person:', error)
-         alert('Error al eliminar la persona')
-      }
-   }
+    if(confirm('¿Seguro que deseas eliminar este registro?')) {
+       try {
+          await poblacionService.deletePersona(row.id)
+          // Eliminar de people
+          const idx = people.value.indexOf(row)
+          if(idx !== -1) people.value.splice(idx, 1)
+
+          // Eliminar también de personasFiltradas
+          const filteredIdx = personasFiltradas.value.indexOf(row)
+          if(filteredIdx !== -1) personasFiltradas.value.splice(filteredIdx, 1)
+
+          // Recargar estadísticas después de eliminar
+          await cargarEstadisticas()
+       } catch (error) {
+          console.error('Error deleting person:', error)
+          alert('Error al eliminar la persona')
+       }
+    }
 }
 
 // Composición familiar
@@ -519,9 +543,33 @@ function verArbolFamiliar(persona) {
 }
 
 function editarPersona(persona) {
-    editIndex.value = people.value.indexOf(persona)
+    editIndex.value = people.value.findIndex(p => p.id === persona.id)
     form.value = { ...persona }
     showForm.value = true
+}
+
+async function eliminarPersona(persona) {
+    if(confirm(`¿Seguro que deseas eliminar a ${persona.nombre_completo}?`)) {
+       try {
+          await poblacionService.deletePersona(persona.id)
+
+          // Eliminar de people
+          const idx = people.value.findIndex(p => p.id === persona.id)
+          if(idx !== -1) people.value.splice(idx, 1)
+
+          // Eliminar también de personasFiltradas
+          const filteredIdx = personasFiltradas.value.findIndex(p => p.id === persona.id)
+          if(filteredIdx !== -1) personasFiltradas.value.splice(filteredIdx, 1)
+
+          // Recargar estadísticas después de eliminar
+          await cargarEstadisticas()
+
+          alert('Persona eliminada exitosamente')
+       } catch (error) {
+          console.error('Error deleting person:', error)
+          alert('Error al eliminar la persona')
+       }
+    }
 }
 
 function filtrarPorOcupacion(ocupacion) {
