@@ -52,7 +52,8 @@
 
 .left-panel {
   flex: 1;
- background: url('../../assets/images/login11.jpg') center/cover no-repeat;  display: flex;
+ background: url('../../assets/images/login11.jpg') center/cover no-repeat;
+ display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 60px;
@@ -219,7 +220,7 @@
 
 .alert-danger {
   background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-  color: white;
+  color: #ffffff;
 }
 
 .btn-close {

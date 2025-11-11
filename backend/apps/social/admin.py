@@ -1,5 +1,9 @@
 from django.contrib import admin
-from .models import EstadoPrograma, ProgramaSocial, ProgramaBeneficiario, ActividadSocial, CoberturaPrograma
+from .models import (
+    EstadoPrograma, ProgramaSocial, ProgramaBeneficiario, ActividadSocial, CoberturaPrograma,
+    TipoAutoridad, RolAutoridad, AutoridadComunitaria,
+    TipoActividad, EstadoActividad, ActividadComunitaria, AsistenciaActividad
+)
 
 # registro de los modelos en el admin de Django
 admin.site.register(EstadoPrograma)
@@ -7,3 +11,10 @@ admin.site.register(ProgramaSocial)
 admin.site.register(ProgramaBeneficiario)
 admin.site.register(ActividadSocial)
 admin.site.register(CoberturaPrograma)
+admin.site.register(TipoAutoridad)
+admin.site.register(RolAutoridad)
+admin.site.register(AutoridadComunitaria)
+admin.site.register(TipoActividad)
+admin.site.register(EstadoActividad)
+admin.site.register(ActividadComunitaria)
+admin.site.register(AsistenciaActividad)
