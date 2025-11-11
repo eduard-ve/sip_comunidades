@@ -33,11 +33,11 @@
                 <td>{{ persona.ocupacion_nombre || 'N/A' }}</td>
                 <td>{{ persona.estado_civil_nombre || 'N/A' }}</td>
                 <td>
-                  <button @click="verDetalle(persona)" class="btn btn-sm btn-outline-primary">
-                    👁️ Ver
-                  </button>
-                  <button @click="editarPersona(persona)" class="btn btn-sm btn-outline-warning ms-1">
+                  <button @click="editarPersona(persona)" class="btn btn-sm btn-outline-warning">
                     ✏️ Editar
+                  </button>
+                  <button @click="eliminarPersona(persona)" class="btn btn-sm btn-outline-danger ms-1">
+                    🗑️ Eliminar
                   </button>
                 </td>
               </tr>
@@ -206,6 +206,12 @@ export default {
 
     filtrarPorOcupacion(ocupacion) {
       this.$emit('filtrar-ocupacion', ocupacion)
+    },
+
+    eliminarPersona(persona) {
+      if (confirm(`¿Seguro que deseas eliminar a ${persona.nombre_completo}?`)) {
+        this.$emit('eliminar-persona', persona)
+      }
     }
   }
 }
