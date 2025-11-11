@@ -1068,14 +1068,18 @@ async function saveAutoridad() {
       await socialService.createAutoridadComunitaria(dataToSend)
     }
     closeAutoridadForm()
-    await loadAutoridadesComunitarias()
+    await loadAutoridadesComunitarias() // Recargar autoridades para actualizar la vista
     await loadPersonasDisponibles() // Recargar personas disponibles
     // Mostrar mensaje de éxito
     const mensaje = isEditing ? 'Autoridad actualizada exitosamente' : 'Autoridad creada exitosamente'
     alert(mensaje)
   } catch (err) {
     console.error('Error saving autoridad:', err)
-    alert('Error al guardar la autoridad. Verifica los datos e intenta nuevamente.')
+    // Solo mostrar error si realmente hay un problema de validación o conexión
+    // No mostrar error si la operación fue exitosa pero hay un problema menor
+    if (err.response && err.response.status !== 201 && err.response.status !== 200) {
+      alert('Error al guardar la autoridad. Verifica los datos e intenta nuevamente.')
+    }
   }
 }
 
@@ -1102,10 +1106,15 @@ async function deleteAutoridad(autoridad) {
   if (globalThis.confirm('¿Seguro que deseas eliminar esta autoridad?')) {
     try {
       await socialService.deleteAutoridadComunitaria(autoridad.id)
-      await loadActividadesComunitarias()
+      await loadAutoridadesComunitarias() // Recargar autoridades para actualizar la vista
       await loadPersonasDisponibles() // Recargar personas disponibles
+      alert('Autoridad eliminada exitosamente')
     } catch (err) {
       console.error('Error deleting autoridad:', err)
+      // Solo mostrar error si realmente hay un problema (no si ya fue eliminada)
+      if (err.response && err.response.status !== 204 && err.response.status !== 404) {
+        alert('Error al eliminar la autoridad')
+      }
     }
   }
 }

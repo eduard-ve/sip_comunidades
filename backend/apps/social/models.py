@@ -151,7 +151,7 @@ class ActividadComunitaria(models.Model):
     asistentes_confirmados = models.PositiveIntegerField(default=0, verbose_name="Asistentes Confirmados")
     asistentes_registrados = models.ManyToManyField(Persona, related_name='actividades_registradas', blank=True, verbose_name="Asistentes Registrados")
 
-    organizador = models.CharField(max_length=200, blank=True, verbose_name="Organizador")
+    organizador = models.CharField(max_length=200, blank=True, null=True, verbose_name="Organizador")
     presupuesto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Presupuesto")
     costo_real = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Costo Real")
 

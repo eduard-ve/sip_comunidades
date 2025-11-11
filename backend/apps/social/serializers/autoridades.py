@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from ..models import TipoAutoridad, RolAutoridad, AutoridadComunitaria
+from apps.poblacion.models.personas import Persona
 from apps.poblacion.serializers.personas import PersonaSerializer
 
 
@@ -18,7 +19,7 @@ class RolAutoridadSerializer(serializers.ModelSerializer):
 class AutoridadComunitariaSerializer(serializers.ModelSerializer):
     persona = PersonaSerializer(read_only=True)
     persona_id = serializers.PrimaryKeyRelatedField(
-        queryset=AutoridadComunitaria.objects.all(),
+        queryset=Persona.objects.all(),
         source='persona',
         write_only=True
     )
