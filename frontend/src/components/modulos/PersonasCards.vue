@@ -25,12 +25,12 @@
         <div class="card-content">
           <h3 class="card-nombre">{{ persona.nombre_completo }}</h3>
           <p class="card-edad">{{ calcularEdad(persona.fecha_nacimiento) }} años</p>
-          <p class="card-ocupacion">{{ persona.ocupacion?.nombre || 'Sin ocupación' }}</p>
+          <p class="card-ocupacion">{{ persona.ocupacion_nombre || 'Sin ocupación' }}</p>
 
           <!-- Estado civil con icono -->
           <div class="card-estado-civil">
-            <span class="estado-icon">{{ getIconoEstadoCivil(persona.estado_civil?.nombre) }}</span>
-            <span class="estado-texto">{{ persona.estado_civil?.nombre || 'No especificado' }}</span>
+            <span class="estado-icon">{{ getIconoEstadoCivil(persona.estado_civil_nombre) }}</span>
+            <span class="estado-texto">{{ persona.estado_civil_nombre || 'No especificado' }}</span>
           </div>
 
           <!-- Género con icono -->
