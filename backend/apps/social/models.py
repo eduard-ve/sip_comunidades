@@ -4,14 +4,16 @@ from apps.usuarios.models import Usuario
 
 # Constantes para textos repetitivos
 VERBOSE_NAME_DESCRIPCION = "Descripción"
+VERBOSE_NAME_TIPO_AUTORIDAD = "Tipo de Autoridad"
+VERBOSE_NAME_TIPO_ACTIVIDAD = "Tipo de Actividad"
 
 # Modelos para gestión de autoridades y líderes comunitarios
 class TipoAutoridad(models.Model):
-    nombre = models.CharField(max_length=100, unique=True, verbose_name="Tipo de Autoridad")
+    nombre = models.CharField(max_length=100, unique=True, verbose_name=VERBOSE_NAME_TIPO_AUTORIDAD)
     descripcion = models.TextField(blank=True, verbose_name=VERBOSE_NAME_DESCRIPCION)
 
     class Meta:
-        verbose_name = "Tipo de Autoridad"
+        verbose_name = VERBOSE_NAME_TIPO_AUTORIDAD
         verbose_name_plural = "Tipos de Autoridad"
 
     def __str__(self):
@@ -110,12 +112,12 @@ class ProgramaBeneficiario(models.Model):  # intermediario para gestionar benefi
 
 # Modelos para gestión de actividades y eventos comunitarios
 class TipoActividad(models.Model):
-    nombre = models.CharField(max_length=100, unique=True, verbose_name="Tipo de Actividad")
+    nombre = models.CharField(max_length=100, unique=True, verbose_name=VERBOSE_NAME_TIPO_ACTIVIDAD)
     descripcion = models.TextField(blank=True, verbose_name=VERBOSE_NAME_DESCRIPCION)
     icono = models.CharField(max_length=50, blank=True, verbose_name="Icono (Bootstrap)")
 
     class Meta:
-        verbose_name = "Tipo de Actividad"
+        verbose_name = VERBOSE_NAME_TIPO_ACTIVIDAD
         verbose_name_plural = "Tipos de Actividad"
 
     def __str__(self):
@@ -149,7 +151,7 @@ class ActividadComunitaria(models.Model):
     asistentes_confirmados = models.PositiveIntegerField(default=0, verbose_name="Asistentes Confirmados")
     asistentes_registrados = models.ManyToManyField(Persona, related_name='actividades_registradas', blank=True, verbose_name="Asistentes Registrados")
 
-    organizador = models.CharField(max_length=200, blank=True, null=True, verbose_name="Organizador")
+    organizador = models.CharField(max_length=200, blank=True, verbose_name="Organizador")
     presupuesto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Presupuesto")
     costo_real = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Costo Real")
 
