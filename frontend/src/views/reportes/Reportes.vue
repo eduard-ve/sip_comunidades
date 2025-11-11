@@ -75,7 +75,7 @@ const kpis = ref([
 ])
 
 // Datos de ejemplo para los gráficos (pueden actualizarse con datos reales)
-const charts = {
+const charts = ref({
   left: {
     id: "repMensuales",
     title: "Reportes por mes",
@@ -94,7 +94,7 @@ const charts = {
       datasets: [{ data: [0, 0, 0] }]
     }
   }
-}
+})
 
 // Estado de la tabla
 const table = ref({
@@ -143,7 +143,7 @@ onMounted(async () => {
     }))
 
     // Actualizar gráfico de distribución
-    charts.right.data.datasets[0].data = [
+    charts.value.right.data.datasets[0].data = [
       reportesStore.reportesSaludCount,
       reportesStore.reportesSocialesCount,
       reportesStore.reportesEncuestasCount
