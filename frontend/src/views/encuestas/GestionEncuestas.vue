@@ -260,7 +260,10 @@ const filteredCount = computed(() => {
 function openSurvey(row) {
   // Redirigir a la página de respuesta de la encuesta usando el id_encuesta
   if (row.id) {
-    router.push(`/encuesta/${row.id}`)
+    console.log('Abriendo encuesta con ID:', row.id)
+    const url = `/encuesta/${row.id}`
+    console.log('URL de destino:', url)
+    router.push(url)
   } else {
     console.error('ID de encuesta no encontrado:', row)
     alert('Error: No se pudo abrir la encuesta. ID no encontrado.')

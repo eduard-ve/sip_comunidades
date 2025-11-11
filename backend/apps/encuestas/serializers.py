@@ -127,3 +127,4 @@ class RespuestaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Respuesta
         fields = ['id_respuesta', 'encuesta', 'pregunta', 'opcion', 'respuesta_texto', 'fecha_respuesta']
+        read_only_fields = ['id_respuesta', 'fecha_respuesta']

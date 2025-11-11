@@ -85,6 +85,7 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     queryset = Respuesta.objects.all()
     serializer_class = RespuestaSerializer
     permission_classes = [permissions.AllowAny]  # Permitir respuestas públicas
+    http_method_names = ['get', 'post', 'head', 'options']  # Solo permitir métodos necesarios
 
     def get_queryset(self):
         """Filtrar respuestas por encuesta si se especifica"""
@@ -108,6 +109,17 @@ class RespuestaViewSet(viewsets.ModelViewSet):
                 'error': 'Datos de respuesta inválidos',
                 'details': e.detail
             }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({
+                'error': 'Error interno del servidor',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def list(self, request, *args, **kwargs):
+        """Sobrescribir list para permitir creación bulk desde GET (no estándar pero necesario para el frontend)"""
+        if request.method == 'POST':
+            return self.create(request, *args, **kwargs)
+        return super().list(request, *args, **kwargs)
 
     def create_single(self, request):
         """Crear una respuesta individual"""
@@ -171,4 +183,7 @@ class RespuestaViewSet(viewsets.ModelViewSet):
 
         # Serializar las respuestas creadas
         result_serializer = self.get_serializer(respuestas_creadas, many=True)
-        return Response(result_serializer.data, status=status.HTTP_201_CREATED)
+        return Response({
+            'message': 'Respuestas guardadas exitosamente',
+            'data': result_serializer.data
+        }, status=status.HTTP_201_CREATED)
