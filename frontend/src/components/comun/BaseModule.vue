@@ -116,7 +116,9 @@
             <thead>
               <tr>
                 <th v-for="(col, cIdx) in safeColumns" :key="cIdx" :class="col.class">
-                  {{ col.label || col.key }}
+                  <slot name="table-header" :column="col">
+                    {{ col.label || col.key }}
+                  </slot>
                 </th>
               </tr>
             </thead>
