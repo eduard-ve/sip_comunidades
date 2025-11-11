@@ -3,7 +3,7 @@ from django.urls import path
 from apps.poblacion.views.personas import PersonaViewSet
 from apps.poblacion.views.relaciones import RelacionFamiliarViewSet
 from apps.poblacion.serializers.catalogos import CatalogoViewSet
-from apps.poblacion.views.stats import population_stats
+from apps.poblacion.views.stats import population_stats, EstadisticasViewSet
 
 router = DefaultRouter()
 
@@ -20,7 +20,10 @@ router.register(r'tipos_relaciones', CatalogoViewSet, basename='tipos_relaciones
 router.register(r'personas', PersonaViewSet)
 router.register(r'relaciones_familiares', RelacionFamiliarViewSet)
 
-# Endpoint adicional para estadísticas
+# Estadísticas
+router.register(r'estadisticas', EstadisticasViewSet, basename='estadisticas')
+
+# Endpoint adicional para estadísticas (legacy)
 urlpatterns = [
     path('stats/', population_stats, name='population_stats'),
 ] + router.urls

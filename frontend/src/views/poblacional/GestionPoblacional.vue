@@ -1,4 +1,69 @@
 <template>
+  <div class="gestion-poblacional-container">
+    <!-- KPIs Section -->
+    <div class="kpis-section">
+      <div class="kpis-grid">
+        <KpiCard
+          v-for="kpi in kpis"
+          :key="kpi.title"
+          :title="kpi.title"
+          :value="kpi.value"
+          :change="kpi.change"
+          :icon="kpi.icon"
+          :color="kpi.color"
+        />
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Filter Sidebar -->
+      <div class="filter-section">
+        <FilterSidebar
+          :ocupaciones="ocupaciones"
+          :niveles-educativos="nivelesEducativos"
+          :estados-civiles="estadosCiviles"
+          :lenguas="lenguas"
+          @filtro-cambio="aplicarFiltros"
+          @filtros-limpios="limpiarFiltros"
+        />
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-section">
+        <!-- Vista Selector -->
+        <VistaSelector
+          :personas="people"
+          :personas-filtradas="personasFiltradas"
+          :relaciones-familiares="relacionesFamiliares"
+          :distribucion-genero="distribucionGenero"
+          :top-ocupaciones="topOcupaciones"
+          :distribucion-educativa="distribucionEducativa"
+          :lenguas-maternas="lenguasMaternas"
+          :distribucion-edad="distribucionEdad"
+          :cargando="cargando"
+          @vista-cambiada="cambiarVista"
+          @ver-detalle="verDetallePersona"
+          @ver-arbol-familiar="verArbolFamiliar"
+          @editar-persona="editarPersona"
+          @filtrar-ocupacion="filtrarPorOcupacion"
+        />
+
+        <!-- Botones de acción -->
+        <div class="action-buttons">
+          <button @click="showForm = true" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Nuevo Individuo
+          </button>
+          <button @click="exportarDatos" class="btn btn-success">
+            <i class="bi bi-download me-2"></i>Exportar Datos
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BaseModule original (comentado para referencia) -->
+  <!--
   <BaseModule
     title="Gestión de Individuos"
     icon="bi bi-people"
@@ -12,10 +77,12 @@
     :forceTable="true"
     @create="showForm = true"
   >
-    <!-- Personalización de celdas de la tabla -->
+  </div>
+
+  <!-- BaseModule original (comentado para referencia) -->
+  <!--
     <template #table-cell="{ column, row }">
       <div>
-        <!-- Columna de Acciones -->
         <div v-if="column.key === 'acciones'" class="d-flex gap-1">
           <button class="btn btn-sm btn-outline-primary" @click="editPersonByRow(row)">
             <i class="bi bi-pencil"></i>
@@ -24,30 +91,15 @@
             <i class="bi bi-trash"></i>
           </button>
         </div>
-
-        <!-- Otras columnas -->
-        <span v-else-if="column.key === 'nombre_completo'">
-           {{ row.nombre_completo }}
-        </span>
-        <span v-else-if="column.key === 'tipo_identificacion'">
-           {{ row.tipo_identificacion_nombre }}
-        </span>
-        <span v-else-if="column.key === 'nivel_educativo'">
-           {{ row.nivel_educativo_nombre }}
-        </span>
-        <span v-else-if="column.key === 'ocupacion'">
-           {{ row.ocupacion_nombre }}
-        </span>
-        <span v-else-if="column.key === 'estado_civil'">
-           {{ row.estado_civil_nombre }}
-        </span>
-        <span v-else>
-           {{ row[column.key] }}
-        </span>
+        <span v-else-if="column.key === 'nombre_completo'">{{ row.nombre_completo }}</span>
+        <span v-else-if="column.key === 'tipo_identificacion'">{{ row.tipo_identificacion_nombre }}</span>
+        <span v-else-if="column.key === 'nivel_educativo'">{{ row.nivel_educativo_nombre }}</span>
+        <span v-else-if="column.key === 'ocupacion'">{{ row.ocupacion_nombre }}</span>
+        <span v-else-if="column.key === 'estado_civil'">{{ row.estado_civil_nombre }}</span>
+        <span v-else>{{ row[column.key] }}</span>
       </div>
     </template>
 
-    <!-- Extra: Mapa y Composición familiar -->
     <template #extra>
       <div class="row g-3">
         <div class="col-md-6">
@@ -66,6 +118,7 @@
       </div>
     </template>
   </BaseModule>
+  -->
 
   <!-- Modal formulario -->
   <div v-if="showForm" class="modal-backdrop">
@@ -119,9 +172,9 @@
             <label class="form-label fw-semibold">Género</label>
             <select v-model="form.genero" class="form-select form-select-sm" required>
               <option value="">Seleccionar género</option>
-              <option value="M">👨 Masculino</option>
-              <option value="F">👩 Femenino</option>
-              <option value="O">🏳️‍🌈 Otro</option>
+              <option value="M"> Masculino</option>
+              <option value="F"> Femenino</option>
+              <option value="O">🏳️ Otro</option>
             </select>
           </div>
 
@@ -189,18 +242,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import BaseModule from '../../components/comun/BaseModule.vue'
-import ServicesMap from '../../components/mapas/ServicesMap.vue'
+import { ref, onMounted, computed } from 'vue'
+import KpiCard from '../../components/tarjetas/KpiCard.vue'
+import FilterSidebar from '../../components/modulos/FilterSidebar.vue'
+import VistaSelector from '../../components/modulos/VistaSelector.vue'
 import { poblacionService } from '../../services/api.js'
+import * as XLSX from 'xlsx'
 import '../../assets/css/GestionPoblacional.css'
 
-// KPIs
+// KPIs dinámicos
 const kpis = ref([
-  { title: 'Población Total', value: '0', change: '0', icon: 'bi bi-people-fill' },
-  { title: 'Nacimientos', value: '0', change: '0', icon: 'bi bi-person-plus-fill' },
-  { title: 'Defunciones', value: '0', change: '0', icon: 'bi bi-person-dash-fill' },
-  { title: 'Crecimiento', value: '0%', change: '0', icon: 'bi bi-graph-up' }
+  { title: 'Población Total', value: '0', change: '0', icon: 'bi bi-people-fill', color: 'primary' },
+  { title: 'Edad Promedio', value: '0', change: '0', icon: 'bi bi-calendar-event', color: 'info' },
+  { title: 'Ratio Género M:F', value: '0:0', change: '0', icon: 'bi bi-gender-ambiguous', color: 'secondary' },
+  { title: 'Tasa Alfabetismo', value: '0%', change: '0', icon: 'bi bi-book', color: 'success' },
+  { title: 'Ocupación Principal', value: 'N/A', change: '0', icon: 'bi bi-briefcase', color: 'warning' },
+  { title: 'Lengua Materna Principal', value: 'N/A', change: '0', icon: 'bi bi-translate', color: 'info' },
+  { title: 'Menores de 5 años', value: '0', change: '0', icon: 'bi bi-baby', color: 'danger' },
+  { title: 'Mayores de 65 años', value: '0', change: '0', icon: 'bi bi-person-wheelchair', color: 'danger' },
+  { title: 'Analfabetos', value: '0', change: '0', icon: 'bi bi-exclamation-triangle', color: 'warning' },
+  { title: 'Población Vulnerable', value: '0', change: '0', icon: 'bi bi-shield-exclamation', color: 'danger' }
 ])
 
 // Gráficas
@@ -244,6 +305,19 @@ const tableColumns = [
 ]
 
 const people = ref([])
+const personasFiltradas = ref([])
+const relacionesFamiliares = ref([])
+
+// Estadísticas para gráficas
+const distribucionGenero = ref([])
+const topOcupaciones = ref([])
+const distribucionEducativa = ref([])
+const lenguasMaternas = ref([])
+const distribucionEdad = ref([])
+
+// Estados
+const cargando = ref(false)
+const filtrosActuales = ref({})
 
 // Datos select
 const tiposIdentificacion = ref([])
@@ -302,63 +376,398 @@ async function deletePersonByRow(row){
 // Composición familiar
 const familyTree = ref([{ name:'Juan Pérez', relation:'Padre' },{ name:'Ana Gómez', relation:'Madre' },{ name:'Pedro Pérez', relation:'Hijo' }])
 
+// Función para cargar estadísticas dinámicas
+async function cargarEstadisticas() {
+    try {
+        const response = await fetch('/api/poblacion/estadisticas/estadisticas/')
+        const stats = await response.json()
+
+        // Calcular estadísticas adicionales
+        const distribucionEdadData = await fetch('/api/poblacion/estadisticas/distribucion-edad/').then(r => r.json())
+        distribucionEdad.value = distribucionEdadData
+        const menores5 = distribucionEdadData.find(item => item.rango_edad === '0-5')?.cantidad || 0
+        const mayores65 = distribucionEdadData.find(item => item.rango_edad === '66+')?.cantidad || 0
+
+        const distribucionEducativaData = await fetch('/api/poblacion/estadisticas/distribucion-educativa/').then(r => r.json())
+        distribucionEducativa.value = distribucionEducativaData
+        const analfabetos = distribucionEducativaData.find(item => item.nivel.toLowerCase().includes('analfabeto'))?.cantidad || 0
+
+        // Cargar otras estadísticas para gráficas
+        distribucionGenero.value = await fetch('/api/poblacion/estadisticas/distribucion-genero/').then(r => r.json())
+        topOcupaciones.value = await fetch('/api/poblacion/estadisticas/top-ocupaciones/').then(r => r.json())
+        lenguasMaternas.value = await fetch('/api/poblacion/estadisticas/lenguas-maternas/').then(r => r.json())
+
+        // Actualizar KPIs dinámicos
+        kpis.value = [
+            {
+                title: 'Población Total',
+                value: stats.poblacion_total?.toLocaleString() || '0',
+                change: '+2.5%',
+                icon: 'bi bi-people-fill',
+                color: 'primary'
+            },
+            {
+                title: 'Edad Promedio',
+                value: `${stats.edad_promedio || 0} años`,
+                change: '+0.2',
+                icon: 'bi bi-calendar-event',
+                color: 'info'
+            },
+            {
+                title: 'Ratio Género M:F',
+                value: stats.ratio_genero || '0:0',
+                change: '0.0',
+                icon: 'bi bi-gender-ambiguous',
+                color: 'secondary'
+            },
+            {
+                title: 'Tasa Alfabetismo',
+                value: `${stats.tasa_alfabetismo || 0}%`,
+                change: '+1.2%',
+                icon: 'bi bi-book',
+                color: stats.tasa_alfabetismo >= 80 ? 'success' : 'warning'
+            },
+            {
+                title: 'Ocupación Principal',
+                value: stats.ocupacion_principal || 'N/A',
+                change: '0.0',
+                icon: 'bi bi-briefcase',
+                color: 'warning'
+            },
+            {
+                title: 'Lengua Materna Principal',
+                value: stats.lengua_materna_principal || 'N/A',
+                change: '0.0',
+                icon: 'bi bi-translate',
+                color: 'info'
+            },
+            {
+                title: 'Menores de 5 años',
+                value: menores5.toLocaleString(),
+                change: '-0.5%',
+                icon: 'bi bi-baby',
+                color: 'danger'
+            },
+            {
+                title: 'Mayores de 65 años',
+                value: mayores65.toLocaleString(),
+                change: '+3.2%',
+                icon: 'bi bi-person-wheelchair',
+                color: 'danger'
+            },
+            {
+                title: 'Analfabetos',
+                value: analfabetos.toLocaleString(),
+                change: '-1.8%',
+                icon: 'bi bi-exclamation-triangle',
+                color: analfabetos > 100 ? 'danger' : 'warning'
+            },
+            {
+                title: 'Población Vulnerable',
+                value: (menores5 + mayores65).toLocaleString(),
+                change: '+1.2%',
+                icon: 'bi bi-shield-exclamation',
+                color: (menores5 + mayores65) > 200 ? 'danger' : 'warning'
+            }
+        ]
+    } catch (error) {
+        console.error('Error cargando estadísticas:', error)
+    }
+}
+
+// Función para aplicar filtros
+function aplicarFiltros(filtros) {
+    filtrosActuales.value = filtros
+    filtrarPersonas()
+}
+
+// Función para limpiar filtros
+function limpiarFiltros() {
+    filtrosActuales.value = {}
+    personasFiltradas.value = [...people.value]
+}
+
+// Función para filtrar personas
+function filtrarPersonas() {
+    let filtradas = [...people.value]
+
+    // Filtro por edad
+    if (filtrosActuales.value.edad_min || filtrosActuales.value.edad_max) {
+        const minEdad = filtrosActuales.value.edad_min || 0
+        const maxEdad = filtrosActuales.value.edad_max || 120
+        filtradas = filtradas.filter(persona => {
+            const edad = calcularEdad(persona.fecha_nacimiento)
+            return edad >= minEdad && edad <= maxEdad
+        })
+    }
+
+    // Filtro por género
+    if (filtrosActuales.value.genero && filtrosActuales.value.genero.length > 0) {
+        filtradas = filtradas.filter(persona => filtrosActuales.value.genero.includes(persona.genero))
+    }
+
+    // Filtro por ocupación
+    if (filtrosActuales.value.ocupacion_id) {
+        filtradas = filtradas.filter(persona => persona.ocupacion?.id == filtrosActuales.value.ocupacion_id)
+    }
+
+    // Filtro por nivel educativo
+    if (filtrosActuales.value.nivel_educativo_id) {
+        filtradas = filtradas.filter(persona => persona.nivel_educativo?.id == filtrosActuales.value.nivel_educativo_id)
+    }
+
+    // Filtro por estado civil
+    if (filtrosActuales.value.estado_civil_ids && filtrosActuales.value.estado_civil_ids.length > 0) {
+        filtradas = filtradas.filter(persona => filtrosActuales.value.estado_civil_ids.includes(persona.estado_civil?.id))
+    }
+
+    // Filtro por lengua materna
+    if (filtrosActuales.value.lengua_id) {
+        filtradas = filtradas.filter(persona => persona.lengua_materna?.id == filtrosActuales.value.lengua_id)
+    }
+
+    personasFiltradas.value = filtradas
+}
+
+// Función auxiliar para calcular edad
+function calcularEdad(fechaNacimiento) {
+    if (!fechaNacimiento) return 0
+    const hoy = new Date()
+    const nacimiento = new Date(fechaNacimiento)
+    let edad = hoy.getFullYear() - nacimiento.getFullYear()
+    const mes = hoy.getMonth() - nacimiento.getMonth()
+    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--
+    }
+    return edad
+}
+
+// Funciones para eventos de componentes
+function cambiarVista(vista) {
+    // Lógica para cambiar vista si es necesario
+    console.log('Vista cambiada a:', vista)
+}
+
+function verDetallePersona(persona) {
+    // Mostrar modal de detalles
+    console.log('Ver detalle de:', persona)
+}
+
+function verArbolFamiliar(persona) {
+    // Cambiar a vista de árbol familiar
+    console.log('Ver árbol familiar de:', persona)
+}
+
+function editarPersona(persona) {
+    editIndex.value = people.value.indexOf(persona)
+    form.value = { ...persona }
+    showForm.value = true
+}
+
+function filtrarPorOcupacion(ocupacion) {
+    filtrosActuales.value.ocupacion_id = ocupacion
+    filtrarPersonas()
+}
+
+async function exportarDatos() {
+    try {
+        // Obtener datos filtrados
+        const datosFiltrados = personasFiltradas.value.length > 0 ? personasFiltradas.value : people.value
+
+        if (datosFiltrados.length === 0) {
+            alert('No hay datos para exportar')
+            return
+        }
+
+        // Crear datos para Excel
+        const datosExcel = datosFiltrados.map(persona => ({
+            'ID': persona.numero_identificacion,
+            'Nombre Completo': persona.nombre_completo,
+            'Fecha Nacimiento': persona.fecha_nacimiento,
+            'Edad': calcularEdad(persona.fecha_nacimiento),
+            'Género': persona.genero === 'M' ? 'Masculino' : persona.genero === 'F' ? 'Femenino' : 'Otro',
+            'Dirección': persona.direccion || '',
+            'Nivel Educativo': persona.nivel_educativo?.nombre || '',
+            'Ocupación': persona.ocupacion?.nombre || '',
+            'Estado Civil': persona.estado_civil?.nombre || '',
+            'Lengua Materna': persona.lengua_materna?.nombre || '',
+            'Grupo Familiar': persona.grupo_familiar?.nombre || ''
+        }))
+
+        // Crear archivo Excel
+        const ws = XLSX.utils.json_to_sheet(datosExcel)
+        const wb = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(wb, ws, 'Personas')
+
+        // Descargar archivo
+        const fecha = new Date().toISOString().split('T')[0]
+        XLSX.writeFile(wb, `poblacion_${fecha}.xlsx`)
+
+    } catch (error) {
+        console.error('Error exportando datos:', error)
+        alert('Error al exportar los datos')
+    }
+}
+
 // Cargar datos al montar el componente
 onMounted(async () => {
     try {
-       // Cargar estadísticas para KPIs
-       const statsResponse = await poblacionService.getPopulationStats()
-       const stats = statsResponse.data
+        // Cargar estadísticas dinámicas
+        await cargarEstadisticas()
 
-       // Actualizar KPIs con datos del backend
-       kpis.value = [
-          {
-             title: 'Población Total',
-             value: stats.total_population.toLocaleString(),
-             change: '2.5',
-             icon: 'bi bi-people-fill'
-          },
-          {
-             title: 'Nacimientos',
-             value: stats.births.toLocaleString(),
-             change: '1.2',
-             icon: 'bi bi-person-plus-fill'
-          },
-          {
-             title: 'Defunciones',
-             value: stats.deaths.toLocaleString(),
-             change: '-0.5',
-             icon: 'bi bi-person-dash-fill'
-          },
-          {
-             title: 'Crecimiento',
-             value: `${stats.growth_rate}%`,
-             change: '0.3',
-             icon: 'bi bi-graph-up'
-          }
-       ]
+        // Cargar personas
+        const personasResponse = await poblacionService.getPersonas()
+        people.value = personasResponse.data
+        personasFiltradas.value = [...people.value] // Inicializar filtradas
 
-       // Cargar personas
-       const personasResponse = await poblacionService.getPersonas()
-       people.value = personasResponse.data
+        // Cargar catálogos
+        const [tiposId, nivelesEdu, ocup, gruposFam, estadosCiv, leng] = await Promise.all([
+            poblacionService.getTiposIdentificacion(),
+            poblacionService.getNivelesEducativos(),
+            poblacionService.getOcupaciones(),
+            poblacionService.getGruposFamiliares(),
+            poblacionService.getEstadosCiviles(),
+            poblacionService.getLenguas()
+        ])
 
-       // Cargar catálogos
-       const [tiposId, nivelesEdu, ocup, gruposFam, estadosCiv, leng] = await Promise.all([
-          poblacionService.getTiposIdentificacion(),
-          poblacionService.getNivelesEducativos(),
-          poblacionService.getOcupaciones(),
-          poblacionService.getGruposFamiliares(),
-          poblacionService.getEstadosCiviles(),
-          poblacionService.getLenguas()
-       ])
-
-       tiposIdentificacion.value = tiposId.data
-       nivelesEducativos.value = nivelesEdu.data
-       ocupaciones.value = ocup.data
-       gruposFamiliares.value = gruposFam.data
-       estadosCiviles.value = estadosCiv.data
-       lenguas.value = leng.data
+        tiposIdentificacion.value = tiposId.data
+        nivelesEducativos.value = nivelesEdu.data
+        ocupaciones.value = ocup.data
+        gruposFamiliares.value = gruposFam.data
+        estadosCiviles.value = estadosCiv.data
+        lenguas.value = leng.data
     } catch (error) {
-       console.error('Error loading data:', error)
+        console.error('Error loading data:', error)
     }
 })
 </script>
+
+<style scoped>
+.gestion-poblacional-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.kpis-section {
+  padding: 1.5rem;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.main-content {
+  display: flex;
+  min-height: calc(100vh - 200px);
+}
+
+.filter-section {
+  width: 300px;
+  background: white;
+  border-right: 1px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+.content-section {
+  flex: 1;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.action-buttons {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 100;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #1e7e34;
+  transform: translateY(-1px);
+}
+
+/* Modal styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.modal-card {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+  }
+
+  .filter-section {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .kpis-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .action-buttons {
+    position: static;
+    margin-top: 1rem;
+    justify-content: center;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+</style>
