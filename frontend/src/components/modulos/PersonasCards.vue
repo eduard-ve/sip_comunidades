@@ -84,7 +84,7 @@
                 <div class="card-content">
                   <div class="info-row">
                     <span class="label">Tipo ID:</span>
-                    <span class="value">{{ personaSeleccionada?.tipo_identificacion?.nombre || 'N/A' }}</span>
+                    <span class="value">{{ personaSeleccionada?.tipo_identificacion_nombre || 'N/A' }}</span>
                   </div>
                   <div class="info-row">
                     <span class="label">Número:</span>
@@ -129,11 +129,11 @@
                 <div class="card-content">
                   <div class="info-row">
                     <span class="label">Ocupación:</span>
-                    <span class="value">{{ personaSeleccionada?.ocupacion?.nombre || 'No especificada' }}</span>
+                    <span class="value">{{ personaSeleccionada?.ocupacion_nombre || 'No especificada' }}</span>
                   </div>
                   <div class="info-row">
                     <span class="label">Estado Civil:</span>
-                    <span class="value">{{ personaSeleccionada?.estado_civil?.nombre || 'No especificado' }}</span>
+                    <span class="value">{{ personaSeleccionada?.estado_civil_nombre || 'No especificado' }}</span>
                   </div>
                 </div>
               </div>
@@ -143,11 +143,11 @@
                 <div class="card-content">
                   <div class="info-row">
                     <span class="label">Nivel:</span>
-                    <span class="value">{{ personaSeleccionada?.nivel_educativo?.nombre || 'No especificado' }}</span>
+                    <span class="value">{{ personaSeleccionada?.nivel_educativo_nombre || 'No especificado' }}</span>
                   </div>
                   <div class="info-row">
                     <span class="label">Grupo Familiar:</span>
-                    <span class="value">{{ personaSeleccionada?.grupo_familiar?.nombre || 'No especificado' }}</span>
+                    <span class="value">{{ personaSeleccionada?.grupo_familiar_nombre || 'No especificado' }}</span>
                   </div>
                 </div>
               </div>
@@ -162,7 +162,7 @@
                 <div class="card-content">
                   <div class="info-row">
                     <span class="label">Lengua Materna:</span>
-                    <span class="value">{{ personaSeleccionada?.lengua_materna?.nombre || 'No especificada' }}</span>
+                    <span class="value">{{ personaSeleccionada?.lengua_materna_nombre || 'No especificada' }}</span>
                   </div>
                   <div class="info-row">
                     <span class="label">Tradiciones:</span>
