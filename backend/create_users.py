@@ -48,7 +48,7 @@ def create_test_users():
         )
         print(f'[OK] Usuario invitado creado: {invitado.username} (password: invitado123)')
 
-    # Crear usuario admin2
+    # Crear usuario admin2 con contraseña 123456
     if not Usuario.objects.filter(username='admin2').exists():
         admin2 = Usuario.objects.create_superuser(
             username='admin2',
