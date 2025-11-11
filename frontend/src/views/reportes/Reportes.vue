@@ -158,12 +158,16 @@ onMounted(async () => {
 async function saveReporte(newReporte) {
   try {
     console.log('Datos del reporte a guardar:', newReporte)
+<<<<<<< Updated upstream
     // Determinar si es creación o edición
     const isEditing = editingReporte.value !== null
+=======
+>>>>>>> Stashed changes
 
     // Determinar el tipo de reporte basado en el valor seleccionado
     let storeMethod
     if (newReporte.tipo_reporte === 'resumen_salud' || newReporte.tipo_reporte === 'indicadores_salud') {
+<<<<<<< Updated upstream
       storeMethod = isEditing ? reportesStore.updateReporteSalud : reportesStore.createReporteSalud
     } else if (newReporte.tipo_reporte === 'reporte_social' || newReporte.tipo_reporte === 'condiciones_sociales') {
       storeMethod = isEditing ? reportesStore.updateReporteSocial : reportesStore.createReporteSocial
@@ -177,10 +181,26 @@ async function saveReporte(newReporte) {
         storeMethod = isEditing ? reportesStore.updateReporteSocial : reportesStore.createReporteSocial
       } else {
         storeMethod = isEditing ? reportesStore.updateReporteEncuestas : reportesStore.createReporteEncuestas
+=======
+      storeMethod = reportesStore.createReporteSalud
+    } else if (newReporte.tipo_reporte === 'reporte_social' || newReporte.tipo_reporte === 'condiciones_sociales') {
+      storeMethod = reportesStore.createReporteSocial
+    } else if (newReporte.tipo_reporte === 'resultados_encuesta' || newReporte.tipo_reporte === 'analisis_encuesta') {
+      storeMethod = reportesStore.createReporteEncuestas
+    } else {
+      // Fallback: si no coincide exactamente, usar lógica anterior
+      if (newReporte.tipo_reporte.includes('salud')) {
+        storeMethod = reportesStore.createReporteSalud
+      } else if (newReporte.tipo_reporte.includes('social')) {
+        storeMethod = reportesStore.createReporteSocial
+      } else {
+        storeMethod = reportesStore.createReporteEncuestas
+>>>>>>> Stashed changes
       }
     }
 
     console.log('Método del store a usar:', storeMethod.name)
+<<<<<<< Updated upstream
 
     if (isEditing) {
       await storeMethod(editingReporte.value.id, newReporte)
@@ -190,6 +210,8 @@ async function saveReporte(newReporte) {
     }
 
     console.log('Método del store a usar:', storeMethod.name)
+=======
+>>>>>>> Stashed changes
     await storeMethod(newReporte)
 
     // Recargar datos
@@ -214,6 +236,7 @@ async function saveReporte(newReporte) {
       categoria: reporte.categoria
     }))
 
+<<<<<<< Updated upstream
 
     alert(isEditing ? "Reporte actualizado con éxito" : "Reporte generado con éxito")
     closeForm()
@@ -221,6 +244,13 @@ async function saveReporte(newReporte) {
     console.error('Error al guardar reporte:', error)
     alert(`Error al ${editingReporte.value ? 'actualizar' : 'generar'} el reporte: ${error.response?.data?.error || error.response?.data?.detail || error.message}`)
 
+=======
+    alert("Reporte generado con éxito")
+    showForm.value = false
+  } catch (error) {
+    console.error('Error al guardar reporte:', error)
+    alert(`Error al generar el reporte: ${error.response?.data?.detail || error.message}`)
+>>>>>>> Stashed changes
   }
 }
 
