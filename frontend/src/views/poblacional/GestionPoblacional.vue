@@ -595,11 +595,11 @@ async function exportarDatos() {
             'Edad': calcularEdad(persona.fecha_nacimiento),
             'Género': persona.genero === 'M' ? 'Masculino' : persona.genero === 'F' ? 'Femenino' : 'Otro',
             'Dirección': persona.direccion || '',
-            'Nivel Educativo': persona.nivel_educativo?.nombre || '',
-            'Ocupación': persona.ocupacion?.nombre || '',
-            'Estado Civil': persona.estado_civil?.nombre || '',
-            'Lengua Materna': persona.lengua_materna?.nombre || '',
-            'Grupo Familiar': persona.grupo_familiar?.nombre || ''
+            'Nivel Educativo': persona.nivel_educativo_nombre || '',
+            'Ocupación': persona.ocupacion_nombre || '',
+            'Estado Civil': persona.estado_civil_nombre || '',
+            'Lengua Materna': persona.lengua_materna_nombre || '',
+            'Grupo Familiar': persona.grupo_familiar_nombre || ''
         }))
 
         // Crear archivo Excel
