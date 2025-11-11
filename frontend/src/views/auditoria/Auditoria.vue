@@ -220,8 +220,25 @@
       </div>
     </div>
 
+    <!-- Loading state -->
+    <div v-if="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Cargando datos de auditoría...</p>
+    </div>
+
+    <!-- Error state -->
+    <div v-else-if="error" class="alert alert-danger" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      {{ error }}
+      <button class="btn btn-sm btn-outline-danger ms-3" @click="fetchAuditData">
+        <i class="fas fa-redo me-1"></i>Reintentar
+      </button>
+    </div>
+
     <!-- Componente de tabla -->
-    <AuditTable :events="events" @view-details="showDetails" />
+    <AuditTable v-else :events="events" @view-details="showDetails" />
  
     <!-- Modal detalle --> 
     <div v-if="selectedEvent" class="audit-modal"> 
@@ -255,38 +272,15 @@
 </template> 
  
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import AuditTable from "../../components/comun/AuditTable.vue"
+import { auditService } from "../../services/api.js"
 import '../../assets/css/Auditoria.css'
 
-const events = ref([
-  {
-    id: 1,
-    module: "usuarios",
-    user: "admin",
-    action: "Creación de usuario",
-    date: "2025-08-15",
-    changes: { nombre: { old: "-", new: "Juan" }, rol: { old: "-", new: "Editor" } }
-  },
-  {
-    id: 2,
-    module: "reportes",
-    user: "soporte",
-    action: "Eliminación de reporte",
-    date: "2025-08-14",
-    changes: { reporte: { old: "Reporte A", new: "-" } }
-  },
-  {
-    id: 3,
-    module: "encuestas",
-    user: "usuario1",
-    action: "Modificación de encuesta",
-    date: "2025-08-13",
-    changes: { titulo: { old: "Encuesta 2024", new: "Encuesta 2025" } }
-  }
-])
-
+const events = ref([])
 const selectedEvent = ref(null)
+const loading = ref(true)
+const error = ref(null)
 
 // Filtro states
 const dropdownOpen = ref(false)
@@ -294,90 +288,180 @@ const currentFilter = ref('all')
 const currentFilterLabel = ref('Filtrar')
 
 // KPIs Data
-const totalEvents = ref(1247)
-const todayEvents = ref(23)
-const activeUsers = ref(18)
-const activeModules = ref(8)
-const criticalEvents = ref(5)
+const totalEvents = ref(0)
+const todayEvents = ref(0)
+const activeUsers = ref(0)
+const activeModules = ref(0)
+const criticalEvents = ref(0)
 
-// Module Activity Data
-const moduleActivity = ref([
-  { name: 'Usuarios', count: 342, percentage: 85, color: 'bg-primary' },
-  { name: 'Reportes', count: 267, percentage: 67, color: 'bg-success' },
-  { name: 'Encuestas', count: 189, percentage: 47, color: 'bg-warning' },
-  { name: 'Configuración', count: 98, percentage: 25, color: 'bg-info' },
-  { name: 'Sistema', count: 67, percentage: 17, color: 'bg-secondary' }
-])
+// Module Activity Data (computed from backend data)
+const moduleActivity = computed(() => {
+  if (!events.value.length) return []
 
-// Action Distribution Data
-const actionDistribution = ref([
-  { 
-    type: 'Creación', 
-    count: 456, 
-    icon: 'fas fa-plus-circle', 
-    bgClass: 'bg-success bg-opacity-10 text-success' 
-  },
-  { 
-    type: 'Modificación', 
-    count: 324, 
-    icon: 'fas fa-edit', 
-    bgClass: 'bg-warning bg-opacity-10 text-warning' 
-  },
-  { 
-    type: 'Eliminación', 
-    count: 89, 
-    icon: 'fas fa-trash', 
-    bgClass: 'bg-danger bg-opacity-10 text-danger' 
+  const moduleCounts = {}
+  events.value.forEach(event => {
+    moduleCounts[event.module] = (moduleCounts[event.module] || 0) + 1
+  })
+
+  const total = Object.values(moduleCounts).reduce((sum, count) => sum + count, 0)
+
+  return Object.entries(moduleCounts)
+    .map(([name, count]) => ({
+      name: name.charAt(0).toUpperCase() + name.slice(1),
+      count,
+      percentage: Math.round((count / total) * 100),
+      color: getModuleColor(name)
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5) // Top 5 modules
+})
+
+// Action Distribution Data (computed from backend data)
+const actionDistribution = computed(() => {
+  if (!events.value.length) return []
+
+  const actionCounts = {}
+  events.value.forEach(event => {
+    const actionType = getActionTypeLabel(event.action)
+    actionCounts[actionType] = (actionCounts[actionType] || 0) + 1
+  })
+
+  return Object.entries(actionCounts).map(([type, count]) => ({
+    type,
+    count,
+    icon: getActionIcon(type),
+    bgClass: getActionBgClass(type)
+  }))
+})
+
+function getModuleColor(module) {
+  const colors = {
+    'usuarios': 'bg-primary',
+    'reportes': 'bg-success',
+    'encuestas': 'bg-warning',
+    'configuracion': 'bg-info',
+    'sistema': 'bg-secondary',
+    'poblacion': 'bg-info',
+    'social': 'bg-success',
+    'salud': 'bg-danger'
   }
-])
+  return colors[module.toLowerCase()] || 'bg-secondary'
+}
 
-// Recent Activity Data
-const recentActivity = ref([
-  {
-    id: 1,
-    title: 'Usuario creado exitosamente',
-    user: 'admin',
-    module: 'usuarios',
-    time: 'hace 5 minutos',
-    status: 'Completado',
-    statusClass: 'bg-success',
-    icon: 'fas fa-user-plus',
-    avatarClass: 'bg-success bg-opacity-10 text-success'
-  },
-  {
-    id: 2,
-    title: 'Reporte eliminado',
-    user: 'soporte',
-    module: 'reportes',
-    time: 'hace 1 hora',
-    status: 'Advertencia',
-    statusClass: 'bg-warning',
-    icon: 'fas fa-trash-alt',
-    avatarClass: 'bg-warning bg-opacity-10 text-warning'
-  },
-  {
-    id: 3,
-    title: 'Configuración actualizada',
-    user: 'admin',
-    module: 'sistema',
-    time: 'hace 2 horas',
-    status: 'Completado',
-    statusClass: 'bg-success',
-    icon: 'fas fa-cog',
-    avatarClass: 'bg-primary bg-opacity-10 text-primary'
-  },
-  {
-    id: 4,
-    title: 'Acceso denegado detectado',
-    user: 'usuario_desconocido',
-    module: 'seguridad',
-    time: 'hace 3 horas',
-    status: 'Crítico',
-    statusClass: 'bg-danger',
-    icon: 'fas fa-exclamation-triangle',
-    avatarClass: 'bg-danger bg-opacity-10 text-danger'
+function getActionTypeLabel(action) {
+  const labels = {
+    'CREATE': 'Creación',
+    'UPDATE': 'Modificación',
+    'DELETE': 'Eliminación',
+    'LOGIN': 'Inicio de sesión',
+    'LOGOUT': 'Cierre de sesión',
+    'VIEW': 'Visualización'
   }
-])
+  return labels[action] || action
+}
+
+function getActionIcon(type) {
+  const icons = {
+    'Creación': 'fas fa-plus-circle',
+    'Modificación': 'fas fa-edit',
+    'Eliminación': 'fas fa-trash',
+    'Inicio de sesión': 'fas fa-sign-in-alt',
+    'Cierre de sesión': 'fas fa-sign-out-alt',
+    'Visualización': 'fas fa-eye'
+  }
+  return icons[type] || 'fas fa-cog'
+}
+
+function getActionBgClass(type) {
+  const classes = {
+    'Creación': 'bg-success bg-opacity-10 text-success',
+    'Modificación': 'bg-warning bg-opacity-10 text-warning',
+    'Eliminación': 'bg-danger bg-opacity-10 text-danger',
+    'Inicio de sesión': 'bg-info bg-opacity-10 text-info',
+    'Cierre de sesión': 'bg-secondary bg-opacity-10 text-secondary',
+    'Visualización': 'bg-primary bg-opacity-10 text-primary'
+  }
+  return classes[type] || 'bg-secondary bg-opacity-10 text-secondary'
+}
+
+// Recent Activity Data (computed from backend data)
+const recentActivity = computed(() => {
+  return events.value
+    .slice(0, 10) // Get most recent 10 events
+    .map(event => ({
+      id: event.id,
+      title: getActivityTitle(event),
+      user: event.user,
+      module: event.module,
+      time: getRelativeTime(event.date),
+      status: event.status,
+      statusClass: getStatusClass(event.status),
+      icon: getActivityIcon(event.action),
+      avatarClass: getAvatarClass(event.status)
+    }))
+})
+
+function getActivityTitle(event) {
+  const actionLabels = {
+    'CREATE': 'creado',
+    'UPDATE': 'actualizado',
+    'DELETE': 'eliminado',
+    'LOGIN': 'inició sesión',
+    'LOGOUT': 'cerró sesión',
+    'VIEW': 'visualizó'
+  }
+
+  const action = actionLabels[event.action] || 'realizó acción'
+  return `${event.module.charAt(0).toUpperCase() + event.module.slice(1)} ${action}`
+}
+
+function getRelativeTime(dateStr) {
+  const now = new Date()
+  const eventDate = new Date(dateStr.split('/').reverse().join('-')) // Convert dd/mm/yyyy to yyyy-mm-dd
+
+  const diffMs = now - eventDate
+  const diffMins = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffMins < 60) {
+    return `hace ${diffMins} minuto${diffMins !== 1 ? 's' : ''}`
+  } else if (diffHours < 24) {
+    return `hace ${diffHours} hora${diffHours !== 1 ? 's' : ''}`
+  } else {
+    return `hace ${diffDays} día${diffDays !== 1 ? 's' : ''}`
+  }
+}
+
+function getStatusClass(status) {
+  const classes = {
+    'Completado': 'bg-success',
+    'Advertencia': 'bg-warning',
+    'Crítico': 'bg-danger'
+  }
+  return classes[status] || 'bg-secondary'
+}
+
+function getActivityIcon(action) {
+  const icons = {
+    'CREATE': 'fas fa-plus-circle',
+    'UPDATE': 'fas fa-edit',
+    'DELETE': 'fas fa-trash-alt',
+    'LOGIN': 'fas fa-sign-in-alt',
+    'LOGOUT': 'fas fa-sign-out-alt',
+    'VIEW': 'fas fa-eye'
+  }
+  return icons[action] || 'fas fa-cog'
+}
+
+function getAvatarClass(status) {
+  const classes = {
+    'Completado': 'bg-success bg-opacity-10 text-success',
+    'Advertencia': 'bg-warning bg-opacity-10 text-warning',
+    'Crítico': 'bg-danger bg-opacity-10 text-danger'
+  }
+  return classes[status] || 'bg-secondary bg-opacity-10 text-secondary'
+}
 
 // Computed property para filtrar actividad reciente
 const filteredRecentActivity = computed(() => {
@@ -402,6 +486,87 @@ const filteredRecentActivity = computed(() => {
 })
 
 // Methods
+async function fetchAuditData() {
+  try {
+    loading.value = true
+    error.value = null
+
+    // Fetch audit logs and stats in parallel
+    const [logsResponse, statsResponse] = await Promise.all([
+      auditService.getAuditLogs(),
+      auditService.getAuditStats()
+    ])
+
+    // Transform audit logs to match frontend structure
+    events.value = logsResponse.data.map(log => ({
+      id: log.id_audit,
+      module: log.modelo,
+      user: log.usuario_username || 'Sistema',
+      action: log.accion,
+      date: new Date(log.fecha).toLocaleDateString('es-ES'),
+      changes: transformChanges(log.datos_anteriores, log.datos_nuevos),
+      description: log.descripcion,
+      status: getStatusFromAction(log.accion)
+    }))
+
+    // Update KPIs from stats
+    totalEvents.value = statsResponse.data.total_logs || 0
+    activeUsers.value = statsResponse.data.usuarios_activos || 0
+    activeModules.value = statsResponse.data.modelos?.length || 0
+
+    // Calculate today events (simplified - in real app might need backend support)
+    const today = new Date().toISOString().split('T')[0]
+    todayEvents.value = events.value.filter(event =>
+      event.date === new Date().toLocaleDateString('es-ES')
+    ).length
+
+    // Calculate critical events (DELETE actions)
+    criticalEvents.value = events.value.filter(event =>
+      event.status === 'Crítico'
+    ).length
+
+  } catch (err) {
+    error.value = 'Error al cargar los datos de auditoría'
+    console.error('Error fetching audit data:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+function transformChanges(oldData, newData) {
+  const changes = {}
+  if (oldData && newData) {
+    Object.keys(newData).forEach(key => {
+      if (oldData[key] !== newData[key]) {
+        changes[key] = {
+          old: oldData[key] || '-',
+          new: newData[key] || '-'
+        }
+      }
+    })
+  }
+  return changes
+}
+
+function getStatusFromAction(action) {
+  switch (action) {
+    case 'CREATE':
+      return 'Completado'
+    case 'UPDATE':
+      return 'Completado'
+    case 'DELETE':
+      return 'Crítico'
+    case 'LOGIN':
+      return 'Completado'
+    case 'LOGOUT':
+      return 'Completado'
+    case 'VIEW':
+      return 'Completado'
+    default:
+      return 'Advertencia'
+  }
+}
+
 function exportExcel() {
   alert("Exportando a Excel...")
 }
@@ -417,7 +582,7 @@ function showDetails(event) {
 function filterEvents(filter) {
   currentFilter.value = filter
   dropdownOpen.value = false
-  
+
   // Actualizar label del botón
   switch (filter) {
     case 'all':
@@ -449,5 +614,10 @@ document.addEventListener('click', (e) => {
   if (!e.target.closest('.dropdown')) {
     dropdownOpen.value = false
   }
+})
+
+// Lifecycle
+onMounted(() => {
+  fetchAuditData()
 })
 </script>
