@@ -27,8 +27,7 @@
         <slot name="actions">
           <button
             v-if="showCreate"
-            class="btn btn-primary btn-sm nuevo-programa-btn"
-            style="background-color: #198754 !important; border-color: #198754 !important; color: white !important;"
+            class="btn btn-sm nuevo-programa-btn"
             @click="$emit('create')"
           >
             <i class="bi bi-plus-lg me-1"></i> Nuevo Programa

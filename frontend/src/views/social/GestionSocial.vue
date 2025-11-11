@@ -31,12 +31,11 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5>Autoridades Comunitarias Activas</h5>
           <button
-            class="btn btn-success btn-sm nueva-autoridad-btn"
-            style="background-color: #198754 !important; border-color: #198754 !important; color: white !important;"
+            class="btn btn-sm nueva-autoridad-btn"
             @click="showAutoridadForm = true"
           >
             <i class="bi bi-plus-circle me-1"></i>
-            NUEVA AUTORIDAD
+            Nueva Autoridad
           </button>
         </div>
         <div class="row">
@@ -96,8 +95,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5>Actividades Comunitarias</h5>
           <button
-            class="btn btn-primary btn-sm nueva-actividad-btn"
-            style="background-color: #198754 !important; border-color: #198754 !important; color: white !important;"
+            class="btn btn-sm nueva-actividad-btn"
             @click="showActividadForm = true"
           >
             <i class="bi bi-plus-circle me-1"></i>
