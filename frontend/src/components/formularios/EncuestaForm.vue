@@ -212,18 +212,17 @@ function submit() {
     estado: estado.value,
     descripcion: descripcion.value?.trim() || '',
     preguntas: preguntas.value.map(p => ({
-      texto: p.texto.trim(),
+      texto_pregunta: p.texto.trim(),
       tipo: p.tipo,
+      orden: preguntas.value.indexOf(p) + 1,
       opciones: p.opciones.map(opt => ({
         texto_opcion: opt.texto_opcion?.trim() || '',
         valor: opt.valor
       }))
-    })),
-    fecha: new Date().toISOString().slice(0, 10),
-    respuestas: 0
+    }))
   })
 
-  // Limpiar formulario
+  // Limpiar formulario después de envío exitoso
   titulo.value = ''
   estado.value = 'activa'
   descripcion.value = ''

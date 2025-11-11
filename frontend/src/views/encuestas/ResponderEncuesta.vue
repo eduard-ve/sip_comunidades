@@ -10,7 +10,17 @@
             <div class="card-body">
               <p class="text-muted mb-4">{{ encuesta.descripcion }}</p>
 
-              <form @submit.prevent="submitRespuesta">
+              <!-- Mostrar mensaje de error si existe -->
+              <div v-if="error" class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> {{ error }}
+              </div>
+
+              <!-- Mostrar mensaje si no hay preguntas -->
+              <div v-if="!encuesta.preguntas || encuesta.preguntas.length === 0" class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle"></i> Esta encuesta no tiene preguntas configuradas.
+              </div>
+
+              <form v-else @submit.prevent="submitRespuesta">
                 <div v-for="(pregunta, index) in encuesta.preguntas" :key="pregunta.id_pregunta" class="mb-4">
                   <h5 class="question-title">{{ index + 1 }}. {{ pregunta.texto_pregunta }}</h5>
 
@@ -47,27 +57,43 @@
 
                   <!-- Pregunta Sí/No -->
                   <div v-else-if="pregunta.tipo === 'si_no'" class="mb-3">
-                    <div class="form-check form-check-inline">
+                    <div v-for="opcion in pregunta.opciones" :key="opcion.id_opcion" class="form-check">
                       <input
                         v-model="respuestas[pregunta.id_pregunta]"
-                        value="si"
+                        :value="opcion.id_opcion"
                         class="form-check-input"
                         type="radio"
                         :name="'pregunta_' + pregunta.id_pregunta"
                         required
                       />
-                      <label class="form-check-label">Sí</label>
+                      <label class="form-check-label">
+                        {{ opcion.texto_opcion }}
+                      </label>
                     </div>
-                    <div class="form-check form-check-inline">
-                      <input
-                        v-model="respuestas[pregunta.id_pregunta]"
-                        value="no"
-                        class="form-check-input"
-                        type="radio"
-                        :name="'pregunta_' + pregunta.id_pregunta"
-                        required
-                      />
-                      <label class="form-check-label">No</label>
+                    <div v-if="!pregunta.opciones || pregunta.opciones.length === 0" class="text-muted">
+                      No hay opciones disponibles para esta pregunta.
+                    </div>
+                  </div>
+
+                  <!-- Pregunta de escala -->
+                  <div v-else-if="pregunta.tipo === 'escala'" class="mb-3">
+                    <div class="scale-options">
+                      <div v-for="opcion in pregunta.opciones" :key="opcion.id_opcion" class="form-check">
+                        <input
+                          v-model="respuestas[pregunta.id_pregunta]"
+                          :value="opcion.id_opcion"
+                          class="form-check-input"
+                          type="radio"
+                          :name="'pregunta_' + pregunta.id_pregunta"
+                          required
+                        />
+                        <label class="form-check-label">
+                          {{ opcion.texto_opcion }} ({{ opcion.valor }})
+                        </label>
+                      </div>
+                    </div>
+                    <div v-if="!pregunta.opciones || pregunta.opciones.length === 0" class="text-muted">
+                      No hay opciones disponibles para esta pregunta.
                     </div>
                   </div>
 
@@ -91,7 +117,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '../../services/api.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -102,22 +128,33 @@ const isSubmitting = ref(false)
 const error = ref('')
 
 onMounted(async () => {
-  const token = route.params.token
-  if (!token) {
-    error.value = 'Token de encuesta no válido'
+  const id = route.params.id
+  if (!id) {
+    error.value = 'ID de encuesta no válido'
     return
   }
 
   try {
-    const response = await axios.get(`/api/encuestas/by_token/?token=${token}`)
+    const response = await api.get(`/encuestas/by_token/?token=${id}`)
     if (response.data) {
       encuesta.value = response.data
+      console.log('Encuesta cargada:', encuesta.value)
+      // Inicializar respuestas vacías para cada pregunta
+      if (encuesta.value.preguntas) {
+        encuesta.value.preguntas.forEach(pregunta => {
+          respuestas.value[pregunta.id_pregunta] = null
+        })
+      }
     } else {
       error.value = 'Encuesta no encontrada'
     }
   } catch (err) {
-    error.value = 'Encuesta no encontrada o no disponible'
     console.error('Error cargando encuesta:', err)
+    if (err.response && err.response.data && err.response.data.message) {
+      error.value = err.response.data.message
+    } else {
+      error.value = 'Error al cargar la encuesta. Por favor intenta de nuevo.'
+    }
   }
 })
 
@@ -144,7 +181,7 @@ const submitRespuesta = async () => {
     }))
 
     // Enviar respuestas al backend
-    const response = await axios.post('/api/respuestas/', respuestasData)
+    const response = await api.post('/encuestas/respuestas/', respuestasData)
 
     if (response.status === 201) {
       alert('¡Gracias por tu respuesta! La encuesta ha sido enviada correctamente.')

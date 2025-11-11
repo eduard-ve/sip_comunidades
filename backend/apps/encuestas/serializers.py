@@ -27,7 +27,7 @@ class PreguntaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Pregunta
-        fields = ['id_pregunta', 'encuesta', 'texto_pregunta', 'tipo', 'orden', 'opciones']
+        fields = ['id_pregunta', 'texto_pregunta', 'tipo', 'orden', 'opciones']
 
 class PreguntaCreateSerializer(serializers.ModelSerializer):
     opciones = OpcionCreateSerializer(many=True, required=False, allow_empty=True)
@@ -63,10 +63,11 @@ class PreguntaCreateSerializer(serializers.ModelSerializer):
 
 class EncuestaSerializer(serializers.ModelSerializer):
     preguntas = PreguntaSerializer(many=True, read_only=True)
+    respuestas_count = serializers.ReadOnlyField()
 
     class Meta:
         model = Encuesta
-        fields = ['id_encuesta', 'titulo', 'descripcion', 'estado', 'fecha_creacion', 'fecha_cierre', 'preguntas']
+        fields = ['id_encuesta', 'titulo', 'descripcion', 'estado', 'fecha_creacion', 'fecha_cierre', 'preguntas', 'respuestas_count']
 
 class EncuestaCreateSerializer(serializers.ModelSerializer):
     preguntas = PreguntaCreateSerializer(many=True, required=True, allow_empty=False)
