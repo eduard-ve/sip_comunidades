@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import viewsets
 from django.db.models import Count, Q, Avg, F
+from django.db.models.functions import ExtractYear
 from datetime import datetime, timedelta
 from ..models.personas import Persona
 from ..models.relaciones import RelacionFamiliar
@@ -26,7 +27,6 @@ class EstadisticasViewSet(viewsets.ViewSet):
         total_personas = Persona.objects.count()
 
         # Edad promedio
-        from django.db.models.functions import ExtractYear
         current_year = datetime.now().year
         edad_promedio = Persona.objects.annotate(
             edad=current_year - ExtractYear('fecha_nacimiento')

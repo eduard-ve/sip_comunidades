@@ -398,23 +398,30 @@ const familyTree = ref([{ name:'Juan Pérez', relation:'Padre' },{ name:'Ana Gó
 // Función para cargar estadísticas dinámicas
 async function cargarEstadisticas() {
     try {
-        const response = await fetch('/api/poblacion/estadisticas/estadisticas/')
-        const stats = await response.json()
+        const statsResponse = await poblacionService.getEstadisticas()
+        const stats = statsResponse.data
 
         // Calcular estadísticas adicionales
-        const distribucionEdadData = await fetch('/api/poblacion/estadisticas/distribucion-edad/').then(r => r.json())
+        const distribucionEdadResponse = await poblacionService.getDistribucionEdad()
+        const distribucionEdadData = distribucionEdadResponse.data
         distribucionEdad.value = distribucionEdadData
         const menores5 = distribucionEdadData.find(item => item.rango_edad === '0-5')?.cantidad || 0
         const mayores65 = distribucionEdadData.find(item => item.rango_edad === '66+')?.cantidad || 0
 
-        const distribucionEducativaData = await fetch('/api/poblacion/estadisticas/distribucion-educativa/').then(r => r.json())
+        const distribucionEducativaResponse = await poblacionService.getDistribucionEducativa()
+        const distribucionEducativaData = distribucionEducativaResponse.data
         distribucionEducativa.value = distribucionEducativaData
         const analfabetos = distribucionEducativaData.find(item => item.nivel.toLowerCase().includes('analfabeto'))?.cantidad || 0
 
         // Cargar otras estadísticas para gráficas
-        distribucionGenero.value = await fetch('/api/poblacion/estadisticas/distribucion-genero/').then(r => r.json())
-        topOcupaciones.value = await fetch('/api/poblacion/estadisticas/top-ocupaciones/').then(r => r.json())
-        lenguasMaternas.value = await fetch('/api/poblacion/estadisticas/lenguas-maternas/').then(r => r.json())
+        const distribucionGeneroResponse = await poblacionService.getDistribucionGenero()
+        distribucionGenero.value = distribucionGeneroResponse.data
+
+        const topOcupacionesResponse = await poblacionService.getTopOcupaciones()
+        topOcupaciones.value = topOcupacionesResponse.data
+
+        const lenguasMaternasResponse = await poblacionService.getLenguasMaternas()
+        lenguasMaternas.value = lenguasMaternasResponse.data
 
         // Actualizar KPIs dinámicos principales (5 KPIs)
         kpis.value = [
@@ -456,6 +463,7 @@ async function cargarEstadisticas() {
         ]
     } catch (error) {
         console.error('Error cargando estadísticas:', error)
+        // En caso de error, mantener valores por defecto
     }
 }
 

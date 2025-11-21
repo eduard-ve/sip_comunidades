@@ -80,6 +80,12 @@ export const poblacionService = {
 
   // Estadísticas de población
   getPopulationStats: () => api.get('/poblacion/stats/'),
+  getEstadisticas: () => api.get('/poblacion/estadisticas/estadisticas/'),
+  getDistribucionEdad: () => api.get('/poblacion/estadisticas/distribucion_edad/'),
+  getDistribucionEducativa: () => api.get('/poblacion/estadisticas/distribucion_educativa/'),
+  getDistribucionGenero: () => api.get('/poblacion/estadisticas/distribucion_genero/'),
+  getTopOcupaciones: () => api.get('/poblacion/estadisticas/top_ocupaciones/'),
+  getLenguasMaternas: () => api.get('/poblacion/estadisticas/lenguas_maternas/'),
   }
   
   // Servicios sociales
