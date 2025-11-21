@@ -500,22 +500,22 @@ function filtrarPersonas() {
 
     // Filtro por ocupación
     if (filtrosActuales.value.ocupacion_id) {
-        filtradas = filtradas.filter(persona => persona.ocupacion?.id == filtrosActuales.value.ocupacion_id)
+        filtradas = filtradas.filter(persona => persona.ocupacion == filtrosActuales.value.ocupacion_id)
     }
 
     // Filtro por nivel educativo
     if (filtrosActuales.value.nivel_educativo_id) {
-        filtradas = filtradas.filter(persona => persona.nivel_educativo?.id == filtrosActuales.value.nivel_educativo_id)
+        filtradas = filtradas.filter(persona => persona.nivel_educativo == filtrosActuales.value.nivel_educativo_id)
     }
 
     // Filtro por estado civil
     if (filtrosActuales.value.estado_civil_ids && filtrosActuales.value.estado_civil_ids.length > 0) {
-        filtradas = filtradas.filter(persona => filtrosActuales.value.estado_civil_ids.includes(persona.estado_civil?.id))
+        filtradas = filtradas.filter(persona => filtrosActuales.value.estado_civil_ids.includes(persona.estado_civil))
     }
 
     // Filtro por lengua materna
     if (filtrosActuales.value.lengua_id) {
-        filtradas = filtradas.filter(persona => persona.lengua_materna?.id == filtrosActuales.value.lengua_id)
+        filtradas = filtradas.filter(persona => persona.lengua_materna == filtrosActuales.value.lengua_id)
     }
 
     personasFiltradas.value = filtradas
