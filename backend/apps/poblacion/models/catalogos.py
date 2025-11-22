@@ -27,10 +27,10 @@ class Ocupacion(CatalogoBase):
         verbose_name = "Ocupación"
         verbose_name_plural = "Ocupaciones"
 
-class GrupoFamiliar(CatalogoBase):
+class GrupoEtnico(CatalogoBase):
     class Meta:
-        verbose_name = "Grupo Familiar"
-        verbose_name_plural = "Grupos Familiares"
+        verbose_name = "Grupo Étnico"
+        verbose_name_plural = "Grupos Étnicos"
 
 class EstadoCivil(CatalogoBase):
     class Meta:

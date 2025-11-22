@@ -17,9 +17,9 @@ class OcupacionSerializer(serializers.ModelSerializer):
         model = catalogos.Ocupacion
         fields = '__all__'
 
-class GrupoFamiliarSerializer(serializers.ModelSerializer):
+class GrupoEtnicoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = catalogos.GrupoFamiliar
+        model = catalogos.GrupoEtnico
         fields = '__all__'
 
 class EstadoCivilSerializer(serializers.ModelSerializer):
@@ -48,7 +48,7 @@ class CatalogoViewSet(viewsets.ReadOnlyModelViewSet):
         'tipos_identificacion': TipoIdentificacionSerializer,
         'niveles_educativos': NivelEducativoSerializer,
         'ocupaciones': OcupacionSerializer,
-        'grupos_familiares': GrupoFamiliarSerializer,
+        'grupos_etnicos': GrupoEtnicoSerializer,
         'estados_civiles': EstadoCivilSerializer,
         'lenguas': LenguaSerializer,
         'tipos_relaciones': TipoRelacionSerializer,
@@ -59,7 +59,7 @@ class CatalogoViewSet(viewsets.ReadOnlyModelViewSet):
         'tipos_identificacion': 'TipoIdentificacion',
         'niveles_educativos': 'NivelEducativo',
         'ocupaciones': 'Ocupacion',
-        'grupos_familiares': 'GrupoFamiliar',
+        'grupos_etnicos': 'GrupoEtnico',
         'estados_civiles': 'EstadoCivil',
         'lenguas': 'Lengua',
         'tipos_relaciones': 'TipoRelacion',
@@ -94,7 +94,7 @@ class CatalogoViewSet(viewsets.ReadOnlyModelViewSet):
         'tipos_identificacion': TipoIdentificacionSerializer,
         'niveles_educativos': NivelEducativoSerializer,
         'ocupaciones': OcupacionSerializer,
-        'grupos_familiares': GrupoFamiliarSerializer,
+        'grupos_etnicos': GrupoEtnicoSerializer,
         'estados_civiles': EstadoCivilSerializer,
         'lenguas': LenguaSerializer,
         'tipos_relaciones': TipoRelacionSerializer,
@@ -105,7 +105,7 @@ class CatalogoViewSet(viewsets.ReadOnlyModelViewSet):
         'tipos_identificacion': 'TipoIdentificacion',
         'niveles_educativos': 'NivelEducativo',
         'ocupaciones': 'Ocupacion',
-        'grupos_familiares': 'GrupoFamiliar',
+        'grupos_etnicos': 'GrupoEtnico',
         'estados_civiles': 'EstadoCivil',
         'lenguas': 'Lengua',
         'tipos_relaciones': 'TipoRelacion',

@@ -173,35 +173,11 @@
             </div>
           </div>
 
-          <!-- Tab Relaciones Familiares -->
-          <div v-if="tabActiva === 'familiares'" class="tab-content">
-            <div v-if="relacionesFamiliares.length === 0" class="no-relations">
-              <p>🔍 Cargando relaciones familiares...</p>
-            </div>
-            <div v-else class="relaciones-grid">
-              <div
-                v-for="relacion in relacionesFamiliares"
-                :key="relacion.id"
-                class="relacion-card"
-                @click="verDetalleFamiliar(relacion)"
-              >
-                <div class="relacion-avatar" :style="{ backgroundColor: getColorGenero(relacion.genero) }">
-                  {{ getIniciales(relacion.nombre_completo) }}
-                </div>
-                <div class="relacion-info">
-                  <div class="relacion-nombre">{{ relacion.nombre_completo }}</div>
-                  <div class="relacion-tipo">{{ relacion.relacion }}</div>
-                  <div class="relacion-edad">{{ relacion.edad }} años</div>
-                  <div class="relacion-ocupacion">{{ relacion.ocupacion || 'Sin ocupación' }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </div>
 
         <div class="modal-footer">
           <div class="footer-right">
-            <button @click="verArbolFamiliar" class="btn-info">🌳 Árbol Familiar</button>
             <button @click="editarPersona" class="btn-warning">✏️ Editar</button>
             <button @click="eliminarPersona" class="btn-danger">🗑️ Eliminar</button>
           </div>
@@ -234,7 +210,6 @@ export default {
         { id: 'personal', nombre: 'Personal', icon: '👤' },
         { id: 'socioeconomica', nombre: 'Socioeconómica', icon: '💼' },
         { id: 'cultural', nombre: 'Cultural', icon: '🌍' },
-        { id: 'familiares', nombre: 'Familiares', icon: '👨‍👩‍👧‍👦' }
       ]
     }
   },

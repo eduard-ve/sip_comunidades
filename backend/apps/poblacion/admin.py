@@ -8,7 +8,7 @@ from apps.poblacion.models.relaciones import RelacionFamiliar
 admin.site.register(TipoIdentificacion)
 admin.site.register(NivelEducativo)
 admin.site.register(Ocupacion)
-admin.site.register(GrupoFamiliar)
+admin.site.register(GrupoEtnico)
 admin.site.register(EstadoCivil)
 admin.site.register(Lengua)
 admin.site.register(TipoRelacion)

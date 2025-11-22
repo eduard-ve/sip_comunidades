@@ -202,12 +202,12 @@
             </select>
           </div>
 
-          <!-- Séptima fila: Grupo familiar y Estado civil -->
+          <!-- Séptima fila: Grupo etnico y Estado civil -->
           <div class="col-md-6">
-            <label class="form-label fw-semibold">Grupo Familiar</label>
-            <select v-model="form.grupo_familiar" class="form-select form-select-sm">
+            <label class="form-label fw-semibold">Grupo Étnico</label>
+            <select v-model="form.grupo_etnico" class="form-select form-select-sm">
               <option value="">Seleccionar grupo</option>
-              <option v-for="grupo in gruposFamiliares" :key="grupo.id" :value="grupo.id">{{ grupo.nombre }}</option>
+              <option v-for="grupo in gruposEtnicos" :key="grupo.id" :value="grupo.id">{{ grupo.nombre }}</option>
             </select>
           </div>
 
@@ -220,7 +220,7 @@
           </div>
 
           <!-- Octava fila: Lengua materna -->
-          <div class="col-12">
+          <div v-if="form.grupo_etnico == 1" class="col-12">
             <label class="form-label fw-semibold">Lengua Materna</label>
             <select v-model="form.lengua_materna" class="form-select form-select-sm">
               <option value="">Seleccionar lengua</option>
@@ -319,19 +319,19 @@ const filtrosActuales = ref({})
 const tiposIdentificacion = ref([])
 const nivelesEducativos = ref([])
 const ocupaciones = ref([])
-const gruposFamiliares = ref([])
+const gruposEtnicos = ref([])
 const estadosCiviles = ref([])
 const lenguas = ref([])
 
 // Modal
 const showForm = ref(false)
-const form = ref({ tipo_identificacion:'', numero_identificacion:'', primer_nombre:'', segundo_nombre:'', primer_apellido:'', segundo_apellido:'', fecha_nacimiento:'', genero:'', direccion:'', nivel_educativo:'', ocupacion:'', grupo_familiar:'', estado_civil:'', lengua_materna:'' })
+const form = ref({ tipo_identificacion:'', numero_identificacion:'', primer_nombre:'', segundo_nombre:'', primer_apellido:'', segundo_apellido:'', fecha_nacimiento:'', genero:'', direccion:'', nivel_educativo:'', ocupacion:'', grupo_etnico:'', estado_civil:'', lengua_materna:'' })
 const editIndex = ref(null)
 
 function closeForm(){
   showForm.value=false
   editIndex.value=null
-  form.value={ tipo_identificacion:'', numero_identificacion:'', primer_nombre:'', segundo_nombre:'', primer_apellido:'', segundo_apellido:'', fecha_nacimiento:'', genero:'', direccion:'', nivel_educativo:'', ocupacion:'', grupo_familiar:'', estado_civil:'', lengua_materna:'' }
+  form.value={ tipo_identificacion:'', numero_identificacion:'', primer_nombre:'', segundo_nombre:'', primer_apellido:'', segundo_apellido:'', fecha_nacimiento:'', genero:'', direccion:'', nivel_educativo:'', ocupacion:'', grupo_etnico:'', estado_civil:'', lengua_materna:'' }
 }
 
 async function savePerson(){
@@ -607,7 +607,7 @@ async function exportarDatos() {
             'Ocupación': persona.ocupacion_nombre || '',
             'Estado Civil': persona.estado_civil_nombre || '',
             'Lengua Materna': persona.lengua_materna_nombre || '',
-            'Grupo Familiar': persona.grupo_familiar_nombre || ''
+            'Grupo Étnico': persona.grupo_etnico_nombre || ''
         }))
 
         // Crear archivo Excel
@@ -641,7 +641,7 @@ onMounted(async () => {
             poblacionService.getTiposIdentificacion(),
             poblacionService.getNivelesEducativos(),
             poblacionService.getOcupaciones(),
-            poblacionService.getGruposFamiliares(),
+            poblacionService.getGruposEtnicos(),
             poblacionService.getEstadosCiviles(),
             poblacionService.getLenguas()
         ])
@@ -649,7 +649,7 @@ onMounted(async () => {
         tiposIdentificacion.value = tiposId.data
         nivelesEducativos.value = nivelesEdu.data
         ocupaciones.value = ocup.data
-        gruposFamiliares.value = gruposFam.data
+        gruposEtnicos.value = gruposFam.data
         estadosCiviles.value = estadosCiv.data
         lenguas.value = leng.data
     } catch (error) {

@@ -91,38 +91,24 @@
     }
   },
   {
-    "model": "poblacion.grupofamiliar",
+    "model": "poblacion.grupoetnico",
     "pk": 1,
     "fields": {
-      "nombre": "Jefe de Hogar"
+      "nombre": "Indígena"
     }
   },
   {
-    "model": "poblacion.grupofamiliar",
+    "model": "poblacion.grupoetnico",
     "pk": 2,
     "fields": {
-      "nombre": "Cónyuge"
+      "nombre": "Afrocolombiano"
     }
   },
   {
-    "model": "poblacion.grupofamiliar",
+    "model": "poblacion.grupoetnico",
     "pk": 3,
     "fields": {
-      "nombre": "Hijo(a)"
-    }
-  },
-  {
-    "model": "poblacion.grupofamiliar",
-    "pk": 4,
-    "fields": {
-      "nombre": "Padre"
-    }
-  },
-  {
-    "model": "poblacion.grupofamiliar",
-    "pk": 5,
-    "fields": {
-      "nombre": "Madre"
+      "nombre": "Mestizo"
     }
   },
   {
@@ -164,35 +150,42 @@
     "model": "poblacion.lengua",
     "pk": 1,
     "fields": {
-      "nombre": "Español"
+      "nombre": "Siriano"
     }
   },
   {
     "model": "poblacion.lengua",
     "pk": 2,
     "fields": {
-      "nombre": "Inglés"
+      "nombre": "Desano"
     }
   },
   {
     "model": "poblacion.lengua",
     "pk": 3,
     "fields": {
-      "nombre": "Francés"
+      "nombre": "Cubeo"
     }
   },
   {
     "model": "poblacion.lengua",
     "pk": 4,
     "fields": {
-      "nombre": "Portugués"
+      "nombre": "Piratapuyo"
     }
   },
   {
     "model": "poblacion.lengua",
     "pk": 5,
     "fields": {
-      "nombre": "Otro"
+      "nombre": "Yurutí"
+    }
+  },
+  {
+    "model": "poblacion.lengua",
+    "pk": 6,
+    "fields": {
+      "nombre": "Tucano"
     }
   },
   {
