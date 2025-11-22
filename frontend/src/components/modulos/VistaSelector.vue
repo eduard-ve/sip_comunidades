@@ -58,13 +58,6 @@
         />
       </div>
 
-      <!-- Vista Árbol Familiar -->
-      <div v-else-if="vistaActiva === 'arbol'" class="vista-arbol">
-        <ArbolFamiliar
-          :grupos-etnicos="gruposEtnicos"
-        />
-      </div>
-
       <!-- Vista Gráficas -->
       <div v-else-if="vistaActiva === 'graficas'" class="vista-graficas">
         <div class="charts-grid">
@@ -103,7 +96,6 @@
 
 <script>
 import PersonasCards from './PersonasCards.vue'
-import ArbolFamiliar from './ArbolFamiliar.vue'
 import DistribucionGenero from '../graficas/DistribucionGenero.vue'
 import TopOcupaciones from '../graficas/TopOcupaciones.vue'
 import DistribucionEducativa from '../graficas/DistribucionEducativa.vue'
@@ -116,7 +108,6 @@ export default {
   name: 'VistaSelector',
   components: {
     PersonasCards,
-    ArbolFamiliar,
     DistribucionGenero,
     TopOcupaciones,
     DistribucionEducativa,
@@ -135,10 +126,6 @@ export default {
       default: () => []
     },
     relacionesFamiliares: {
-      type: Array,
-      default: () => []
-    },
-    gruposEtnicos: {
       type: Array,
       default: () => []
     },
@@ -173,7 +160,6 @@ export default {
       vistas: [
         { id: 'tabla', nombre: 'Tabla', icon: '📊' },
         { id: 'tarjetas', nombre: 'Tarjetas', icon: '📇' },
-        { id: 'arbol', nombre: 'Lenguas por Grupo Étnico', icon: '🌍' },
         { id: 'graficas', nombre: 'Gráficas', icon: '📈' },
         { id: 'analisis', nombre: 'Análisis', icon: '📋' }
       ],
