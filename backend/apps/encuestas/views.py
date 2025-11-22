@@ -92,6 +92,11 @@ class RespuestaViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]  # Permitir respuestas públicas
     http_method_names = ['get', 'post', 'head', 'options']  # Solo permitir métodos necesarios
 
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny])
+    def bulk(self, request):
+        """Endpoint para crear respuestas en bulk"""
+        return self.bulk_create(request)
+
     def get_queryset(self):
         """Filtrar respuestas por encuesta si se especifica"""
         queryset = Respuesta.objects.all()
@@ -120,11 +125,6 @@ class RespuestaViewSet(viewsets.ModelViewSet):
                 'details': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def list(self, request, *args, **kwargs):
-        """Sobrescribir list para permitir creación bulk desde GET (no estándar pero necesario para el frontend)"""
-        if request.method == 'POST':
-            return self.create(request, *args, **kwargs)
-        return super().list(request, *args, **kwargs)
 
     def create_single(self, request):
         """Crear una respuesta individual"""
