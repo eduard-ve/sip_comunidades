@@ -61,8 +61,7 @@
       <!-- Vista Árbol Familiar -->
       <div v-else-if="vistaActiva === 'arbol'" class="vista-arbol">
         <ArbolFamiliar
-          :personas="personas"
-          :relaciones-familiares="relacionesFamiliares"
+          :grupos-etnicos="gruposEtnicos"
         />
       </div>
 
@@ -139,6 +138,10 @@ export default {
       type: Array,
       default: () => []
     },
+    gruposEtnicos: {
+      type: Array,
+      default: () => []
+    },
     distribucionGenero: {
       type: Array,
       default: () => []
@@ -170,7 +173,7 @@ export default {
       vistas: [
         { id: 'tabla', nombre: 'Tabla', icon: '📊' },
         { id: 'tarjetas', nombre: 'Tarjetas', icon: '📇' },
-        { id: 'arbol', nombre: 'Árbol Familiar', icon: '🌳' },
+        { id: 'arbol', nombre: 'Lenguas por Grupo Étnico', icon: '🌍' },
         { id: 'graficas', nombre: 'Gráficas', icon: '📈' },
         { id: 'analisis', nombre: 'Análisis', icon: '📋' }
       ],

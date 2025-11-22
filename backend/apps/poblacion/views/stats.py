@@ -272,6 +272,34 @@ class EstadisticasViewSet(viewsets.ViewSet):
         serializer = RelacionFamiliarDetailSerializer(data, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'])
+    def lenguas_por_grupo_etnico(self, request, pk=None):
+        """
+        Lenguas maternas asociadas a un grupo étnico específico
+        """
+        try:
+            grupo_etnico_id = pk
+        except:
+            return Response({'error': 'Grupo étnico no especificado'}, status=400)
+
+        # Obtener todas las lenguas maternas de personas que pertenecen a este grupo étnico
+        lenguas = Persona.objects.filter(
+            grupo_familiar_id=grupo_etnico_id
+        ).values('lengua_materna__nombre').annotate(
+            count=Count('lengua_materna')
+        ).exclude(lengua_materna__isnull=True).order_by('-count')
+
+        data = []
+        for lengua in lenguas:
+            data.append({
+                'id': f"lengua_{lengua['lengua_materna__nombre']}",
+                'nombre': lengua['lengua_materna__nombre'],
+                'cantidad_hablantes': lengua['count'],
+                'tipo': 'lengua_materna'
+            })
+
+        return Response(data)
+
 # Mantener el endpoint anterior por compatibilidad
 @api_view(['GET'])
 @permission_classes([AllowAny])

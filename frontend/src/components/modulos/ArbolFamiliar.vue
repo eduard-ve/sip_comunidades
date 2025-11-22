@@ -1,15 +1,15 @@
 <template>
   <div class="arbol-familiar">
     <div class="arbol-header">
-      <h2>🌳 Árbol Familiar</h2>
-      <select v-model="personaSeleccionadaId" @change="cargarArbol" class="persona-selector">
-        <option value="">Selecciona una persona</option>
+      <h2>🌍 Lenguas por Grupo Étnico</h2>
+      <select v-model="grupoSeleccionadoId" @change="cargarArbol" class="persona-selector">
+        <option value="">Selecciona un grupo étnico</option>
         <option
-          v-for="persona in todasLasPersonas"
-          :key="persona.id"
-          :value="persona.value"
+          v-for="grupo in todosLosGrupos"
+          :key="grupo.id"
+          :value="grupo.id"
         >
-          {{ persona.label }}
+          {{ grupo.nombre }}
         </option>
       </select>
     </div>
@@ -19,45 +19,22 @@
       <p>Cargando árbol familiar...</p>
     </div>
 
-    <div v-else-if="!personaSeleccionadaId" class="no-selection">
-      <p>👆 Selecciona una persona para ver su árbol familiar</p>
+    <div v-else-if="!grupoSeleccionadoId" class="no-selection">
+      <p>👆 Selecciona un grupo étnico para ver sus lenguas maternas</p>
     </div>
 
     <div v-else class="arbol-container">
-      <!-- Nivel 1: Padres -->
-      <div class="nivel padres">
-        <div
-          v-for="familiar in relacionesFiltradas.padres"
-          :key="familiar.id"
-          class="nodo-familiar padre"
-          @click="cambiarPersonaCentral(familiar)"
-        >
-          <div class="nodo-avatar" :style="{ backgroundColor: getColorGenero(familiar.genero) }">
-            {{ getIniciales(familiar.nombre_completo) }}
-          </div>
-          <div class="nodo-info">
-            <div class="nodo-nombre">{{ familiar.nombre_completo }}</div>
-            <div class="nodo-relacion">Padre/Madre</div>
-            <div class="nodo-edad">{{ familiar.edad }} años</div>
-            <div class="nodo-ocupacion">{{ familiar.ocupacion || 'Sin ocupación' }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Conexión vertical -->
-      <div class="conexion-vertical"></div>
-
-      <!-- Nivel 2: Persona central -->
+      <!-- Nivel 1: Grupo Étnico Central -->
       <div class="nivel central">
-        <div class="nodo-familiar central-nodo">
-          <div class="nodo-avatar central-avatar" :style="{ backgroundColor: getColorGenero(personaCentral.genero) }">
-            {{ getIniciales(personaCentral.nombre_completo) }}
+        <div class="nodo-familiar central-nodo grupo-etnico">
+          <div class="nodo-avatar central-avatar" style="background-color: #007bff;">
+            🌍
           </div>
           <div class="nodo-info">
-            <div class="nodo-nombre central-nombre">{{ personaCentral.nombre_completo }}</div>
-            <div class="nodo-relacion">Persona Central</div>
-            <div class="nodo-edad">{{ personaCentral.edad }} años</div>
-            <div class="nodo-ocupacion">{{ personaCentral.ocupacion || 'Sin ocupación' }}</div>
+            <div class="nodo-nombre central-nombre">{{ grupoSeleccionado.nombre }}</div>
+            <div class="nodo-relacion">Grupo Étnico</div>
+            <div class="nodo-edad">{{ lenguasActuales.length }} lenguas</div>
+            <div class="nodo-ocupacion">Lenguas maternas habladas</div>
           </div>
         </div>
       </div>
@@ -65,61 +42,21 @@
       <!-- Conexión vertical -->
       <div class="conexion-vertical"></div>
 
-      <!-- Nivel 3: Pareja e hijos -->
-      <div class="nivel descendientes">
-        <!-- Pareja -->
+      <!-- Nivel 2: Lenguas Maternas -->
+      <div class="nivel lenguas">
         <div
-          v-for="familiar in relacionesFiltradas.pareja"
-          :key="familiar.id"
-          class="nodo-familiar pareja"
-          @click="cambiarPersonaCentral(familiar)"
+          v-for="lengua in lenguasActuales"
+          :key="lengua.id"
+          class="nodo-familiar lengua"
         >
-          <div class="nodo-avatar" :style="{ backgroundColor: getColorGenero(familiar.genero) }">
-            {{ getIniciales(familiar.nombre_completo) }}
+          <div class="nodo-avatar" style="background-color: #28a745;">
+            🗣️
           </div>
           <div class="nodo-info">
-            <div class="nodo-nombre">{{ familiar.nombre_completo }}</div>
-            <div class="nodo-relacion">Pareja</div>
-            <div class="nodo-edad">{{ familiar.edad }} años</div>
-            <div class="nodo-ocupacion">{{ familiar.ocupacion || 'Sin ocupación' }}</div>
-          </div>
-        </div>
-
-        <!-- Hijos -->
-        <div
-          v-for="familiar in relacionesFiltradas.hijos"
-          :key="familiar.id"
-          class="nodo-familiar hijo"
-          @click="cambiarPersonaCentral(familiar)"
-        >
-          <div class="nodo-avatar" :style="{ backgroundColor: getColorGenero(familiar.genero) }">
-            {{ getIniciales(familiar.nombre_completo) }}
-          </div>
-          <div class="nodo-info">
-            <div class="nodo-nombre">{{ familiar.nombre_completo }}</div>
-            <div class="nodo-relacion">Hijo/a</div>
-            <div class="nodo-edad">{{ familiar.edad }} años</div>
-            <div class="nodo-ocupacion">{{ familiar.ocupacion || 'Sin ocupación' }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Nivel 4: Hermanos (lateral) -->
-      <div class="nivel hermanos">
-        <div
-          v-for="familiar in relacionesFiltradas.hermanos"
-          :key="familiar.id"
-          class="nodo-familiar hermano"
-          @click="cambiarPersonaCentral(familiar)"
-        >
-          <div class="nodo-avatar" :style="{ backgroundColor: getColorGenero(familiar.genero) }">
-            {{ getIniciales(familiar.nombre_completo) }}
-          </div>
-          <div class="nodo-info">
-            <div class="nodo-nombre">{{ familiar.nombre_completo }}</div>
-            <div class="nodo-relacion">Hermano/a</div>
-            <div class="nodo-edad">{{ familiar.edad }} años</div>
-            <div class="nodo-ocupacion">{{ familiar.ocupacion || 'Sin ocupación' }}</div>
+            <div class="nodo-nombre">{{ lengua.nombre }}</div>
+            <div class="nodo-relacion">Lengua Materna</div>
+            <div class="nodo-edad">{{ lengua.cantidad_hablantes }} hablantes</div>
+            <div class="nodo-ocupacion">Idioma nativo</div>
           </div>
         </div>
       </div>
@@ -131,18 +68,14 @@
       <div class="leyenda-items">
         <div class="leyenda-item">
           <div class="leyenda-color" style="background-color: #007bff;"></div>
-          <span>Hombres</span>
+          <span>🌍 Grupo Étnico</span>
         </div>
         <div class="leyenda-item">
-          <div class="leyenda-color" style="background-color: #e83e8c;"></div>
-          <span>Mujeres</span>
-        </div>
-        <div class="leyenda-item">
-          <div class="leyenda-color" style="background-color: #6c757d;"></div>
-          <span>Otro</span>
+          <div class="leyenda-color" style="background-color: #28a745;"></div>
+          <span>🗣️ Lengua Materna</span>
         </div>
       </div>
-      <p class="leyenda-nota">💡 Haz clic en cualquier persona para centrar el árbol en ella</p>
+      <p class="leyenda-nota">💡 Selecciona un grupo étnico para ver sus lenguas maternas</p>
     </div>
   </div>
 </template>
@@ -151,132 +84,47 @@
 export default {
   name: 'ArbolFamiliar',
   props: {
-    personas: {
-      type: Array,
-      default: () => []
-    },
-    relacionesFamiliares: {
+    gruposEtnicos: {
       type: Array,
       default: () => []
     }
   },
   data() {
     return {
-      personaSeleccionadaId: '',
-      personaCentral: null,
-      relacionesActuales: [],
+      grupoSeleccionadoId: '',
+      grupoSeleccionado: null,
+      lenguasActuales: [],
       cargando: false
     }
   },
   computed: {
-    todasLasPersonas() {
-      return this.personas.map(persona => ({
-        value: persona.id,
-        label: `${persona.nombre_completo} (${this.calcularEdad(persona.fecha_nacimiento)} años)`
-      }))
-    },
-    relacionesFiltradas() {
-      if (!this.relacionesActuales.length) {
-        return {
-          padres: [],
-          pareja: [],
-          hijos: [],
-          hermanos: []
-        }
-      }
-
-      const padres = []
-      const pareja = []
-      const hijos = []
-      const hermanos = []
-
-      this.relacionesActuales.forEach(relacion => {
-        const relacionLower = relacion.relacion.toLowerCase()
-
-        if (relacionLower.includes('padre') || relacionLower.includes('madre')) {
-          padres.push(relacion)
-        } else if (relacionLower.includes('pareja') || relacionLower.includes('esposo') || relacionLower.includes('esposa')) {
-          pareja.push(relacion)
-        } else if (relacionLower.includes('hijo') || relacionLower.includes('hija')) {
-          hijos.push(relacion)
-        } else if (relacionLower.includes('hermano') || relacionLower.includes('hermana')) {
-          hermanos.push(relacion)
-        }
-      })
-
-      return {
-        padres,
-        pareja,
-        hijos,
-        hermanos
-      }
+    todosLosGrupos() {
+      return this.gruposEtnicos
     }
   },
   methods: {
     async cargarArbol() {
-      if (!this.personaSeleccionadaId) {
-        this.personaCentral = null
-        this.relacionesActuales = []
+      if (!this.grupoSeleccionadoId) {
+        this.grupoSeleccionado = null
+        this.lenguasActuales = []
         return
       }
 
       this.cargando = true
 
       try {
-        // Buscar la persona central
-        this.personaCentral = this.personas.find(p => p.id == this.personaSeleccionadaId)
-        if (this.personaCentral) {
-          this.personaCentral.edad = this.calcularEdad(this.personaCentral.fecha_nacimiento)
-          this.personaCentral.ocupacion = this.personaCentral.ocupacion?.nombre || null
-        }
+        // Buscar el grupo étnico seleccionado
+        this.grupoSeleccionado = this.gruposEtnicos.find(g => g.id == this.grupoSeleccionadoId)
 
-        // Cargar relaciones familiares desde API
-        const response = await fetch(`/api/poblacion/estadisticas/personas/${this.personaSeleccionadaId}/relaciones-familiares/`)
-        if (response.ok) {
-          this.relacionesActuales = await response.json()
-        } else {
-          console.error('Error al cargar relaciones familiares')
-          this.relacionesActuales = []
-        }
+        // Cargar lenguas maternas desde API
+        const response = await poblacionService.getLenguasPorGrupoEtnico(this.grupoSeleccionadoId)
+        this.lenguasActuales = response.data
       } catch (error) {
-        console.error('Error:', error)
-        this.relacionesActuales = []
+        console.error('Error al cargar lenguas maternas:', error)
+        this.lenguasActuales = []
       } finally {
         this.cargando = false
       }
-    },
-
-    cambiarPersonaCentral(familiar) {
-      this.personaSeleccionadaId = familiar.id
-      this.cargarArbol()
-    },
-
-    getIniciales(nombreCompleto) {
-      if (!nombreCompleto) return '??'
-      const partes = nombreCompleto.split(' ')
-      const iniciales = partes.map(parte => parte.charAt(0).toUpperCase()).slice(0, 2)
-      return iniciales.join('')
-    },
-
-    getColorGenero(genero) {
-      const colores = {
-        'M': '#007bff', // Azul para hombres
-        'F': '#e83e8c', // Rosa para mujeres
-        'O': '#6c757d'  // Gris para otro
-      }
-      return colores[genero] || '#6c757d'
-    },
-
-    calcularEdad(fechaNacimiento) {
-      if (!fechaNacimiento) return 'N/A'
-      const hoy = new Date()
-      const nacimiento = new Date(fechaNacimiento)
-      let edad = hoy.getFullYear() - nacimiento.getFullYear()
-      const mes = hoy.getMonth() - nacimiento.getMonth()
-      if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
-        edad--
-      }
-      return edad
     }
   }
 }

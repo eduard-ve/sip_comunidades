@@ -86,6 +86,7 @@ export const poblacionService = {
   getDistribucionGenero: () => api.get('/poblacion/estadisticas/distribucion_genero/'),
   getTopOcupaciones: () => api.get('/poblacion/estadisticas/top_ocupaciones/'),
   getLenguasMaternas: () => api.get('/poblacion/estadisticas/lenguas_maternas/'),
+  getLenguasPorGrupoEtnico: (grupoId) => api.get(`/poblacion/estadisticas/${grupoId}/lenguas_por_grupo_etnico/`),
   }
   
   // Servicios sociales

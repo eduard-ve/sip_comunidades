@@ -36,6 +36,7 @@
           :personas="people"
           :personas-filtradas="personasFiltradas"
           :relaciones-familiares="relacionesFamiliares"
+          :grupos-etnicos="gruposFamiliares"
           :distribucion-genero="distribucionGenero"
           :top-ocupaciones="topOcupaciones"
           :distribucion-educativa="distribucionEducativa"
