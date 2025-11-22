@@ -28,7 +28,12 @@ class EncuestaViewSet(viewsets.ModelViewSet):
         """Crear encuesta con manejo de transacciones"""
         try:
             with transaction.atomic():
-                return super().create(request, *args, **kwargs)
+                serializer = self.get_serializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                instance = serializer.save()
+                # Serialize with read serializer
+                read_serializer = EncuestaSerializer(instance)
+                return Response(read_serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as e:
             return Response({
                 'error': 'Datos de entrada inválidos',
