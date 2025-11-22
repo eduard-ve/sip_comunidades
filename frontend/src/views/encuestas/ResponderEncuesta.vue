@@ -135,23 +135,34 @@ onMounted(async () => {
   }
 
   try {
+    console.log('Cargando encuesta con ID:', id)
     const response = await api.get(`/encuestas/by_token/?token=${id}`)
+    console.log('Respuesta del servidor:', response)
+
     if (response.data) {
       encuesta.value = response.data
       console.log('Encuesta cargada:', encuesta.value)
+
       // Inicializar respuestas vacías para cada pregunta
-      if (encuesta.value.preguntas) {
+      if (encuesta.value.preguntas && encuesta.value.preguntas.length > 0) {
         encuesta.value.preguntas.forEach(pregunta => {
           respuestas.value[pregunta.id_pregunta] = null
         })
+        console.log('Respuestas inicializadas para', encuesta.value.preguntas.length, 'preguntas')
+      } else {
+        console.warn('La encuesta no tiene preguntas configuradas')
       }
     } else {
       error.value = 'Encuesta no encontrada'
     }
   } catch (err) {
     console.error('Error cargando encuesta:', err)
+    console.error('Detalles del error:', err.response?.data)
+
     if (err.response && err.response.data && err.response.data.message) {
       error.value = err.response.data.message
+    } else if (err.response && err.response.status === 404) {
+      error.value = 'Encuesta no encontrada o no disponible'
     } else {
       error.value = 'Error al cargar la encuesta. Por favor intenta de nuevo.'
     }
@@ -180,16 +191,36 @@ const submitRespuesta = async () => {
       opcion: typeof respuesta === 'number' ? respuesta : null
     }))
 
-    // Enviar respuestas al backend
+    console.log('Enviando respuestas:', respuestasData)
+
+    // Enviar respuestas al backend usando POST directo a la lista
     const response = await api.post('/encuestas/respuestas/', respuestasData)
+
+    console.log('Respuesta del servidor:', response)
 
     if (response.status === 201) {
       alert('¡Gracias por tu respuesta! La encuesta ha sido enviada correctamente.')
       router.push('/')
+    } else {
+      throw new Error('Respuesta inesperada del servidor')
     }
   } catch (err) {
     console.error('Error enviando respuesta:', err)
-    alert('Error al enviar la respuesta. Por favor intenta de nuevo.')
+    console.error('Detalles del error:', err.response?.data)
+
+    let errorMessage = 'Error al enviar la respuesta. Por favor intenta de nuevo.'
+
+    if (err.response?.data?.error) {
+      errorMessage = err.response.data.error
+    } else if (err.response?.data?.message) {
+      errorMessage = err.response.data.message
+    } else if (err.response?.data?.detail) {
+      errorMessage = err.response.data.detail
+    } else if (err.message) {
+      errorMessage = err.message
+    }
+
+    alert(errorMessage)
   } finally {
     isSubmitting.value = false
   }

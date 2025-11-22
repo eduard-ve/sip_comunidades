@@ -75,7 +75,7 @@ const kpis = ref([
 ])
 
 // Datos de ejemplo para los gráficos (pueden actualizarse con datos reales)
-const charts = {
+const charts = ref({
   left: {
     id: "repMensuales",
     title: "Reportes por mes",
@@ -94,7 +94,7 @@ const charts = {
       datasets: [{ data: [0, 0, 0] }]
     }
   }
-}
+})
 
 // Estado de la tabla
 const table = ref({
@@ -143,7 +143,7 @@ onMounted(async () => {
     }))
 
     // Actualizar gráfico de distribución
-    charts.right.data.datasets[0].data = [
+    charts.value.right.data.datasets[0].data = [
       reportesStore.reportesSaludCount,
       reportesStore.reportesSocialesCount,
       reportesStore.reportesEncuestasCount
@@ -158,35 +158,24 @@ onMounted(async () => {
 async function saveReporte(newReporte) {
   try {
     console.log('Datos del reporte a guardar:', newReporte)
-    // Determinar si es creación o edición
-    const isEditing = editingReporte.value !== null
 
     // Determinar el tipo de reporte basado en el valor seleccionado
     let storeMethod
     if (newReporte.tipo_reporte === 'resumen_salud' || newReporte.tipo_reporte === 'indicadores_salud') {
-      storeMethod = isEditing ? reportesStore.updateReporteSalud : reportesStore.createReporteSalud
+      storeMethod = reportesStore.createReporteSalud
     } else if (newReporte.tipo_reporte === 'reporte_social' || newReporte.tipo_reporte === 'condiciones_sociales') {
-      storeMethod = isEditing ? reportesStore.updateReporteSocial : reportesStore.createReporteSocial
+      storeMethod = reportesStore.createReporteSocial
     } else if (newReporte.tipo_reporte === 'resultados_encuesta' || newReporte.tipo_reporte === 'analisis_encuesta') {
-      storeMethod = isEditing ? reportesStore.updateReporteEncuestas : reportesStore.createReporteEncuestas
+      storeMethod = reportesStore.createReporteEncuestas
     } else {
       // Fallback: si no coincide exactamente, usar lógica anterior
       if (newReporte.tipo_reporte.includes('salud')) {
-        storeMethod = isEditing ? reportesStore.updateReporteSalud : reportesStore.createReporteSalud
+        storeMethod = reportesStore.createReporteSalud
       } else if (newReporte.tipo_reporte.includes('social')) {
-        storeMethod = isEditing ? reportesStore.updateReporteSocial : reportesStore.createReporteSocial
+        storeMethod = reportesStore.createReporteSocial
       } else {
-        storeMethod = isEditing ? reportesStore.updateReporteEncuestas : reportesStore.createReporteEncuestas
+        storeMethod = reportesStore.createReporteEncuestas
       }
-    }
-
-    console.log('Método del store a usar:', storeMethod.name)
-
-    if (isEditing) {
-      await storeMethod(editingReporte.value.id, newReporte)
-    } else {
-      await storeMethod(newReporte)
-
     }
 
     console.log('Método del store a usar:', storeMethod.name)
@@ -214,13 +203,11 @@ async function saveReporte(newReporte) {
       categoria: reporte.categoria
     }))
 
-
-    alert(isEditing ? "Reporte actualizado con éxito" : "Reporte generado con éxito")
-    closeForm()
+    alert("Reporte generado con éxito")
+    showForm.value = false
   } catch (error) {
     console.error('Error al guardar reporte:', error)
-    alert(`Error al ${editingReporte.value ? 'actualizar' : 'generar'} el reporte: ${error.response?.data?.error || error.response?.data?.detail || error.message}`)
-
+    alert(`Error al generar el reporte: ${error.response?.data?.detail || error.message}`)
   }
 }
 

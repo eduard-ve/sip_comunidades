@@ -165,5 +165,12 @@ export const poblacionService = {
     createAsistencia: (asistenciaData) => api.post('/social/asistencias-actividad/', asistenciaData),
     updateAsistencia: (id, asistenciaData) => api.put(`/social/asistencias-actividad/${id}/`, asistenciaData),
     deleteAsistencia: (id) => api.delete(`/social/asistencias-actividad/${id}/`),
+    }
+  
+  // Servicios de auditoría
+  export const auditService = {
+    getAuditLogs: () => api.get('/auditoria/'),
+    getAuditStats: () => api.get('/auditoria/stats/'),
   }
+  
   export default api

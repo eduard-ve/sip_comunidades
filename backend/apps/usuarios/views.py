@@ -25,6 +25,18 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['rol'] = user.rol
         return token
 
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        # Agregar info del usuario al access token también
+        user = self.user
+        # Crear access token con la info adicional
+        from rest_framework_simplejwt.tokens import AccessToken
+        access_token = AccessToken.for_user(user)
+        access_token['username'] = user.username
+        access_token['rol'] = user.rol
+        data['access'] = str(access_token)
+        return data
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 

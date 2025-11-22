@@ -198,6 +198,33 @@ export const useReportesStore = defineStore('reportes', {
         this.error = 'Error al actualizar reporte de encuestas'
         throw error
       }
+    },
+
+    async exportReportePDF(id, categoria) {
+      try {
+        let url = ''
+        if (categoria === 'Salud') {
+          url = `${API_BASE_URL}/reportes/salud/${id}/export_pdf/`
+        } else if (categoria === 'Social') {
+          url = `${API_BASE_URL}/reportes/social/${id}/export_pdf/`
+        } else if (categoria === 'Encuestas') {
+          url = `${API_BASE_URL}/reportes/encuestas/${id}/export_pdf/`
+        }
+
+        const response = await axios.get(url, { responseType: 'blob' })
+
+        // Crear un enlace para descargar el archivo
+        const blob = new Blob([response.data], { type: 'application/pdf' })
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(blob)
+        link.download = `reporte_${categoria.toLowerCase()}_${id}.pdf`
+        link.click()
+
+        return true
+      } catch (error) {
+        this.error = 'Error al exportar PDF'
+        throw error
+      }
     }
   }
 })
