@@ -8,6 +8,8 @@ export const useSaludStore = defineStore('salud', {
     registros: [],
     alertas: [],
     controles: [],
+    enfermedadesComunes: [],
+    distribucionEdad: [],
     loading: false,
     error: null
   }),
@@ -115,6 +117,34 @@ export const useSaludStore = defineStore('salud', {
       } catch (error) {
         this.error = 'Error al eliminar registro de salud'
         throw error
+      }
+    },
+
+    async fetchEnfermedadesComunes() {
+      this.loading = true
+      try {
+        const response = await axios.get(`${API_BASE_URL}/salud/stats/enfermedades_comunes/`)
+        this.enfermedadesComunes = response.data
+        this.error = null
+      } catch (error) {
+        this.error = 'Error al cargar enfermedades comunes'
+        console.error(error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchDistribucionEdad() {
+      this.loading = true
+      try {
+        const response = await axios.get(`${API_BASE_URL}/salud/stats/distribucion_edad_salud/`)
+        this.distribucionEdad = response.data
+        this.error = null
+      } catch (error) {
+        this.error = 'Error al cargar distribución por edad'
+        console.error(error)
+      } finally {
+        this.loading = false
       }
     }
   }
