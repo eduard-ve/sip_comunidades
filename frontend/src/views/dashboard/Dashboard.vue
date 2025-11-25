@@ -1,310 +1,411 @@
 <template>
-  <div class="container-fluid py-4">
-    <!-- ======= Encabezado Mejorado ======= -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-      <div>
-        <h2 class="fw-bold mb-1">📊 Dashboard - Sistema de Gestión Comunitaria</h2>
-        <div class="text-muted small">
-          Comunidad: <span class="fw-semibold">{{ nombreComunidad }}</span> |
-          Año: <span class="fw-semibold">{{ currentYear }}</span> |
-          Última actualización: <span class="fw-semibold">{{ lastUpdate }}</span>
-        </div>
-      </div>
-      <div class="d-flex gap-2">
-        <!-- Selector de vista por módulo (según permisos) -->
-        <select v-if="modulosDisponibles.length > 1" v-model="vistaActual" class="form-select w-auto">
-          <option v-for="modulo in modulosDisponibles" :key="modulo.value" :value="modulo.value">
-            {{ modulo.label }}
-          </option>
-        </select>
-        
-        <select v-model="currentYear" class="form-select w-auto">
-          <option v-for="y in years" :key="y">{{ y }}</option>
-        </select>
-        
-        <select v-model="periodo" class="form-select w-auto">
-          <option value="dia">Día</option>
-          <option value="semana">Semana</option>
-          <option value="mes">Mes</option>
-          <option value="año">Año</option>
-        </select>
-      </div>
-    </div>
+  <div class="min-vh-100" style="background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);">
 
-    <!-- ======= KPIs Principales (Filtrados por permisos) ======= -->
-    <div class="row g-3 mb-4">
-      <div class="col-12 col-sm-6 col-lg-2" v-for="card in kpisVisibles" :key="card.title">
-        <KpiCard
-          :title="card.title"
-          :value="card.value"
-          :change="card.change"
-          :icon="card.icon"
-          :color-icon="card.color"
-          :subtitle="card.subtitle"
-        />
-      </div>
-    </div>
-
-    <!-- ======= Resumen por Módulos (Filtrado por permisos) ======= -->
-    <div class="row g-3 mb-4" v-if="mostrarSeccion('resumen_modulos')">
-      <div class="col-md-3" v-for="modulo in modulosResumenVisibles" :key="modulo.nombre">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <div :style="`background: ${modulo.color}; padding: 12px; border-radius: 8px;`">
-                <i :class="modulo.icon" class="text-white" style="font-size: 1.5rem;"></i>
-              </div>
-              <span v-if="modulo.badge" class="badge" :class="modulo.badgeClass">{{ modulo.badge }}</span>
+    <!-- Header Superior Fijo -->
+    <div class="position-sticky top-0 bg-white border-bottom border-secondary shadow-sm" style="z-index: 50;">
+      <div class="container-fluid px-4 py-3" style="max-width: 1800px;">
+        <div class="d-flex align-items-center justify-content-center">
+          <div class="d-flex align-items-center gap-3">
+            <div class="bg-primary rounded-4 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+              <i class="bi bi-people-fill text-white fs-5"></i>
             </div>
-            <h5 class="fw-bold mb-2">{{ modulo.nombre }}</h5>
-            <h3 class="fw-bold text-primary mb-1">{{ modulo.valor }}</h3>
-            <p class="text-muted small mb-3">{{ modulo.descripcion }}</p>
-            <div class="border-top pt-2">
-              <div v-for="det in modulo.detalles" :key="det.label" class="d-flex justify-content-between mb-1">
-                <small class="text-muted">{{ det.label }}:</small>
-                <small class="fw-semibold">{{ det.value }}</small>
-              </div>
+            <div class="text-center">
+              <h1 class="fs-3 fw-bold text-dark mb-0">Dashboard Poblacional</h1>
+              <p class="fs-6 text-muted mb-0">{{ nombreComunidad }} • {{ currentYear }}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ======= Gráficos Principales ======= -->
-    <div class="row g-3 mb-4" v-if="mostrarSeccion('graficos_poblacionales')">
-      <div class="col-md-6" v-if="puedeVerModulo('poblacional')">
-        <ChartPanel chart-id="barLineChart" type="bar" :data="barLineChartData">
-          <template #title>📈 Evolución de Registros Poblacionales</template>
-        </ChartPanel>
-      </div>
-      <div class="col-md-6" v-if="puedeVerModulo('poblacional')">
-        <ChartPanel chart-id="pieChart" type="pie" :data="pieChartData">
-          <template #title>👥 Distribución por Género</template>
-        </ChartPanel>
-      </div>
-    </div>
+    <div class="container-fluid px-4 py-3" style="max-width: 1800px;">
 
-    <!-- ======= Gráficos Adicionales ======= -->
-    <div class="row g-3 mb-4" v-if="mostrarSeccion('graficos_adicionales')">
-      <div class="col-md-6" v-if="puedeVerModulo('social')">
-        <ChartPanel chart-id="programasSociales" type="doughnut" :data="programasSocialesData">
-          <template #title>🤝 Programas Sociales - Beneficiarios</template>
-        </ChartPanel>
-      </div>
-      <div class="col-md-6" v-if="puedeVerModulo('salud')">
-        <ChartPanel chart-id="saludChart" type="bar" :data="saludChartData">
-          <template #title>🏥 Indicadores de Salud</template>
-        </ChartPanel>
-      </div>
-    </div>
-
-    <!-- ======= Mapas y Pirámide ======= -->
-    <div class="row g-3 mb-4" v-if="puedeVerModulo('poblacional')">
-      <div class="col-md-6">
-        <PopulationPyramid />
-      </div>
-      <div class="col-md-6">
-        <ServicesMap />
-      </div>
-    </div>
-
-    <!-- ======= Indicadores Sectoriales ======= -->
-    <div class="row g-3 mb-4" v-if="mostrarSeccion('indicadores_sectoriales')">
-      <div class="col-md-6" v-if="puedeVerModulo('salud')">
-        <HealthIndicators />
-      </div>
-      <div class="col-md-6" v-if="puedeVerModulo('poblacional')">
-        <EducationStats />
-      </div>
-    </div>
-
-    <!-- ======= Actividad Reciente y Auditoría ======= -->
-    <div class="row g-3 mb-4" v-if="mostrarSeccion('actividad_auditoria')">
-      <div class="col-md-6" v-if="puedeVerModulo('auditoria')">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 class="fw-bold mb-0">📅 Actividad Reciente del Sistema</h6>
-              <span class="badge bg-primary">{{ actividadReciente.length }} eventos</span>
+       <!-- Hero Metrics - 4 Columnas -->
+       <div class="row g-3 mb-3">
+        <div class="col-12 col-sm-6 col-lg-3">
+           <div class="bg-white rounded-4 shadow-sm border border-light p-3 text-center">
+             <div class="circular-progress position-relative d-inline-block mb-3" style="width: 120px; height: 120px;">
+               <svg width="120" height="120" viewBox="0 0 120 120">
+                 <circle cx="60" cy="60" r="50" stroke="#e6e6e6" stroke-width="8" fill="none" />
+                 <circle cx="60" cy="60" r="50" :stroke="heroMetrics.poblacion.trend >= 0 ? '#10b981' : '#ef4444'" stroke-width="8" fill="none" stroke-dasharray="314.16" :stroke-dashoffset="314.16 - (Math.abs(heroMetrics.poblacion.trend)/100)*314.16" transform="rotate(-90 60 60)" stroke-linecap="round" />
+               </svg>
+               <div class="position-absolute top-50 start-50 translate-middle">
+                 <div class="fs-4 fw-bold" :class="heroMetrics.poblacion.trend >= 0 ? 'text-success' : 'text-danger'">{{ Math.abs(heroMetrics.poblacion.trend) }}%</div>
+               </div>
+             </div>
+             <div class="display-6 fw-bold mb-2 text-primary">{{ heroMetrics.poblacion.value }}</div>
+             <div class="fs-6 fw-bold text-secondary text-uppercase mb-1">{{ heroMetrics.poblacion.label }}</div>
+             <div class="fs-6 text-muted">{{ heroMetrics.poblacion.sublabel }}</div>
+           </div>
+         </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3 text-center">
+            <div class="circular-progress position-relative d-inline-block mb-3" style="width: 120px; height: 120px;">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" stroke="#e6e6e6" stroke-width="8" fill="none" />
+                <circle cx="60" cy="60" r="50" :stroke="heroMetrics.familiar.trend >= 0 ? '#10b981' : '#ef4444'" stroke-width="8" fill="none" stroke-dasharray="314.16" :stroke-dashoffset="314.16 - (Math.abs(heroMetrics.familiar.trend)/100)*314.16" transform="rotate(-90 60 60)" stroke-linecap="round" />
+              </svg>
+              <div class="position-absolute top-50 start-50 translate-middle">
+                <div class="fs-4 fw-bold" :class="heroMetrics.familiar.trend >= 0 ? 'text-success' : 'text-danger'">{{ Math.abs(heroMetrics.familiar.trend) }}%</div>
+              </div>
             </div>
-            <div class="activity-timeline">
-              <div v-for="act in actividadReciente" :key="act.id" class="activity-item mb-3 pb-3 border-bottom">
-                <div class="d-flex">
-                  <div class="activity-dot" :style="`background: ${act.color};`"></div>
-                  <div class="flex-grow-1">
-                    <div class="d-flex justify-content-between align-items-start">
-                      <div>
-                        <strong class="d-block">{{ act.accion }}</strong>
-                        <!-- Solo admin ve el usuario -->
-                        <small class="text-muted" v-if="esAdmin">{{ act.usuario }}</small>
-                        <small class="text-muted" v-else>Usuario del sistema</small>
-                      </div>
-                      <span class="badge" :class="`bg-${act.moduloColor}`">{{ act.modulo }}</span>
-                    </div>
-                    <small class="text-muted">{{ act.tiempo }}</small>
+            <div class="display-6 fw-bold mb-2 text-success">{{ heroMetrics.familiar.value }}</div>
+            <div class="fs-6 fw-bold text-secondary text-uppercase mb-1">{{ heroMetrics.familiar.label }}</div>
+            <div class="fs-6 text-muted">{{ heroMetrics.familiar.sublabel }}</div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3 text-center">
+            <div class="circular-progress position-relative d-inline-block mb-3" style="width: 120px; height: 120px;">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" stroke="#e6e6e6" stroke-width="8" fill="none" />
+                <circle cx="60" cy="60" r="50" :stroke="heroMetrics.educacion.trend >= 0 ? '#10b981' : '#ef4444'" stroke-width="8" fill="none" stroke-dasharray="314.16" :stroke-dashoffset="314.16 - (Math.abs(heroMetrics.educacion.trend)/100)*314.16" transform="rotate(-90 60 60)" stroke-linecap="round" />
+              </svg>
+              <div class="position-absolute top-50 start-50 translate-middle">
+                <div class="fs-4 fw-bold" :class="heroMetrics.educacion.trend >= 0 ? 'text-success' : 'text-danger'">{{ Math.abs(heroMetrics.educacion.trend) }}%</div>
+              </div>
+            </div>
+            <div class="display-6 fw-bold mb-2 text-warning">{{ heroMetrics.educacion.value }}</div>
+            <div class="fs-6 fw-bold text-secondary text-uppercase mb-1">{{ heroMetrics.educacion.label }}</div>
+            <div class="fs-6 text-muted">{{ heroMetrics.educacion.sublabel }}</div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3 text-center">
+            <div class="circular-progress position-relative d-inline-block mb-3" style="width: 120px; height: 120px;">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" stroke="#e6e6e6" stroke-width="8" fill="none" />
+                <circle cx="60" cy="60" r="50" :stroke="heroMetrics.empleo.trend >= 0 ? '#10b981' : '#ef4444'" stroke-width="8" fill="none" stroke-dasharray="314.16" :stroke-dashoffset="314.16 - (Math.abs(heroMetrics.empleo.trend)/100)*314.16" transform="rotate(-90 60 60)" stroke-linecap="round" />
+              </svg>
+              <div class="position-absolute top-50 start-50 translate-middle">
+                <div class="fs-4 fw-bold" :class="heroMetrics.empleo.trend >= 0 ? 'text-success' : 'text-danger'">{{ Math.abs(heroMetrics.empleo.trend) }}%</div>
+              </div>
+            </div>
+            <div class="display-6 fw-bold mb-2 text-danger">{{ heroMetrics.empleo.value }}</div>
+            <div class="fs-6 fw-bold text-secondary text-uppercase mb-1">{{ heroMetrics.empleo.label }}</div>
+            <div class="fs-6 text-muted">{{ heroMetrics.empleo.sublabel }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid Principal - 2 Filas -->
+
+      <!-- Fila 1: Evolución + Composición + Indicadores -->
+
+      <!-- Grid Principal - 2 Filas -->
+
+      <!-- Fila 1: Evolución + Composición + Indicadores -->
+      <div class="row g-3 mb-3">
+
+        <!-- Área CHART - Evolución Temporal -->
+        <div class="col-12 col-lg-4">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3" style="height: 320px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="fs-5 fw-bold text-dark d-flex align-items-center mb-0">
+                <div class="bg-primary rounded-pill me-3" style="width: 4px; height: 24px;"></div>
+                Evolución de Registros
+              </h3>
+              <button class="btn btn-link text-primary p-0 fs-6 fw-semibold d-flex align-items-center">
+                Ver detalle <i class="bi bi-chevron-right ms-1"></i>
+              </button>
+            </div>
+            <ChartPanel chart-id="areaChart" type="line" :data="evolucionData">
+              <template #title></template>
+            </ChartPanel>
+          </div>
+        </div>
+
+        <!-- TREEMAP - Composición Demográfica -->
+        <div class="col-12 col-lg-4">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3" style="height: 320px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="fs-5 fw-bold text-dark d-flex align-items-center mb-0">
+                <div class="bg-primary rounded-pill me-3" style="width: 4px; height: 24px;"></div>
+                Composición por Edad
+              </h3>
+              <button class="btn btn-link text-primary p-0 fs-6 fw-semibold d-flex align-items-center">
+                Ver grupos <i class="bi bi-chevron-right ms-1"></i>
+              </button>
+            </div>
+            <ChartPanel chart-id="treemapChart" type="bar" :data="composicionData">
+              <template #title></template>
+            </ChartPanel>
+          </div>
+        </div>
+
+        <!-- RADAR CHART - Indicadores Sociodemográficos -->
+        <div class="col-12 col-lg-4">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3" style="height: 320px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="fs-5 fw-bold text-dark d-flex align-items-center mb-0">
+                <div class="bg-primary rounded-pill me-3" style="width: 4px; height: 24px;"></div>
+                Indicadores Clave
+              </h3>
+              <button class="btn btn-link text-primary p-0 fs-6 fw-semibold d-flex align-items-center">
+                Ver todos <i class="bi bi-chevron-right ms-1"></i>
+              </button>
+            </div>
+            <ChartPanel chart-id="radarChart" type="radar" :data="indicadoresData">
+              <template #title></template>
+            </ChartPanel>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid Secundario -->
+      <div class="row g-3 mb-3">
+
+        <!-- HORIZONTAL BAR - Nivel Educativo -->
+        <div class="col-12 col-lg-4">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3" style="height: 320px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="fs-5 fw-bold text-dark d-flex align-items-center mb-0">
+                <div class="bg-primary rounded-pill me-3" style="width: 4px; height: 24px;"></div>
+                Nivel Educativo
+              </h3>
+              <button class="btn btn-link text-primary p-0 fs-6 fw-semibold d-flex align-items-center">
+                Ver estadísticas <i class="bi bi-chevron-right ms-1"></i>
+              </button>
+            </div>
+            <ChartPanel chart-id="educacionChart" type="bar" :data="educacionData">
+              <template #title></template>
+            </ChartPanel>
+          </div>
+        </div>
+
+        <!-- DONUT CHART - Distribución de Género -->
+        <div class="col-12 col-lg-4">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3" style="height: 320px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="fs-5 fw-bold text-dark d-flex align-items-center mb-0">
+                <div class="bg-primary rounded-pill me-3" style="width: 4px; height: 24px;"></div>
+                Distribución de Género
+              </h3>
+            </div>
+            <ChartPanel chart-id="generoChart" type="doughnut" :data="generoData">
+              <template #title></template>
+            </ChartPanel>
+            <div class="row g-2 mt-3">
+              <div v-for="(value, index) in generoData.datasets[0].data" :key="index" class="col-4 text-center">
+                <div class="fs-4 fw-bold text-dark">{{ value }}</div>
+                <div class="fs-6 text-muted fw-medium">{{ generoData.labels[index] }}</div>
+                <div class="w-100 rounded-pill mt-1" style="height: 4px;" :style="{ backgroundColor: generoData.datasets[0].backgroundColor[index] }"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STACKED BAR - Grupos de Edad por Género -->
+        <div class="col-12 col-lg-4">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3" style="height: 320px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="fs-5 fw-bold text-dark d-flex align-items-center mb-0">
+                <div class="bg-primary rounded-pill me-3" style="width: 4px; height: 24px;"></div>
+                Pirámide Poblacional Simplificada
+              </h3>
+              <button class="btn btn-link text-primary p-0 fs-6 fw-semibold d-flex align-items-center">
+                Ver detalle <i class="bi bi-chevron-right ms-1"></i>
+              </button>
+            </div>
+            <ChartPanel chart-id="gruposEdadChart" type="bar" :data="gruposEdadData" :options="gruposEdadOptions">
+              <template #title></template>
+            </ChartPanel>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila Inferior - Estructura Familiar + Mapa -->
+      <div class="row g-3">
+
+        <!-- Estructura Familiar - Cards Grid -->
+        <div class="col-12 col-lg-4">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3" style="height: 320px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="fs-5 fw-bold text-dark d-flex align-items-center mb-0">
+                <div class="bg-primary rounded-pill me-3" style="width: 4px; height: 24px;"></div>
+                Estructura Familiar
+              </h3>
+              <button class="btn btn-link text-primary p-0 fs-6 fw-semibold d-flex align-items-center">
+                Ver composición <i class="bi bi-chevron-right ms-1"></i>
+              </button>
+            </div>
+            <div class="row g-3">
+              <div v-for="item in estructuraFamiliar" :key="item.tipo" class="col-6 col-md-3">
+                <div class="rounded-4 p-3 text-white position-relative overflow-hidden" :style="{ backgroundColor: item.color }">
+                  <div class="position-absolute top-0 end-0 opacity-25" style="width: 80px; height: 80px; transform: translate(24px, -24px);">
+                    <i class="bi bi-people" style="font-size: 5rem;"></i>
+                  </div>
+                  <div class="position-relative">
+                    <div class="fs-2 fw-bold mb-1">{{ item.cantidad }}</div>
+                    <div class="fs-6 fw-semibold opacity-75">{{ item.tipo }}</div>
+                    <div class="fs-4 fw-bold mt-2">{{ item.porcentaje }}%</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div class="col-md-6" v-if="puedeVerModulo('auditoria')">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <h6 class="fw-bold mb-3">🛡️ Resumen de Auditoría</h6>
-            <div class="row g-3 mb-3">
-              <div class="col-4">
-                <div class="border-start border-success border-4 ps-3">
-                  <h3 class="fw-bold text-success mb-0">{{ auditoria.completados }}</h3>
-                  <small class="text-muted">Completados</small>
-                </div>
-              </div>
-              <div class="col-4">
-                <div class="border-start border-warning border-4 ps-3">
-                  <h3 class="fw-bold text-warning mb-0">{{ auditoria.advertencias }}</h3>
-                  <small class="text-muted">Advertencias</small>
-                </div>
-              </div>
-              <div class="col-4">
-                <div class="border-start border-danger border-4 ps-3">
-                  <h3 class="fw-bold text-danger mb-0">{{ auditoria.criticos }}</h3>
-                  <small class="text-muted">Críticos</small>
-                </div>
-              </div>
-            </div>
-            <ChartPanel chart-id="auditoriaChart" type="line" :data="auditoriaChartData">
-              <template #title>Eventos de Auditoría (7 días)</template>
-            </ChartPanel>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- ======= Encuestas y Reportes ======= -->
-    <div class="row g-3 mb-4" v-if="mostrarSeccion('encuestas_reportes')">
-      <div class="col-md-6" v-if="puedeVerModulo('encuestas')">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <h6 class="fw-bold mb-3">📋 Estado de Encuestas</h6>
-            <div class="mb-3">
-              <div class="d-flex justify-content-between mb-2">
-                <span>Encuestas Activas</span>
-                <strong class="text-success">{{ encuestas.activas }}</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-2">
-                <span>Encuestas Cerradas</span>
-                <strong class="text-secondary">{{ encuestas.cerradas }}</strong>
-              </div>
-              <div class="d-flex justify-content-between mb-2">
-                <span>Total Respuestas</span>
-                <strong class="text-primary">{{ encuestas.respuestas }}</strong>
-              </div>
-              <div class="d-flex justify-content-between">
-                <span>Tasa de Participación</span>
-                <strong class="text-info">{{ encuestas.tasaParticipacion }}%</strong>
-              </div>
+        <!-- Métricas Compactas -->
+        <div class="col-12 col-lg-4">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3" style="height: 320px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="fs-5 fw-bold text-dark d-flex align-items-center mb-0">
+                <div class="bg-primary rounded-pill me-3" style="width: 4px; height: 24px;"></div>
+                Indicadores Demográficos
+              </h3>
             </div>
-            <div class="progress" style="height: 25px;">
-              <div class="progress-bar bg-success" role="progressbar" 
-                   :style="`width: ${encuestas.tasaParticipacion}%`">
-                {{ encuestas.tasaParticipacion }}%
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-md-6" v-if="puedeVerModulo('reportes')">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <h6 class="fw-bold mb-3">📊 Reportes Generados</h6>
-            <ChartPanel chart-id="reportesChart" type="doughnut" :data="reportesChartData">
-              <template #title>Distribución por Tipo</template>
-            </ChartPanel>
-            <div class="mt-3 text-center">
-              <small class="text-muted">Total descargas: <strong>{{ reportes.descargasTotal }}</strong></small>
-              <div class="mt-2">
-                <router-link to="/reportes" class="btn btn-sm btn-outline-primary">
-                  Ir a Módulo de Reportes
-                </router-link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ======= Alertas y Noticias ======= -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-8">
-        <div class="card shadow-sm p-3 h-100">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="fw-bold mb-0">📰 Noticias y Comunicados</h6>
-            <button class="btn btn-sm btn-outline-primary">Ver todas</button>
-          </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item" v-for="n in noticias" :key="n.id">
-              <div class="d-flex justify-content-between align-items-start">
-                <div>
-                  <strong class="d-block">{{ n.titulo }}</strong>
-                  <p class="mb-1">{{ n.descripcion }}</p>
-                  <small class="text-muted">
-                    <i class="bi bi-calendar3"></i> {{ n.fecha }}
-                  </small>
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="d-flex align-items-center gap-3 p-3 bg-white rounded-3 border border-light shadow-sm">
+                  <div class="p-2 rounded-3" style="background-color: rgba(59, 130, 246, 0.15);">
+                    <i class="bi bi-people fs-4 text-primary"></i>
+                  </div>
+                  <div class="flex-fill">
+                    <div class="fs-5 fw-bold text-dark">{{ indicadoresCompactos.menores.value }}</div>
+                    <div class="fs-6 text-muted">{{ indicadoresCompactos.menores.label }}</div>
+                  </div>
                 </div>
-                <span class="badge bg-info">{{ n.categoria }}</span>
               </div>
-            </li>
-          </ul>
+              <div class="col-6">
+                <div class="d-flex align-items-center gap-3 p-3 bg-white rounded-3 border border-light shadow-sm">
+                  <div class="p-2 rounded-3" style="background-color: rgba(139, 92, 246, 0.15);">
+                    <i class="bi bi-people fs-4 text-info"></i>
+                  </div>
+                  <div class="flex-fill">
+                    <div class="fs-5 fw-bold text-dark">{{ indicadoresCompactos.adultosMayores.value }}</div>
+                    <div class="fs-6 text-muted">{{ indicadoresCompactos.adultosMayores.label }}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex align-items-center gap-3 p-3 bg-white rounded-3 border border-light shadow-sm">
+                  <div class="p-2 rounded-3" style="background-color: rgba(16, 185, 129, 0.15);">
+                    <i class="bi bi-graph-up fs-4 text-success"></i>
+                  </div>
+                  <div class="flex-fill">
+                    <div class="fs-5 fw-bold text-dark">{{ indicadoresCompactos.alfabetizacion.value }}</div>
+                    <div class="fs-6 text-muted">{{ indicadoresCompactos.alfabetizacion.label }}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="d-flex align-items-center gap-3 p-3 bg-white rounded-3 border border-light shadow-sm">
+                  <div class="p-2 rounded-3" style="background-color: rgba(245, 158, 11, 0.15);">
+                    <i class="bi bi-house fs-4 text-warning"></i>
+                  </div>
+                  <div class="flex-fill">
+                    <div class="fs-5 fw-bold text-dark">{{ indicadoresCompactos.familiar.value }}</div>
+                    <div class="fs-6 text-muted">{{ indicadoresCompactos.familiar.label }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mapa 3D con Población -->
+        <div class="col-12 col-lg-4">
+          <div class="bg-white rounded-4 shadow-sm border border-light p-3" style="height: 320px;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="fs-5 fw-bold text-dark d-flex align-items-center mb-0">
+                <div class="bg-primary rounded-pill me-3" style="width: 4px; height: 24px;"></div>
+                Mapa Poblacional 3D
+              </h3>
+              <button class="btn btn-link text-primary p-0 fs-6 fw-semibold d-flex align-items-center">
+                Ver en detalle <i class="bi bi-chevron-right ms-1"></i>
+              </button>
+            </div>
+            <div class="position-relative">
+              <canvas
+                ref="mapaCanvas"
+                width="320"
+                height="160"
+                class="w-100 rounded-4"
+                style="background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);"
+              />
+              <div class="position-absolute bottom-0 start-0 end-0 text-center">
+                <div class="d-inline-block bg-white bg-opacity-90 backdrop-blur px-3 py-1 rounded-pill border border-primary border-opacity-25 shadow-sm">
+                  <span class="fs-6 fw-semibold text-secondary">
+                    <span class="d-inline-block bg-primary rounded-circle me-1" style="width: 8px; height: 8px; animation: pulse 2s infinite;"></span>
+                    {{ totalPersonas.toLocaleString() }} personas registradas
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <div class="col-md-4">
-        <div class="card shadow-sm p-3 h-100 bg-light">
-          <h6 class="fw-bold mb-3">⚠️ Alertas Activas</h6>
-          <ul class="list-unstyled">
-            <li v-for="a in alertasVisibles" :key="a.id" class="mb-3">
-              <div class="alert" :class="`alert-${a.tipo}`" role="alert">
-                <i class="bi" :class="`bi-${a.icon}`"></i>
-                <strong>{{ a.titulo }}</strong>
-                <p class="mb-0 small">{{ a.mensaje }}</p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
+
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import KpiCard from '../../components/tarjetas/KpiCard.vue'
 import ChartPanel from '../../components/graficas/ChartPanel.vue'
-import PopulationPyramid from '../../components/graficas/PopulationPyramid.vue'
-import ServicesMap from '../../components/mapas/ServicesMap.vue'
-import HealthIndicators from '../../components/tarjetas/HealthIndicators.vue'
-import EducationStats from '../../components/graficas/EducationStats.vue'
-
-// ======= CONFIGURACIÓN DE USUARIO Y PERMISOS =======
-// TODO: Reemplazar con datos reales del backend/Django
-const usuario = ref({
-  rol: 'admin', // Opciones: 'admin', 'coordinador_salud', 'coordinador_social', 'encuestador', 'invitado'
-  nombre: 'Admin Juan',
-  permisos: [] // Se llenará según el rol
-})
-
-// Nombre de la comunidad (viene de configuración)
-const nombreComunidad = ref('Comunidad Indígena  El Refugio')
 
 // Estados reactivos
-const vistaActual = ref('todo')
-const currentYear = ref(2025)
 const periodo = ref('mes')
-const lastUpdate = ref('Hoy, 14:32')
-const years = [2023, 2024, 2025]
+const currentYear = ref(2025)
+const nombreComunidad = ref('Comunidad Indígena El Refugio')
+const totalPersonas = ref(1847)
+const mapaCanvas = ref(null)
+
+// Usuario (simulado)
+const usuario = ref({
+  rol: 'admin',
+  nombre: 'Admin Juan',
+  permisos: []
+})
+
+// Hero Metrics
+const heroMetrics = ref({
+  poblacion: {
+    value: '1,847',
+    label: 'Población Total',
+    sublabel: '512 familias registradas',
+    trend: 2.8,
+    color: '#3b82f6'
+  },
+  familiar: {
+    value: '3.6',
+    label: 'Promedio Familiar',
+    sublabel: 'Personas por hogar',
+    trend: 0.5,
+    color: '#10b981'
+  },
+  educacion: {
+    value: '78%',
+    label: 'Cobertura Educativa',
+    sublabel: 'Nivel escolarizado',
+    trend: 3.2,
+    color: '#f59e0b'
+  },
+  empleo: {
+    value: '62%',
+    label: 'Tasa de Empleo',
+    sublabel: 'Población activa',
+    trend: -1.2,
+    color: '#ef4444'
+  }
+})
+
+// Indicadores Compactos
+const indicadoresCompactos = ref({
+  menores: { value: '423', label: 'Menores de Edad' },
+  adultosMayores: { value: '135', label: 'Adultos Mayores' },
+  alfabetizacion: { value: '92.2%', label: 'Alfabetización' },
+  familiar: { value: '3.6', label: 'Promedio Familiar' }
+})
+
+// Estructura Familiar
+const estructuraFamiliar = ref([
+  { tipo: 'Nuclear', cantidad: 256, porcentaje: 50, color: '#3b82f6' },
+  { tipo: 'Extendida', cantidad: 154, porcentaje: 30, color: '#10b981' },
+  { tipo: 'Monoparental', cantidad: 77, porcentaje: 15, color: '#f59e0b' },
+  { tipo: 'Unipersonal', cantidad: 25, porcentaje: 5, color: '#ef4444' }
+])
 
 // ======= SISTEMA DE PERMISOS =======
 const permisosPorRol = {
@@ -523,30 +624,110 @@ const alertasVisibles = computed(() => {
   return todasLasAlertas.filter(alerta => alerta.roles.includes(usuario.value.rol))
 })
 
-// ======= DATOS DE GRÁFICAS (Sin cambios) =======
-const barLineChartData = {
+// ======= DATOS DE GRÁFICAS =======
+
+// Evolución Temporal (Area Chart)
+const evolucionData = ref({
   labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago'],
   datasets: [
     {
-      type: 'bar',
-      label: 'Registros Poblacionales',
-      data: [42, 58, 33, 65, 52, 73, 68, 81],
-      backgroundColor: 'rgba(13, 110, 253, 0.8)',
-      borderRadius: 6
+      label: 'Registros',
+      data: [142, 158, 133, 165, 152, 173, 168, 181],
+      borderColor: '#3b82f6',
+      backgroundColor: 'rgba(59, 130, 246, 0.3)',
+      fill: true,
+      tension: 0.4
     },
     {
-      type: 'line',
-      label: 'Tendencia',
-      data: [40, 55, 35, 60, 55, 70, 70, 80],
-      borderColor: '#ffc107',
-      borderWidth: 3,
+      label: 'Meta',
+      data: [150, 160, 155, 170, 165, 175, 170, 180],
+      borderColor: '#10b981',
+      backgroundColor: 'rgba(16, 185, 129, 0.2)',
+      fill: true,
       tension: 0.4,
-      fill: false,
-      pointRadius: 5,
-      pointBackgroundColor: '#ffc107'
+      borderDash: [5, 5]
     }
   ]
-}
+})
+
+// Composición Demográfica (Treemap - usando bar chart por ahora)
+const composicionData = ref({
+  labels: ['Adultos 31-50 años', 'Jóvenes 18-30 años', 'Adolescentes 13-17 años', 'Niños 6-12 años', 'Primera infancia 0-5 años', 'Adultos mayores 51-65 años', 'Tercera edad 65+ años'],
+  datasets: [
+    {
+      label: 'Población',
+      data: [512, 324, 243, 160, 181, 279, 134],
+      backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#6366f1', '#ef4444']
+    }
+  ]
+})
+
+// Indicadores Sociodemográficos (Radar Chart)
+const indicadoresData = ref({
+  labels: ['Alfabetización', 'Empleo', 'Educación', 'Salud', 'Vivienda', 'Servicios'],
+  datasets: [
+    {
+      label: 'Cobertura',
+      data: [92, 62, 78, 85, 71, 88],
+      borderColor: '#8b5cf6',
+      backgroundColor: 'rgba(139, 92, 246, 0.6)',
+      pointBackgroundColor: '#8b5cf6'
+    }
+  ]
+})
+
+// Nivel Educativo (Horizontal Bar)
+const educacionData = ref({
+  labels: ['Secundaria', 'Primaria', 'Técnico', 'Sin educación', 'Universidad', 'Posgrado'],
+  datasets: [
+    {
+      label: 'Cantidad',
+      data: [723, 486, 312, 145, 156, 25],
+      backgroundColor: '#f59e0b'
+    }
+  ]
+})
+
+// Distribución de Género (Donut Chart)
+const generoData = ref({
+  labels: ['Femenino', 'Masculino', 'Otro'],
+  datasets: [
+    {
+      data: [941, 892, 14],
+      backgroundColor: ['#ec4899', '#3b82f6', '#8b5cf6'],
+      borderWidth: 2,
+      borderColor: '#fff'
+    }
+  ]
+})
+
+// Grupos de Edad por Género (Stacked Bar)
+const gruposEdadData = ref({
+  labels: ['0-12', '13-17', '18-30', '31-50', '51+'],
+  datasets: [
+    {
+      label: 'Masculino',
+      data: [214, 78, 156, 245, 199],
+      backgroundColor: '#3b82f6'
+    },
+    {
+      label: 'Femenino',
+      data: [210, 82, 168, 267, 214],
+      backgroundColor: '#ec4899'
+    }
+  ]
+})
+
+const gruposEdadOptions = ref({
+  scales: {
+    x: {
+      stacked: true
+    },
+    y: {
+      stacked: true
+    }
+  }
+})
 
 const pieChartData = {
   labels: ['Masculino', 'Femenino', 'Otro'],
@@ -736,16 +917,103 @@ const noticias = [
   }
 ]
 
-// ======= CARGAR DATOS DEL USUARIO AL MONTAR =======
-onMounted(async () => {
-  // TODO: Reemplazar con llamada real a tu API Django
-  // const response = await fetch('/api/auth/user')
-  // const userData = await response.json()
-  // usuario.value = userData
-  
-  // Por ahora usa datos simulados
-  console.log('Usuario cargado:', usuario.value)
-  console.log('Permisos:', permisosPorRol[usuario.value.rol])
+// ======= 3D MAP LOGIC =======
+const puntos3D = ref([])
+const rotacion3D = ref(0)
+
+const generarPuntos3D = () => {
+  const nuevosPuntos = []
+  const radio = 80
+  const capas = 8
+  const puntosPorCapa = Math.ceil(totalPersonas.value / capas)
+
+  for (let capa = 0; capa < capas; capa++) {
+    const y = (capa / (capas - 1)) * 2 - 1
+    const radioEnCapa = Math.sqrt(1 - y * y) * radio
+    const puntosEnEstaCapa = Math.floor(puntosPorCapa * (1 - Math.abs(y) * 0.3))
+
+    for (let i = 0; i < puntosEnEstaCapa; i++) {
+      const angulo = (i / puntosEnEstaCapa) * Math.PI * 2
+      nuevosPuntos.push({
+        x: Math.cos(angulo) * radioEnCapa,
+        y: y * radio * 0.8,
+        z: Math.sin(angulo) * radioEnCapa,
+        color: `hsl(${200 + capa * 20}, 70%, ${50 + capa * 5}%)`,
+        size: 2 + Math.random() * 2
+      })
+    }
+  }
+  puntos3D.value = nuevosPuntos.slice(0, Math.min(totalPersonas.value, 500))
+}
+
+const dibujarMapa3D = () => {
+  const canvas = mapaCanvas.value
+  if (!canvas) return
+
+  const ctx = canvas.getContext('2d')
+  const width = canvas.width
+  const height = canvas.height
+
+  ctx.clearRect(0, 0, width, height)
+
+  const gradiente = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2)
+  gradiente.addColorStop(0, 'rgba(59, 130, 246, 0.1)')
+  gradiente.addColorStop(1, 'rgba(139, 92, 246, 0.05)')
+  ctx.fillStyle = gradiente
+  ctx.fillRect(0, 0, width, height)
+
+  const puntosOrdenados = [...puntos3D.value].sort((a, b) => {
+    const rad = (rotacion3D.value * Math.PI) / 180
+    const zA = a.z * Math.cos(rad) - a.x * Math.sin(rad)
+    const zB = b.z * Math.cos(rad) - b.x * Math.sin(rad)
+    return zA - zB
+  })
+
+  puntosOrdenados.forEach(punto => {
+    const rad = (rotacion3D.value * Math.PI) / 180
+
+    const x3d = punto.x * Math.cos(rad) + punto.z * Math.sin(rad)
+    const z3d = punto.z * Math.cos(rad) - punto.x * Math.sin(rad)
+
+    const escala = 300 / (300 + z3d)
+    const x2d = width / 2 + x3d * escala
+    const y2d = height / 2 + punto.y * escala
+
+    const opacidad = 0.3 + (z3d + 100) / 200 * 0.7
+
+    ctx.shadowBlur = 8
+    ctx.shadowColor = punto.color
+    ctx.fillStyle = punto.color
+    ctx.globalAlpha = opacidad
+
+    ctx.beginPath()
+    ctx.arc(x2d, y2d, punto.size * escala, 0, Math.PI * 2)
+    ctx.fill()
+
+    ctx.shadowBlur = 0
+    ctx.globalAlpha = 1
+  })
+
+  ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)'
+  ctx.lineWidth = 2
+  ctx.setLineDash([5, 5])
+  ctx.beginPath()
+  ctx.arc(width/2, height/2, 80, 0, Math.PI * 2)
+  ctx.stroke()
+  ctx.setLineDash([])
+}
+
+// ======= CARGAR DATOS AL MONTAR =======
+onMounted(() => {
+  generarPuntos3D()
+
+  const intervalo = setInterval(() => {
+    rotacion3D.value = (rotacion3D.value + 0.5) % 360
+    dibujarMapa3D()
+  }, 50)
+
+  // Cleanup on unmount
+  return () => clearInterval(intervalo)
 })
 </script>
 
@@ -795,5 +1063,22 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Animación de pulso para el indicador del mapa 3D */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Estilos adicionales para el mapa 3D */
+canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 </style>
