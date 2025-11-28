@@ -178,6 +178,7 @@ class EstadisticasViewSet(viewsets.ViewSet):
         """
         # Datos de población
         total_personas = Persona.objects.count()
+        current_year = datetime.now().year
 
         # Promedio familiar (simulado basado en relaciones)
         # En un sistema real, esto vendría de datos de hogares/familias
@@ -231,6 +232,39 @@ class EstadisticasViewSet(viewsets.ViewSet):
         registros_salud = RegistroSalud.objects.count()
         alertas_activas = AlertaSalud.objects.filter(resuelta=False).count()
         controles_pendientes = ControlSalud.objects.filter(realizado=False).count()
+        controles_realizados = ControlSalud.objects.filter(realizado=True).count()
+
+        # Calcular indicadores de salud
+        total_controles = controles_pendientes + controles_realizados
+        tasa_cumplimiento_salud = (controles_realizados / total_controles * 100) if total_controles > 0 else 0
+
+        # Calcular otros indicadores disponibles
+        promedio_edad = Persona.objects.annotate(
+            edad=current_year - ExtractYear('fecha_nacimiento')
+        ).aggregate(avg_edad=Avg('edad'))['avg_edad'] or 0
+
+        cobertura_programas = (beneficiarios_totales / total_personas * 100) if total_personas > 0 else 0
+
+        # Calcular distribución por lengua materna (comunidad indígena)
+        lenguas_maternas = Persona.objects.values('lengua_materna__nombre').annotate(
+            count=Count('lengua_materna')
+        ).exclude(lengua_materna__isnull=True).order_by('lengua_materna__nombre')
+
+        # Crear diccionario con las lenguas específicas mencionadas
+        lenguas_indigenas = {
+            'Cubeo': 0,
+            'Siriano': 0,
+            'Desano': 0,
+            'Tucano': 0,
+            'Yuruti': 0,
+            'Piratapuyo': 0
+        }
+
+        # Llenar con datos reales
+        for lengua in lenguas_maternas:
+            nombre_lengua = lengua['lengua_materna__nombre']
+            if nombre_lengua in lenguas_indigenas:
+                lenguas_indigenas[nombre_lengua] = lengua['count']
 
         # Distribución por género
         genero_data = Persona.objects.values('genero').annotate(count=Count('genero'))
@@ -245,7 +279,6 @@ class EstadisticasViewSet(viewsets.ViewSet):
             genero_porcentajes[key] = round((value / total_genero * 100), 1) if total_genero > 0 else 0
 
         # Distribución por edad
-        current_year = datetime.now().year
         edad_ranges = [
             (0, 5), (6, 12), (13, 17), (18, 30), (31, 50), (51, 65), (66, 120)
         ]
@@ -254,17 +287,24 @@ class EstadisticasViewSet(viewsets.ViewSet):
         edad_mujeres = []
 
         for min_age, max_age in edad_ranges:
-            # Hombres
+            # Hombres (valores positivos para barras agrupadas)
             count_h = Persona.objects.filter(genero='M').annotate(
                 edad=current_year - ExtractYear('fecha_nacimiento')
             ).filter(edad__gte=min_age, edad__lte=max_age).count()
-            edad_hombres.append(count_h)
+            edad_hombres.append(count_h)  # Positivo para barras agrupadas
 
-            # Mujeres
+            # Mujeres (valores positivos para barras agrupadas)
             count_m = Persona.objects.filter(genero='F').annotate(
                 edad=current_year - ExtractYear('fecha_nacimiento')
             ).filter(edad__gte=min_age, edad__lte=max_age).count()
-            edad_mujeres.append(count_m)
+            edad_mujeres.append(count_m)  # Positivo para barras agrupadas
+
+        # Calcular Tasa de Dependencia: (menores 15 + mayores 65) / (15-64) * 100
+        poblacion_menor_15 = sum(edad_hombres[:3]) + sum(edad_mujeres[:3])  # 0-5, 6-12, 13-17
+        poblacion_mayor_65 = edad_hombres[6] + edad_mujeres[6]  # 65+
+        poblacion_activa = sum(edad_hombres[3:6]) + sum(edad_mujeres[3:6])  # 18-30, 31-50, 51-65
+
+        tasa_dependencia = ((poblacion_menor_15 + poblacion_mayor_65) / poblacion_activa * 100) if poblacion_activa > 0 else 0
 
         # Ocupación por género (excluyendo desempleados)
         ocupacion_hombres = Persona.objects.filter(
@@ -325,10 +365,10 @@ class EstadisticasViewSet(viewsets.ViewSet):
                 }
             },
             'indicadores_compactos': {
-                'dependencia': {'value': '61.4%', 'label': 'Tasa de Dependencia', 'color': '#ff7043'},
-                'servicios': {'value': '88%', 'label': 'Hogares con Servicios', 'color': '#42a5f5'},
+                'dependencia': {'value': f'{tasa_dependencia:.1f}%', 'label': 'Tasa de Dependencia', 'color': '#ff7043'},
+                'promedio_edad': {'value': f'{promedio_edad:.1f} años', 'label': 'Edad Promedio', 'color': '#42a5f5'},
                 'alfabetizacion': {'value': f'{tasa_alfabetismo:.1f}%', 'label': 'Alfabetización', 'color': '#10b981'},
-                'familiar': {'value': f'{int(total_personas / promedio_familiar):,}', 'label': 'Total Familias', 'color': '#f59e0b'}
+                'cobertura_programas': {'value': f'{cobertura_programas:.1f}%', 'label': 'Cobertura Programas', 'color': '#f59e0b'}
             },
             'gestion_social': [
                 {'label': 'Programas Activos', 'value': programas_activos, 'color': '#17a2b8'},
@@ -387,9 +427,16 @@ class EstadisticasViewSet(viewsets.ViewSet):
             },
             'genero_porcentajes': genero_porcentajes,
             'indicadores_data': {
-                'labels': ['Alfabetización', 'Empleo', 'Educación', 'Salud', 'Vivienda', 'Servicios'],
+                'labels': ['Cubeo', 'Siriano', 'Desano', 'Tucano', 'Yuruti', 'Piratapuyo'],
                 'datasets': [{
-                    'data': [tasa_alfabetismo, tasa_empleo, tasa_alfabetismo, 85, 71, 88],  # Salud, Vivienda, Servicios simulados
+                    'data': [
+                        lenguas_indigenas['Cubeo'],      # ✅ Número de hablantes
+                        lenguas_indigenas['Siriano'],    # ✅ Número de hablantes
+                        lenguas_indigenas['Desano'],     # ✅ Número de hablantes
+                        lenguas_indigenas['Tucano'],     # ✅ Número de hablantes
+                        lenguas_indigenas['Yuruti'],     # ✅ Número de hablantes
+                        lenguas_indigenas['Piratapuyo']  # ✅ Número de hablantes
+                    ],
                     'backgroundColor': ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6b7280'],
                     'borderWidth': 0
                 }]

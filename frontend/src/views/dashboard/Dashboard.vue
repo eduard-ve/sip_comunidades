@@ -72,7 +72,7 @@
             <div class="col-12">
               <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white border-0 pt-3 pb-2">
-                  <h5 class="fw-bold mb-0">
+                  <h5 class="fw-bold mb-0 text-center">
                     <span class="badge bg-primary me-2">📈</span>
                     Evolución de Registros (Tendencia)
                   </h5>
@@ -94,7 +94,7 @@
             <div class="col-12">
               <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white border-0 pt-3 pb-2">
-                  <h5 class="fw-bold mb-0">
+                  <h5 class="fw-bold mb-0 text-center">
                     <span class="badge bg-success me-2">💼</span>
                     Indicadores de Empleo
                   </h5>
@@ -187,7 +187,7 @@
             <div class="col-lg-6">
               <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white border-0 pt-3 pb-2">
-                  <h5 class="fw-bold mb-0">
+                  <h5 class="fw-bold mb-0 text-center">
                     <span class="badge bg-info me-2">✅</span>
                     Programas y Beneficiarios
                   </h5>
@@ -258,7 +258,7 @@
                 <div class="col-12">
                   <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white border-0 pt-3 pb-2">
-                      <h5 class="fw-bold mb-0">
+                      <h5 class="fw-bold mb-0 text-center">
                         <span class="badge bg-warning me-2">📅</span>
                         Actividad Comunitaria
                       </h5>
@@ -307,7 +307,7 @@
                 <div class="col-12">
                   <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white border-0 pt-3 pb-2">
-                      <h5 class="fw-bold mb-0">
+                      <h5 class="fw-bold mb-0 text-center">
                         <span class="badge bg-secondary me-2">📋</span>
                         Indicadores Demográficos
                       </h5>
@@ -323,7 +323,7 @@
                           <div class="p-2 rounded-2 border bg-light">
                             <div class="d-flex flex-column align-items-start">
                               <div class="fw-bold small" :style="{ color: indicator.color }">
-                                {{ indicator.value }}
+                                {{ indicator.value === 'N/A' ? 'N/A' : indicator.value }}
                               </div>
                               <div class="text-muted small">{{ indicator.label }}</div>
                             </div>
@@ -350,9 +350,9 @@
         <div class="col-lg-4">
           <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white border-0 pt-3 pb-2">
-              <h5 class="fw-bold mb-0">
-                <span class="badge bg-info me-2">👶</span>
-                Composición Etaria
+              <h5 class="fw-bold mb-0 text-center">
+                <span class="badge bg-info me-2">📊</span>
+                Distribución por Edad
               </h5>
             </div>
             <div class="card-body p-0" style="height: 320px; overflow: hidden;">
@@ -362,7 +362,34 @@
                 chart-id="edadChart"
                 type="bar"
                 :data="edadData"
-                :options="{ maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }"
+                :options="{
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: {
+                      stacked: false,
+                      grid: {
+                        display: false
+                      }
+                    },
+                    y: {
+                      stacked: false,
+                      beginAtZero: true,
+                      grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                      }
+                    }
+                  },
+                  plugins: {
+                    legend: {
+                      display: true,
+                      position: 'bottom'
+                    },
+                    tooltip: {
+                      mode: 'index',
+                      intersect: false
+                    }
+                  }
+                }"
               />
             </div>
           </div>
@@ -372,7 +399,7 @@
         <div class="col-lg-4">
           <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white border-0 pt-3 pb-2">
-              <h5 class="fw-bold mb-0">
+              <h5 class="fw-bold mb-0 text-center">
                 <span class="badge bg-primary me-2">👥</span>
                 Distribución por Género
               </h5>
@@ -445,9 +472,9 @@
         <div class="col-lg-4">
           <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white border-0 pt-3 pb-2">
-              <h5 class="fw-bold mb-0">
-                <span class="badge bg-success me-2">🎯</span>
-                Indicadores Clave
+              <h5 class="fw-bold mb-0 text-center">
+                <span class="badge bg-success me-2">🗣️</span>
+                Lenguas Maternas
               </h5>
             </div>
 
