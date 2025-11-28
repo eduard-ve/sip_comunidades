@@ -275,6 +275,18 @@
         </div>
 
         <div class="mb-2">
+          <label for="tipo_programa" class="form-label small fw-semibold">Tipo de Programa</label>
+          <select id="tipo_programa" v-model="form.tipo_programa" class="form-control form-control-sm" required>
+            <option disabled value="">Seleccione tipo de programa</option>
+            <option value="educacion">Educación</option>
+            <option value="cultural">Cultural</option>
+            <option value="salud">Salud</option>
+            <option value="infraestructura">Infraestructura</option>
+            <option value="seguridad_alimentaria">Seguridad Alimentaria</option>
+          </select>
+        </div>
+
+        <div class="mb-2">
           <label for="estado_programa" class="form-label small fw-semibold">Estado</label>
           <select id="estado_programa" v-model="form.estado_id" class="form-control form-control-sm" required>
             <option disabled value="">Seleccione estado</option>
@@ -689,6 +701,7 @@ const actividadesTipoData = ref({
 
 const tableColumns = [
   { key: 'nombre', label: 'Programa' },
+  { key: 'tipo_programa_display', label: 'Tipo' },
   { key: 'beneficiarios_count', label: 'Beneficiarios' },
   { key: 'estado', label: 'Estado' },
   { key: 'acciones', label: 'Acciones', class: 'text-center'}
@@ -706,7 +719,7 @@ const error = ref(null)
 
 // Modal formulario programas
 const showForm = ref(false)
-const form = ref({ nombre: '', descripcion: '', estado_id: '', fecha_inicio: '', fecha_fin: '', beneficiarios_count: 0 })
+const form = ref({ nombre: '', descripcion: '', tipo_programa: '', estado_id: '', fecha_inicio: '', fecha_fin: '', beneficiarios_count: 0 })
 const editIndex = ref(null)
 
 // Modal formulario autoridades
@@ -985,7 +998,7 @@ onMounted(async () => {
 // Funciones del modal
 function closeForm() {
   showForm.value = false
-  form.value = { nombre: '', descripcion: '', estado_id: '', fecha_inicio: '', fecha_fin: '', beneficiarios_count: 0 }
+  form.value = { nombre: '', descripcion: '', tipo_programa: '', estado_id: '', fecha_inicio: '', fecha_fin: '', beneficiarios_count: 0 }
   editIndex.value = null
 }
 
@@ -1013,6 +1026,7 @@ function editPrograma(row) {
   form.value = {
     nombre: row.nombre,
     descripcion: row.descripcion || '',
+    tipo_programa: row.tipo_programa || '',
     estado_id: row.estado_id || '',
     fecha_inicio: row.fecha_inicio || '',
     fecha_fin: row.fecha_fin || '',

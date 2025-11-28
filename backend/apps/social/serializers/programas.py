@@ -19,6 +19,10 @@ class ProgramaSocialSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True  # mostrar IDs de beneficiarios, sin editar
     )
+    tipo_programa_display = serializers.CharField(
+        source='get_tipo_programa_display',
+        read_only=True
+    )
 
     class Meta:
         model = ProgramaSocial
@@ -26,6 +30,8 @@ class ProgramaSocialSerializer(serializers.ModelSerializer):
             'id',
             'nombre',
             'descripcion',
+            'tipo_programa',
+            'tipo_programa_display',
             'estado',
             'estado_id',
             'fecha_inicio',

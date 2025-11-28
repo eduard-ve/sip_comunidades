@@ -330,8 +330,34 @@ class EstadisticasViewSet(viewsets.ViewSet):
         desocupacion_hombres_pct = (desocupacion_hombres / total_hombres * 100) if total_hombres > 0 else 0
         desocupacion_mujeres_pct = (desocupacion_mujeres / total_mujeres * 100) if total_mujeres > 0 else 0
 
-        # Programas por tipo (simulado - no hay campo tipo_programa en el modelo)
-        programas_radar = [4, 5, 3, 2, 5]  # Valores simulados para Salud, Educación, Cultural, Infraestructura, Asistencia
+        # Programas por tipo (datos reales basados en tipo_programa)
+        programas_por_tipo = ProgramaSocial.objects.values('tipo_programa').annotate(
+            count=Count('tipo_programa')
+        ).order_by('tipo_programa')
+
+        # Crear diccionario con los tipos de programa
+        tipos_programa = {
+            'salud': 0,
+            'educacion': 0,
+            'cultural': 0,
+            'infraestructura': 0,
+            'seguridad_alimentaria': 0
+        }
+
+        # Llenar con datos reales
+        for programa in programas_por_tipo:
+            tipo = programa['tipo_programa']
+            if tipo in tipos_programa:
+                tipos_programa[tipo] = programa['count']
+
+        # Crear array en orden específico para el radar: Salud, Educación, Cultural, Infraestructura, Asistencia
+        programas_radar = [
+            tipos_programa['salud'],           # Salud
+            tipos_programa['educacion'],       # Educación
+            tipos_programa['cultural'],        # Cultural
+            tipos_programa['infraestructura'], # Infraestructura
+            tipos_programa['seguridad_alimentaria']  # Seguridad Alimentaria
+        ]
 
         return Response({
             'hero_metrics': {

@@ -65,8 +65,22 @@ class EstadoPrograma(models.Model):
 
 
 class ProgramaSocial(models.Model):  # modelo principal de programas sociales
+    TIPO_PROGRAMA_CHOICES = [
+        ('educacion', 'Educación'),
+        ('cultural', 'Cultural'),
+        ('salud', 'Salud'),
+        ('infraestructura', 'Infraestructura'),
+        ('seguridad_alimentaria', 'Seguridad Alimentaria'),
+    ]
+
     nombre = models.CharField(max_length=150)
     descripcion = models.TextField(blank=True)
+    tipo_programa = models.CharField(
+        max_length=25,
+        choices=TIPO_PROGRAMA_CHOICES,
+        default='educacion',
+        verbose_name="Tipo de Programa"
+    )
     estado = models.ForeignKey(EstadoPrograma, on_delete=models.PROTECT)
     fecha_inicio = models.DateField(null=True, blank=True)
     fecha_fin = models.DateField(null=True, blank=True)
