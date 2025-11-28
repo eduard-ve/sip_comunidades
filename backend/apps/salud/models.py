@@ -129,7 +129,7 @@ class AlertaSalud(models.Model):
         ('critica', 'Crítica'),
     ]
 
-    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, related_name='alertas_salud')
+    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, related_name='alertas_salud', blank=True, null=True)
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
     prioridad = models.CharField(max_length=10, choices=PRIORIDAD_CHOICES, default='media')
@@ -140,7 +140,8 @@ class AlertaSalud(models.Model):
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Alerta para {self.persona} - {self.titulo} ({self.prioridad})"
+        persona_str = f"{self.persona}" if self.persona else "General"
+        return f"Alerta para {persona_str} - {self.titulo} ({self.prioridad})"
 
     class Meta:
         verbose_name = "Alerta de Salud"

@@ -101,7 +101,7 @@
                   </thead>
                   <tbody>
                     <tr v-for="alerta in saludStore.alertas" :key="alerta.id">
-                      <td>{{ alerta.persona_nombre }} {{ alerta.persona_apellido }}</td>
+                      <td>{{ alerta.persona ? `${alerta.persona_nombre} ${alerta.persona_apellido}` : 'General' }}</td>
                       <td>{{ alerta.titulo }}</td>
                       <td>{{ alerta.descripcion }}</td>
                       <td>
@@ -144,21 +144,12 @@
                       <option value="critica">Crítica</option>
                     </select>
                   </div>
-                  <div class="col-md-6">
-                    <label class="form-label fw-bold">Persona</label>
-                    <select v-model="nuevaAlerta.persona" class="form-select" required>
-                      <option value="">Seleccionar persona</option>
-                      <option v-for="persona in personas" :key="persona.id" :value="persona.id">
-                        {{ persona.primer_nombre }} {{ persona.primer_apellido }} - {{ persona.numero_identificacion }}
-                      </option>
-                    </select>
-                  </div>
                   <div class="col-12">
                     <label class="form-label fw-bold">Descripción</label>
                     <textarea v-model="nuevaAlerta.descripcion" class="form-control" rows="3" placeholder="Describe la alerta en detalle" required></textarea>
                   </div>
                   <div class="col-12">
-                    <button type="submit" class="btn btn-success me-2" :disabled="!nuevaAlerta.titulo || !nuevaAlerta.descripcion || !nuevaAlerta.persona">
+                    <button type="submit" class="btn btn-success me-2" :disabled="!nuevaAlerta.titulo || !nuevaAlerta.descripcion">
                       <i class="bi bi-check-circle me-2"></i>{{ isEditing ? 'Actualizar Alerta' : 'Crear Alerta' }}
                     </button>
                     <button v-if="isEditing" type="button" class="btn btn-secondary" @click="resetForm">
@@ -243,12 +234,9 @@ const campaigns = [
 const nuevaAlerta = ref({
   titulo: '',
   descripcion: '',
-  prioridad: 'media',
-  persona: null
+  prioridad: 'media'
 })
 
-/* Personas disponibles */
-const personas = ref([])
 
 /* Edición */
 const isEditing = ref(false)
@@ -276,8 +264,7 @@ const editarAlerta = (alerta) => {
   nuevaAlerta.value = {
     titulo: alerta.titulo,
     descripcion: alerta.descripcion,
-    prioridad: alerta.prioridad,
-    persona: alerta.persona
+    prioridad: alerta.prioridad
   }
   isEditing.value = true
   editingId.value = alerta.id
@@ -295,28 +282,13 @@ const eliminarAlerta = async (id) => {
   }
 }
 
-/* Fetch personas */
-const fetchPersonas = async () => {
-  try {
-    const token = localStorage.getItem('access_token')
-    const response = await axios.get('http://127.0.0.1:8000/api/poblacion/personas/', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-    personas.value = response.data
-  } catch (error) {
-    console.error('Error fetching personas:', error)
-  }
-}
 
 /* Reset form */
 const resetForm = () => {
   nuevaAlerta.value = {
     titulo: '',
     descripcion: '',
-    prioridad: 'media',
-    persona: null
+    prioridad: 'media'
   }
   isEditing.value = false
   editingId.value = null
@@ -327,8 +299,7 @@ onMounted(async () => {
   try {
     await Promise.all([
       saludStore.fetchAlertas(),
-      saludStore.fetchEnfermedadesComunes(),
-      fetchPersonas()
+      saludStore.fetchEnfermedadesComunes()
     ])
 
     // Actualizar KPIs con datos reales

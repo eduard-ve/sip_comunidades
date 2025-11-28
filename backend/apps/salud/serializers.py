@@ -17,7 +17,10 @@ class AlertaSaludSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AlertaSalud
-        fields = '__all__'
+        fields = ['id', 'persona', 'titulo', 'descripcion', 'prioridad', 'fecha_alerta', 'resuelta', 'fecha_resolucion', 'fecha_creacion', 'fecha_modificacion', 'persona_nombre', 'persona_apellido', 'persona_identificacion']
+        extra_kwargs = {
+            'persona': {'required': False}
+        }
 
 class ControlSaludSerializer(serializers.ModelSerializer):
     persona_nombre = serializers.CharField(source='persona.primer_nombre', read_only=True)
