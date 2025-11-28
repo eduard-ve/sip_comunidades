@@ -91,6 +91,13 @@
     }
   },
   {
+    "model": "poblacion.ocupacion",
+    "pk": 6,
+    "fields": {
+      "nombre": "Desempleado"
+    }
+  },
+  {
     "model": "poblacion.grupoetnico",
     "pk": 1,
     "fields": {

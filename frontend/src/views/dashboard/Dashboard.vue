@@ -79,7 +79,7 @@
                 </div>
                 <div class="card-body p-0" style="height: 280px; overflow: hidden;">
                   <ChartPanel
-                    noCard="true"
+                    :noCard="true"
                     height="280px"
                     chart-id="areaChart"
                     type="line"
@@ -215,7 +215,7 @@
                     <h6 class="fw-bold small text-muted mb-2">Cobertura por Tipo</h6>
                     <div style="height: 280px; position: relative;">
                       <ChartPanel
-                        noCard="true"
+                        :noCard="true"
                         height="280px"
                         chart-id="programasTipoRadar"
                         type="radar"
@@ -357,7 +357,7 @@
             </div>
             <div class="card-body p-0" style="height: 320px; overflow: hidden;">
               <ChartPanel
-                noCard="true"
+                :noCard="true"
                 height="320px"
                 chart-id="edadChart"
                 type="bar"
@@ -454,7 +454,7 @@
             <div class="card-body p-0" style="height: 320px; overflow: hidden;">
               <div style="height: 250px; position: relative;">
                 <ChartPanel
-                  noCard="true"
+                  :noCard="true"
                   height="250px"
                   chart-id="radarChart"
                   type="doughnut"
@@ -482,171 +482,105 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ChartPanel from '../../components/graficas/ChartPanel.vue'
+import { poblacionService } from '../../services/api.js'
 
 /* ---------------------------------------------
-   DATOS GLOBALES
+    DATOS GLOBALES
 --------------------------------------------- */
 
 const currentYear = ref(2025)
 const nombreComunidad = ref('Comunidad Indígena El Refugio')
+const isLoading = ref(true)
 
-const heroMetrics = ref({
-  poblacion: { value: '1,847', label: 'Población Total', sublabel: '512 familias', trend: 2.8, color: '#3b82f6' },
-  familiar: { value: '3.6', label: 'Promedio Familiar', sublabel: 'Personas/hogar', trend: 0.5, color: '#10b981' },
-  educacion: { value: '78%', label: 'Cobertura Educativa', sublabel: 'Escolaridad', trend: 3.2, color: '#f59e0b' },
-  empleo: { value: '62%', label: 'Tasa de Empleo', sublabel: 'Población activa', trend: -1.2, color: '#ef4444' }
-})
+const heroMetrics = ref({})
+const indicadoresCompactos = ref({})
 
-const indicadoresCompactos = ref({
-  dependencia: { value: '61.4%', label: 'Tasa de Dependencia', color: '#ff7043' },
-  servicios: { value: '88%', label: 'Hogares con Servicios', color: '#42a5f5' },
-  alfabetizacion: { value: '92.2%', label: 'Alfabetización', color: '#10b981' },
-  familiar: { value: '512', label: 'Total Familias', color: '#f59e0b' }
+/* ---------------------------------------------
+    GESTIÓN SOCIAL
+--------------------------------------------- */
+
+const gestionSocial = ref([])
+const programasTipoRadarData = ref({})
+const proximasActividades = ref([])
+const autoridadesActivas = ref([])
+
+/* ---------------------------------------------
+    GRÁFICAS
+--------------------------------------------- */
+
+const evolucionData = ref({})
+const ocupacionData = ref({})
+const desocupacionData = ref({})
+
+/* ---------------------------------------------
+    DISTRIBUCIÓN POR GÉNERO
+--------------------------------------------- */
+
+const generoPorcentajes = ref({
+  femenino: 0,
+  masculino: 0,
+  otro: 0
 })
 
 /* ---------------------------------------------
-   GESTIÓN SOCIAL
+    INDICADORES RADAR
 --------------------------------------------- */
 
-const gestionSocial = ref([
-  { label: 'Programas Activos', value: 5, color: '#17a2b8' },
-  { label: 'Beneficiarios Totales', value: 53, color: '#fd7e14' },
-  { label: 'Autoridades Activas', value: 2, color: '#28a745' },
-  { label: 'Actividades Realizadas', value: 3, color: '#6f42c1' }
-])
-
-const programasTipoRadarData = ref({
-  labels: ['Salud', 'Educación', 'Cultural', 'Infraestructura', 'Asistencia'],
-  datasets: [
-    {
-      label: 'Programas',
-      data: [4, 5, 3, 2, 5],
-      backgroundColor: 'rgba(59, 130, 246, 0.3)',
-      borderColor: '#3b82f6',
-      pointBackgroundColor: ['#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4']
-    }
-  ]
-})
-
-const proximasActividades = ref([
-  { nombre: 'Actividad Deportiva', tipo: 'Planificada', fecha: '13/11/2025' },
-  { nombre: 'Taller', tipo: 'Planificada', fecha: '12/11/2025' }
-])
-
-const autoridadesActivas = ref([
-  { rol: 'Coordinador', nombre: 'Sebastián bolivar velez' },
-  { rol: 'Secretario', nombre: 'john eduard velez vasca' }
-])
+const indicadoresData = ref({})
 
 /* ---------------------------------------------
-   GRÁFICAS
+    EDAD
 --------------------------------------------- */
 
-const evolucionData = ref({
-  labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago'],
-  datasets: [
-    {
-      label: 'Registros',
-      data: [142, 158, 133, 165, 152, 173, 168, 181],
-      borderColor: '#3b82f6',
-      backgroundColor: 'rgba(59, 130, 246, 0.1)',
-      fill: true,
-      tension: 0.4,
-      borderWidth: 2
-    },
-    {
-      label: 'Meta',
-      data: [150, 160, 155, 170, 165, 175, 170, 180],
-      borderColor: '#10b981',
-      backgroundColor: 'rgba(16, 185, 129, 0.05)',
-      fill: true,
-      tension: 0.4,
-      borderDash: [5, 5],
-      borderWidth: 2
-    }
-  ]
-})
-
-const ocupacionData = ref({
-  labels: ['Hombres', 'Mujeres'],
-  datasets: [
-    {
-      data: [55.2, 44.8],
-      backgroundColor: ['#3b82f6', '#ec4899'],
-      borderWidth: 0
-    }
-  ]
-})
-
-const desocupacionData = ref({
-  labels: ['Hombres', 'Mujeres'],
-  datasets: [
-    {
-      data: [38.5, 61.5],
-      backgroundColor: ['#3b82f6', '#ec4899'],
-      borderWidth: 0
-    }
-  ]
-})
+const edadData = ref({})
 
 /* ---------------------------------------------
-   DISTRIBUCIÓN POR GÉNERO
+    FETCH DATA
 --------------------------------------------- */
 
-const rawGeneroData = ref({
-  femenino: 941,
-  masculino: 892,
-  otro: 14
-})
+const fetchDashboardData = async () => {
+  try {
+    isLoading.value = true
+    const response = await poblacionService.getDashboardData()
 
-const generoPorcentajes = computed(() => {
-  const total =
-    rawGeneroData.value.femenino +
-    rawGeneroData.value.masculino +
-    rawGeneroData.value.otro
+    // Update hero metrics
+    heroMetrics.value = response.data.hero_metrics
 
-  return {
-    femenino: Math.round((rawGeneroData.value.femenino / total) * 100),
-    masculino: Math.round((rawGeneroData.value.masculino / total) * 100),
-    otro: Math.round((rawGeneroData.value.otro / total) * 100)
+    // Update compact indicators
+    indicadoresCompactos.value = response.data.indicadores_compactos
+
+    // Update social management data
+    gestionSocial.value = response.data.gestion_social
+    programasTipoRadarData.value = response.data.programas_tipo_radar
+    proximasActividades.value = response.data.proximas_actividades
+    autoridadesActivas.value = response.data.autoridades_activas
+
+    // Update charts
+    evolucionData.value = response.data.evolucion_data
+    ocupacionData.value = response.data.ocupacion_data
+    desocupacionData.value = response.data.desocupacion_data
+    generoPorcentajes.value = response.data.genero_porcentajes
+    indicadoresData.value = response.data.indicadores_data
+    edadData.value = response.data.edad_data
+
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error)
+    // Fallback to default values if API fails
+    heroMetrics.value = {
+      poblacion: { value: '0', label: 'Población Total', sublabel: '0 familias', trend: 0, color: '#3b82f6' },
+      familiar: { value: '0', label: 'Promedio Familiar', sublabel: 'Personas/hogar', trend: 0, color: '#10b981' },
+      educacion: { value: '0%', label: 'Cobertura Educativa', sublabel: 'Alfabetización', trend: 0, color: '#f59e0b' },
+      empleo: { value: '0%', label: 'Tasa de Empleo', sublabel: 'Población activa', trend: 0, color: '#ef4444' }
+    }
+  } finally {
+    isLoading.value = false
   }
-})
+}
 
-/* ---------------------------------------------
-   INDICADORES RADAR
---------------------------------------------- */
-
-const indicadoresData = ref({
-  labels: ['Alfabetización', 'Empleo', 'Educación', 'Salud', 'Vivienda', 'Servicios'],
-  datasets: [
-    {
-      data: [92, 62, 78, 85, 71, 88],
-      backgroundColor: ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6b7280'],
-      borderWidth: 0
-    }
-  ]
-})
-
-/* ---------------------------------------------
-   EDAD (CORREGIDO COMPLETO)
---------------------------------------------- */
-
-const edadData = ref({
-  labels: ['0-5', '6-12', '13-17', '18-30', '31-50', '51-65', '65+'],
-  datasets: [
-    {
-      label: 'Hombres',
-      backgroundColor: '#3b82f6',
-      data: [132, 241, 152, 321, 290, 184, 72]
-    },
-    {
-      label: 'Mujeres',
-      backgroundColor: '#ec4899',
-      data: [141, 252, 160, 335, 301, 170, 82]
-    }
-  ]
+onMounted(() => {
+  fetchDashboardData()
 })
 </script>
 
