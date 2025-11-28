@@ -38,7 +38,12 @@ export const useSaludStore = defineStore('salud', {
     async fetchAlertas() {
       this.loading = true
       try {
-        const response = await axios.get(`${API_BASE_URL}/salud/alertas/`)
+        const token = localStorage.getItem('access_token')
+        const response = await axios.get(`${API_BASE_URL}/salud/alertas/`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
         this.alertas = response.data
         this.error = null
       } catch (error) {
@@ -76,11 +81,50 @@ export const useSaludStore = defineStore('salud', {
 
     async createAlerta(alertaData) {
       try {
-        const response = await axios.post(`${API_BASE_URL}/salud/alertas/`, alertaData)
+        const token = localStorage.getItem('access_token')
+        const response = await axios.post(`${API_BASE_URL}/salud/alertas/`, alertaData, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
         this.alertas.push(response.data)
         return response.data
       } catch (error) {
         this.error = 'Error al crear alerta de salud'
+        throw error
+      }
+    },
+
+    async updateAlerta(id, alertaData) {
+      try {
+        const token = localStorage.getItem('access_token')
+        const response = await axios.put(`${API_BASE_URL}/salud/alertas/${id}/`, alertaData, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        const index = this.alertas.findIndex(a => a.id === id)
+        if (index !== -1) {
+          this.alertas[index] = response.data
+        }
+        return response.data
+      } catch (error) {
+        this.error = 'Error al actualizar alerta de salud'
+        throw error
+      }
+    },
+
+    async deleteAlerta(id) {
+      try {
+        const token = localStorage.getItem('access_token')
+        await axios.delete(`${API_BASE_URL}/salud/alertas/${id}/`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        this.alertas = this.alertas.filter(a => a.id !== id)
+      } catch (error) {
+        this.error = 'Error al eliminar alerta de salud'
         throw error
       }
     },

@@ -87,11 +87,86 @@
               <h5 class="fw-bold mb-3">
                 <i class="bi bi-exclamation-triangle me-2 salud-icon"></i> Alertas de Salud
               </h5>
-              <ul>
-                <li>⚠️ Prevención de dengue: eliminar criaderos de zancudos.</li>
-                <li>💧 Recomendación: hervir el agua antes de consumir.</li>
-                <li>🌧️ En temporada de lluvias: cuidado con enfermedades respiratorias.</li>
-              </ul>
+              <div v-if="saludStore.alertas.length > 0" class="table-responsive">
+                <table class="table table-striped table-hover">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Persona</th>
+                      <th>Título</th>
+                      <th>Descripción</th>
+                      <th>Prioridad</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="alerta in saludStore.alertas" :key="alerta.id">
+                      <td>{{ alerta.persona_nombre }} {{ alerta.persona_apellido }}</td>
+                      <td>{{ alerta.titulo }}</td>
+                      <td>{{ alerta.descripcion }}</td>
+                      <td>
+                        <span class="badge" :class="alerta.prioridad === 'alta' ? 'bg-danger' : alerta.prioridad === 'media' ? 'bg-warning' : alerta.prioridad === 'critica' ? 'bg-dark' : 'bg-info'">
+                          {{ alerta.prioridad }}
+                        </span>
+                      </td>
+                      <td>
+                        <span v-if="!alerta.resuelta" class="text-danger">Activa</span>
+                        <span v-else class="text-success">Resuelta</span>
+                      </td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-primary me-1" @click="editarAlerta(alerta)">
+                          <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" @click="eliminarAlerta(alerta.id)">
+                          <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p v-else class="text-muted">No hay alertas registradas en este momento.</p>
+
+              <!-- Formulario para crear nueva alerta -->
+              <div class="mt-3 border-top pt-3">
+                <h6 class="text-primary mb-3"><i class="bi bi-plus-circle me-2"></i>Crear Nueva Alerta</h6>
+                <form @submit.prevent="crearAlerta" class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold">Título</label>
+                    <input v-model="nuevaAlerta.titulo" type="text" class="form-control" placeholder="Ej: Alerta de infección" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold">Prioridad</label>
+                    <select v-model="nuevaAlerta.prioridad" class="form-select" required>
+                      <option value="baja">Baja</option>
+                      <option value="media">Media</option>
+                      <option value="alta">Alta</option>
+                      <option value="critica">Crítica</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold">Persona</label>
+                    <select v-model="nuevaAlerta.persona" class="form-select" required>
+                      <option value="">Seleccionar persona</option>
+                      <option v-for="persona in personas" :key="persona.id" :value="persona.id">
+                        {{ persona.primer_nombre }} {{ persona.primer_apellido }} - {{ persona.numero_identificacion }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fw-bold">Descripción</label>
+                    <textarea v-model="nuevaAlerta.descripcion" class="form-control" rows="3" placeholder="Describe la alerta en detalle" required></textarea>
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-success me-2" :disabled="!nuevaAlerta.titulo || !nuevaAlerta.descripcion || !nuevaAlerta.persona">
+                      <i class="bi bi-check-circle me-2"></i>{{ isEditing ? 'Actualizar Alerta' : 'Crear Alerta' }}
+                    </button>
+                    <button v-if="isEditing" type="button" class="btn btn-secondary" @click="resetForm">
+                      <i class="bi bi-x-circle me-2"></i>Cancelar
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -124,6 +199,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
 import { useSaludStore } from '../../stores/salud.js'
 import BaseModule from '../../components/comun/BaseModule.vue'
 import '../../assets/css/GestionSalud.css'
@@ -132,10 +208,8 @@ const saludStore = useSaludStore()
 
 /* Estado reactivo para datos dinámicos */
 const kpis = ref([
-  { title: 'Registros de salud', value: 0, icon: 'bi bi-clipboard-data' },
   { title: 'Alertas activas', value: 0, icon: 'bi bi-exclamation-triangle' },
-  { title: 'Controles pendientes', value: 0, icon: 'bi bi-calendar-check' },
-  { title: 'Controles realizados', value: 0, icon: 'bi bi-check-circle' }
+  { title: 'Total de alertas', value: 0, icon: 'bi bi-bell' }
 ])
 
 const charts = ref({
@@ -165,21 +239,101 @@ const campaigns = [
   'Taller de medicina tradicional'
 ]
 
+/* Nueva alerta */
+const nuevaAlerta = ref({
+  titulo: '',
+  descripcion: '',
+  prioridad: 'media',
+  persona: null
+})
+
+/* Personas disponibles */
+const personas = ref([])
+
+/* Edición */
+const isEditing = ref(false)
+const editingId = ref(null)
+
+/* Crear o actualizar alerta */
+const crearAlerta = async () => {
+  try {
+    if (isEditing.value) {
+      await saludStore.updateAlerta(editingId.value, nuevaAlerta.value)
+    } else {
+      await saludStore.createAlerta(nuevaAlerta.value)
+    }
+    // Limpiar formulario
+    resetForm()
+    // Recargar alertas
+    await saludStore.fetchAlertas()
+  } catch (error) {
+    console.error('Error guardando alerta:', error)
+  }
+}
+
+/* Editar alerta */
+const editarAlerta = (alerta) => {
+  nuevaAlerta.value = {
+    titulo: alerta.titulo,
+    descripcion: alerta.descripcion,
+    prioridad: alerta.prioridad,
+    persona: alerta.persona
+  }
+  isEditing.value = true
+  editingId.value = alerta.id
+}
+
+/* Eliminar alerta */
+const eliminarAlerta = async (id) => {
+  if (confirm('¿Estás seguro de eliminar esta alerta?')) {
+    try {
+      await saludStore.deleteAlerta(id)
+      await saludStore.fetchAlertas()
+    } catch (error) {
+      console.error('Error eliminando alerta:', error)
+    }
+  }
+}
+
+/* Fetch personas */
+const fetchPersonas = async () => {
+  try {
+    const token = localStorage.getItem('access_token')
+    const response = await axios.get('http://127.0.0.1:8000/api/poblacion/personas/', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    personas.value = response.data
+  } catch (error) {
+    console.error('Error fetching personas:', error)
+  }
+}
+
+/* Reset form */
+const resetForm = () => {
+  nuevaAlerta.value = {
+    titulo: '',
+    descripcion: '',
+    prioridad: 'media',
+    persona: null
+  }
+  isEditing.value = false
+  editingId.value = null
+}
+
 /* Cargar datos del backend */
 onMounted(async () => {
   try {
     await Promise.all([
-      saludStore.fetchRegistros(),
       saludStore.fetchAlertas(),
-      saludStore.fetchControles(),
-      saludStore.fetchEnfermedadesComunes()
+      saludStore.fetchEnfermedadesComunes(),
+      fetchPersonas()
     ])
 
     // Actualizar KPIs con datos reales
-    kpis.value[0].value = saludStore.registrosCount
-    kpis.value[1].value = saludStore.alertasActivas
-    kpis.value[2].value = saludStore.controlesPendientes
-    kpis.value[3].value = saludStore.controles.filter(c => c.realizado).length
+    kpis.value[0].value = saludStore.alertasActivas
+    kpis.value[1].value = saludStore.alertas.length
 
     // Actualizar gráficos con datos reales
     if (saludStore.enfermedadesComunes.length > 0) {

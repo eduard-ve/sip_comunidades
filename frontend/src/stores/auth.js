@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { authService } from '../services/api.js'
 import { jwtDecode } from 'jwt-decode'
+import axios from 'axios'
 
 const user = ref(null)
 const isAuthenticated = ref(false)
@@ -43,11 +44,15 @@ export const useAuth = () => {
     loading.value = true
     try {
       const response = await authService.login(credentials)
-      localStorage.setItem('access_token', response.data.access)
+      const token = response.data.access
+      localStorage.setItem('access_token', token)
       localStorage.setItem('refresh_token', response.data.refresh)
 
+      // Set axios default header
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
       // Decodificar token para obtener información del usuario
-      const decoded = decodeToken(response.data.access)
+      const decoded = decodeToken(token)
       if (decoded) {
         user.value = {
           username: decoded.username,
