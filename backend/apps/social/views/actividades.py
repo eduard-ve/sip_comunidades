@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -12,32 +12,39 @@ from ..serializers.actividades import (
     ActividadComunitariaCreateSerializer,
     AsistenciaActividadSerializer
 )
+from apps.usuarios.permissions import EsAdminRol
 
 
 class TipoActividadViewSet(viewsets.ModelViewSet):
     """
     API endpoint que permite ver o editar tipos de actividad comunitaria.
+    Solo accesible para usuarios autenticados con rol de administrador.
     """
     queryset = TipoActividad.objects.all()
     serializer_class = TipoActividadSerializer
+    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
 
 
 class EstadoActividadViewSet(viewsets.ModelViewSet):
     """
     API endpoint que permite ver o editar estados de actividad.
+    Solo accesible para usuarios autenticados con rol de administrador.
     """
     queryset = EstadoActividad.objects.all()
     serializer_class = EstadoActividadSerializer
+    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
 
 
 class ActividadComunitariaViewSet(viewsets.ModelViewSet):
     """
     API endpoint que permite ver o editar actividades comunitarias.
+    Solo accesible para usuarios autenticados con rol de administrador.
     """
     queryset = ActividadComunitaria.objects.select_related(
         'tipo_actividad', 'estado'
     ).prefetch_related('asistentes_registrados').all()
     serializer_class = ActividadComunitariaSerializer
+    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -137,9 +144,11 @@ class ActividadComunitariaViewSet(viewsets.ModelViewSet):
 class AsistenciaActividadViewSet(viewsets.ModelViewSet):
     """
     API endpoint que permite gestionar asistencias a actividades.
+    Solo accesible para usuarios autenticados con rol de administrador.
     """
     queryset = AsistenciaActividad.objects.select_related('actividad', 'persona').all()
     serializer_class = AsistenciaActividadSerializer
+    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
 
     @action(detail=False, methods=['get'], url_path='por-actividad')
     def por_actividad(self, request):

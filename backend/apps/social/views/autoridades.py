@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -9,32 +9,39 @@ from ..serializers.autoridades import (
     RolAutoridadSerializer,
     AutoridadComunitariaSerializer
 )
+from apps.usuarios.permissions import EsAdminRol
 
 
 class TipoAutoridadViewSet(viewsets.ModelViewSet):
     """
     API endpoint que permite ver o editar tipos de autoridad comunitaria.
+    Solo accesible para usuarios autenticados con rol de administrador.
     """
     queryset = TipoAutoridad.objects.all()
     serializer_class = TipoAutoridadSerializer
+    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
 
 
 class RolAutoridadViewSet(viewsets.ModelViewSet):
     """
     API endpoint que permite ver o editar roles de autoridad comunitaria.
+    Solo accesible para usuarios autenticados con rol de administrador.
     """
     queryset = RolAutoridad.objects.all()
     serializer_class = RolAutoridadSerializer
+    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
 
 
 class AutoridadComunitariaViewSet(viewsets.ModelViewSet):
     """
     API endpoint que permite ver o editar autoridades comunitarias.
+    Solo accesible para usuarios autenticados con rol de administrador.
     """
     queryset = AutoridadComunitaria.objects.select_related(
         'persona', 'tipo_autoridad', 'rol'
     ).all()
     serializer_class = AutoridadComunitariaSerializer
+    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
 
     @action(detail=False, methods=['get'], url_path='buscar-persona')
     def buscar_persona(self, request):

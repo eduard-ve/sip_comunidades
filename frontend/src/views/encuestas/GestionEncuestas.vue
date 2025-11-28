@@ -134,12 +134,8 @@ async function loadSurveys() {
     if (!token) {
       console.warn('No hay token de autenticación - usando datos de muestra')
       // Fallback a datos de muestra cuando no hay token
-      table.value.rows = [
-        { titulo: "Satisfacción clientes", estado: "activa", descripcion: "Encuesta sobre satisfacción", preguntas: [], fecha: "2025-08-10", respuestas: 120 },
-        { titulo: "Evaluación interna", estado: "cerrada", descripcion: "Evaluación de procesos internos", preguntas: [], fecha: "2025-07-22", respuestas: 80 },
-        { titulo: "Clima laboral", estado: "activa", descripcion: "Encuesta sobre clima laboral", preguntas: [], fecha: "2025-08-05", respuestas: 200 },
-        { titulo: "Mejoras 2026", estado: "borrador", descripcion: "Sugerencias para mejoras", preguntas: [], fecha: "-", respuestas: 0 }
-      ]
+      setMockData()
+      updateKPIsAndCharts()
       return
     }
 
@@ -157,36 +153,51 @@ async function loadSurveys() {
         respuestas: encuesta.respuestas_count || 0
       }))
       console.log('Tabla actualizada con', table.value.rows.length, 'encuestas')
+      updateKPIsAndCharts()
       saveToLocalStorage()
-    } else if (response.status === 401) {
-      console.warn('Token expirado o inválido - usando datos de muestra')
-      // Fallback a datos de muestra
-      table.value.rows = [
-        { titulo: "Satisfacción clientes", estado: "activa", descripcion: "Encuesta sobre satisfacción", preguntas: [], fecha: "2025-08-10", respuestas: 120 },
-        { titulo: "Evaluación interna", estado: "cerrada", descripcion: "Evaluación de procesos internos", preguntas: [], fecha: "2025-07-22", respuestas: 80 },
-        { titulo: "Clima laboral", estado: "activa", descripcion: "Encuesta sobre clima laboral", preguntas: [], fecha: "2025-08-05", respuestas: 200 },
-        { titulo: "Mejoras 2026", estado: "borrador", descripcion: "Sugerencias para mejoras", preguntas: [], fecha: "-", respuestas: 0 }
-      ]
     } else {
       console.error('Error del servidor:', response.status)
-      // Fallback a datos de muestra
-      table.value.rows = [
-        { titulo: "Satisfacción clientes", estado: "activa", descripcion: "Encuesta sobre satisfacción", preguntas: [], fecha: "2025-08-10", respuestas: 120 },
-        { titulo: "Evaluación interna", estado: "cerrada", descripcion: "Evaluación de procesos internos", preguntas: [], fecha: "2025-07-22", respuestas: 80 },
-        { titulo: "Clima laboral", estado: "activa", descripcion: "Encuesta sobre clima laboral", preguntas: [], fecha: "2025-08-05", respuestas: 200 },
-        { titulo: "Mejoras 2026", estado: "borrador", descripcion: "Sugerencias para mejoras", preguntas: [], fecha: "-", respuestas: 0 }
-      ]
+      setMockData()
+      updateKPIsAndCharts()
     }
   } catch (error) {
     console.error('Error cargando encuestas:', error)
-    // Fallback a datos de muestra
-    table.value.rows = [
-      { titulo: "Satisfacción clientes", estado: "activa", descripcion: "Encuesta sobre satisfacción", preguntas: [], fecha: "2025-08-10", respuestas: 120 },
-      { titulo: "Evaluación interna", estado: "cerrada", descripcion: "Evaluación de procesos internos", preguntas: [], fecha: "2025-07-22", respuestas: 80 },
-      { titulo: "Clima laboral", estado: "activa", descripcion: "Encuesta sobre clima laboral", preguntas: [], fecha: "2025-08-05", respuestas: 200 },
-      { titulo: "Mejoras 2026", estado: "borrador", descripcion: "Sugerencias para mejoras", preguntas: [], fecha: "-", respuestas: 0 }
-    ]
+    setMockData()
+    updateKPIsAndCharts()
   }
+}
+
+function setMockData() {
+  table.value.rows = [
+    { titulo: "Satisfacción clientes", estado: "activa", descripcion: "Encuesta sobre satisfacción", preguntas: [], fecha: "2025-08-10", respuestas: 120 },
+    { titulo: "Evaluación interna", estado: "cerrada", descripcion: "Evaluación de procesos internos", preguntas: [], fecha: "2025-07-22", respuestas: 80 },
+    { titulo: "Clima laboral", estado: "activa", descripcion: "Encuesta sobre clima laboral", preguntas: [], fecha: "2025-08-05", respuestas: 200 },
+    { titulo: "Mejoras 2026", estado: "borrador", descripcion: "Sugerencias para mejoras", preguntas: [], fecha: "-", respuestas: 0 }
+  ]
+}
+
+function updateKPIsAndCharts() {
+  const rows = table.value.rows
+  const totalEncuestas = rows.length
+  const encuestasActivas = rows.filter(r => r.estado === 'activa').length
+  const totalRespuestas = rows.reduce((sum, r) => sum + r.respuestas, 0)
+  const tasaRespuesta = totalEncuestas > 0 ? ((totalRespuestas / totalEncuestas) * 100).toFixed(1) + '%' : '0%'
+
+  kpis.value = [
+    { title: "Encuestas activas", value: encuestasActivas, change: "", icon: "bi-clipboard-check", colorIcon: "#198754" },
+    { title: "Respuestas totales", value: totalRespuestas, change: "", icon: "bi-people", colorIcon: "#0d6efd" },
+    { title: "Tasa de respuesta", value: tasaRespuesta, change: "", icon: "bi-bar-chart-line", colorIcon: "#ffc107" },
+    { title: "Promedio satisfacción", value: "N/A", change: "", icon: "bi-star", colorIcon: "#fd7e14" }
+  ]
+
+  charts.value.left.data.labels = rows.map(r => r.titulo)
+  charts.value.left.data.datasets[0].data = rows.map(r => r.respuestas)
+
+  const activaCount = rows.filter(r => r.estado === 'activa').length
+  const cerradaCount = rows.filter(r => r.estado === 'cerrada').length
+  const borradorCount = rows.filter(r => r.estado === 'borrador').length
+
+  charts.value.right.data.datasets[0].data = [activaCount, cerradaCount, borradorCount]
 }
 
 // Funciones de lógica

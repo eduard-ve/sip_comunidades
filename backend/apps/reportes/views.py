@@ -11,10 +11,14 @@ from io import BytesIO
 import json
 from .models import ReporteSalud, ReporteSocial, ReporteEncuestas
 from .serializers import ReporteSaludSerializer, ReporteSocialSerializer, ReporteEncuestasSerializer
-# from apps.usuarios.permissions import EsAdminRol
+from apps.usuarios.permissions import EsAdminRol
 
 class BaseReporteViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.AllowAny]
+    """
+    ViewSet base para reportes.
+    Solo accesible para usuarios autenticados con rol de administrador.
+    """
+    permission_classes = [permissions.IsAuthenticated, EsAdminRol]
 
     def _generate_pdf(self, reporte, tipo):
         buffer = BytesIO()

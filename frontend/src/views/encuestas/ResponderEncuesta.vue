@@ -193,8 +193,8 @@ const submitRespuesta = async () => {
 
     console.log('Enviando respuestas:', respuestasData)
 
-    // Enviar respuestas al backend usando POST directo a la lista
-    const response = await api.post('/encuestas/respuestas/', respuestasData)
+    // Enviar respuestas al backend usando POST al endpoint bulk
+    const response = await api.post('/encuestas/respuestas/bulk/', respuestasData)
 
     console.log('Respuesta del servidor:', response)
 
