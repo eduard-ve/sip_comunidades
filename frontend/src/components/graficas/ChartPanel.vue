@@ -1,9 +1,12 @@
 <template>
-  <div class="card shadow-sm border-0 p-3 dashboard-chart">
-    <h6 class="fw-bold mb-3"><slot name="title"></slot></h6>
-     <div class="chart-wrapper">
+  <div v-if="!noCard" :class="['card shadow-sm border-0 p-3 dashboard-chart', variant === 'donut' ? 'donut-variant' : '']">
+    <h6 v-if="variant !== 'donut'" class="fw-bold mb-3"><slot name="title"></slot></h6>
+     <div class="chart-wrapper" :style="{ height: height }">
         <canvas :id="chartId"></canvas>
       </div>
+  </div>
+  <div v-else class="chart-wrapper" :style="{ height: height }">
+    <canvas :id="chartId"></canvas>
   </div>
 </template>
 
@@ -15,7 +18,10 @@ const props = defineProps({
   chartId: { type: String, required: true },
   type: { type: String, default: 'bar' },
   data: { type: Object, required: true },
-  options: { type: Object, default: () => ({}) }
+  options: { type: Object, default: () => ({}) },
+  variant: { type: String, default: 'default' },
+  height: { type: String, default: '280px' },
+  noCard: { type: Boolean, default: false }
 })
 
 let chartInstance = null
@@ -60,11 +66,22 @@ onUnmounted(() => {
   border-radius: 12px;
 }
 
+.donut-variant {
+  padding: 0;
+  box-shadow: none;
+  border: none;
+}
+
+.donut-variant .chart-wrapper {
+  height: 160px !important;
+  max-width: 160px !important;
+}
+
 .chart-wrapper {
   position: relative;
   width: 100%;
   max-width: 420px; /* 👈 ancho máximo */
-  height: 280px;    /* 👈 altura fija más pequeña */
   margin: auto;     /* centrar dentro de la tarjeta */
+  overflow: hidden;
 }
 </style>
