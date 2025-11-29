@@ -33,10 +33,9 @@ class BaseReporteViewSet(viewsets.ModelViewSet):
 
         # Información básica
         info_data = [
-            ['Persona:', f"{reporte.persona.primer_nombre} {reporte.persona.primer_apellido}"],
             ['Tipo de Reporte:', reporte.tipo_reporte],
             ['Fecha del Reporte:', reporte.fecha_reporte.strftime('%Y-%m-%d')],
-            ['Generado por:', reporte.generado_por],
+            ['Generado por:', f"{reporte.generado_por.first_name} {reporte.generado_por.last_name} ({reporte.generado_por.username})"],
             ['Fecha de Creación:', reporte.fecha_creacion.strftime('%Y-%m-%d %H:%M:%S')]
         ]
 
@@ -225,10 +224,9 @@ class ReporteEncuestasViewSet(BaseReporteViewSet):
 
         # Información básica
         info_data = [
-            ['Persona:', f"{reporte.persona.primer_nombre} {reporte.persona.primer_apellido}"],
             ['Tipo de Reporte:', reporte.tipo_reporte],
             ['Fecha del Reporte:', reporte.fecha_reporte.strftime('%Y-%m-%d')],
-            ['Generado por:', reporte.generado_por],
+            ['Generado por:', f"{reporte.generado_por.first_name} {reporte.generado_por.last_name} ({reporte.generado_por.username})"],
             ['Fecha de Creación:', reporte.fecha_creacion.strftime('%Y-%m-%d %H:%M:%S')]
         ]
 

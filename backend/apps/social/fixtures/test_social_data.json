@@ -1,0 +1,185 @@
+[
+  {
+    "model": "social.estadoprograma",
+    "pk": 1,
+    "fields": {
+      "nombre": "Activo"
+    }
+  },
+  {
+    "model": "social.estadoprograma",
+    "pk": 2,
+    "fields": {
+      "nombre": "Completado"
+    }
+  },
+  {
+    "model": "social.estadoprograma",
+    "pk": 3,
+    "fields": {
+      "nombre": "Suspendido"
+    }
+  },
+  {
+    "model": "social.programasocial",
+    "pk": 1,
+    "fields": {
+      "nombre": "Programa de Educación Básica",
+      "descripcion": "Programa para mejorar la educación en la comunidad",
+      "tipo_programa": "educacion",
+      "estado": 1,
+      "fecha_inicio": "2024-01-01",
+      "fecha_fin": "2024-12-31",
+      "beneficiarios_count": 5,
+      "responsable": null
+    }
+  },
+  {
+    "model": "social.programasocial",
+    "pk": 2,
+    "fields": {
+      "nombre": "Programa de Salud Comunitaria",
+      "descripcion": "Atención médica preventiva para la comunidad",
+      "tipo_programa": "salud",
+      "estado": 1,
+      "fecha_inicio": "2024-02-01",
+      "fecha_fin": "2024-11-30",
+      "beneficiarios_count": 8,
+      "responsable": null
+    }
+  },
+  {
+    "model": "social.programasocial",
+    "pk": 3,
+    "fields": {
+      "nombre": "Programa Cultural Indígena",
+      "descripcion": "Preservación y promoción de la cultura tradicional",
+      "tipo_programa": "cultural",
+      "estado": 1,
+      "fecha_inicio": "2024-03-01",
+      "fecha_fin": "2024-10-31",
+      "beneficiarios_count": 12,
+      "responsable": null
+    }
+  },
+  {
+    "model": "social.programabeneficiario",
+    "pk": 1,
+    "fields": {
+      "programa": 1,
+      "persona": 1,
+      "fecha_inscripcion": "2024-01-15",
+      "observaciones": "Participante activo",
+      "estado": "activo",
+      "fecha_egreso": null
+    }
+  },
+  {
+    "model": "social.programabeneficiario",
+    "pk": 2,
+    "fields": {
+      "programa": 1,
+      "persona": 2,
+      "fecha_inscripcion": "2024-01-20",
+      "observaciones": "Madre soltera",
+      "estado": "activo",
+      "fecha_egreso": null
+    }
+  },
+  {
+    "model": "social.programabeneficiario",
+    "pk": 3,
+    "fields": {
+      "programa": 2,
+      "persona": 3,
+      "fecha_inscripcion": "2024-02-10",
+      "observaciones": "Necesita atención médica regular",
+      "estado": "activo",
+      "fecha_egreso": null
+    }
+  },
+  {
+    "model": "social.programabeneficiario",
+    "pk": 4,
+    "fields": {
+      "programa": 2,
+      "persona": 4,
+      "fecha_inscripcion": "2024-02-15",
+      "observaciones": "Joven estudiante",
+      "estado": "activo",
+      "fecha_egreso": null
+    }
+  },
+  {
+    "model": "social.programabeneficiario",
+    "pk": 5,
+    "fields": {
+      "programa": 3,
+      "persona": 5,
+      "fecha_inscripcion": "2024-03-05",
+      "observaciones": "Artista local",
+      "estado": "activo",
+      "fecha_egreso": null
+    }
+  },
+  {
+    "model": "social.programabeneficiario",
+    "pk": 6,
+    "fields": {
+      "programa": 3,
+      "persona": 6,
+      "fecha_inscripcion": "2024-03-10",
+      "observaciones": "Interés en tradiciones culturales",
+      "estado": "activo",
+      "fecha_egreso": null
+    }
+  },
+  {
+    "model": "social.programabeneficiario",
+    "pk": 7,
+    "fields": {
+      "programa": 3,
+      "persona": 7,
+      "fecha_inscripcion": "2024-03-15",
+      "observaciones": "Líder comunitario",
+      "estado": "activo",
+      "fecha_egreso": null
+    }
+  },
+  {
+    "model": "social.programabeneficiario",
+    "pk": 8,
+    "fields": {
+      "programa": 1,
+      "persona": 8,
+      "fecha_inscripcion": "2024-01-25",
+      "observaciones": "Niña de 10 años",
+      "estado": "activo",
+      "fecha_egreso": null
+    }
+  },
+  {
+    "model": "social.programabeneficiario",
+    "pk": 9,
+    "fields": {
+      "programa": 2,
+      "persona": 9,
+      "fecha_inscripcion": "2024-02-20",
+      "observaciones": "Adulto mayor",
+      "estado": "activo",
+      "fecha_egreso": null
+    }
+  },
+  {
+    "model": "social.programabeneficiario",
+    "pk": 10,
+    "fields": {
+      "programa": 1,
+      "persona": 10,
+      "fecha_inscripcion": "2024-01-30",
+      "observaciones": "Adolescente",
+      "estado": "activo",
+      "fecha_egreso": null
+    }
+  }
+]

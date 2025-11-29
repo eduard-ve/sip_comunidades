@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import api from '../services/api.js'
 
 const API_BASE_URL = 'http://127.0.0.1:8000/api'
 
@@ -35,7 +35,7 @@ export const useReportesStore = defineStore('reportes', {
     async fetchReportesSalud() {
       this.loading = true
       try {
-        const response = await axios.get(`${API_BASE_URL}/reportes/salud/`)
+        const response = await api.get('/reportes/salud/')
         this.reportesSalud = response.data
         this.error = null
       } catch (error) {
@@ -49,7 +49,7 @@ export const useReportesStore = defineStore('reportes', {
     async fetchReportesSociales() {
       this.loading = true
       try {
-        const response = await axios.get(`${API_BASE_URL}/reportes/social/`)
+        const response = await api.get('/reportes/social/')
         this.reportesSociales = response.data
         this.error = null
       } catch (error) {
@@ -63,7 +63,7 @@ export const useReportesStore = defineStore('reportes', {
     async fetchReportesEncuestas() {
       this.loading = true
       try {
-        const response = await axios.get(`${API_BASE_URL}/reportes/encuestas/`)
+        const response = await api.get('/reportes/encuestas/')
         this.reportesEncuestas = response.data
         this.error = null
       } catch (error) {
@@ -77,7 +77,7 @@ export const useReportesStore = defineStore('reportes', {
     async createReporte(reporteData) {
       try {
         const apiUrl = this.getApiUrl(reporteData.tipo_reporte);
-        const response = await axios.post(`${API_BASE_URL}${apiUrl}`, reporteData)
+        const response = await api.post(apiUrl, reporteData)
 
         // Agregar a la lista correspondiente según el tipo
         if (reporteData.tipo_reporte === 'reporte_salud') {
@@ -97,7 +97,7 @@ export const useReportesStore = defineStore('reportes', {
 
     async createReporteSalud(reporteData) {
       try {
-        const response = await axios.post(`${API_BASE_URL}/reportes/salud/`, reporteData)
+        const response = await api.post('/reportes/salud/', reporteData)
         this.reportesSalud.push(response.data)
         return response.data
       } catch (error) {
@@ -108,7 +108,7 @@ export const useReportesStore = defineStore('reportes', {
 
     async createReporteSocial(reporteData) {
       try {
-        const response = await axios.post(`${API_BASE_URL}/reportes/social/`, reporteData)
+        const response = await api.post('/reportes/social/', reporteData)
         this.reportesSociales.push(response.data)
         return response.data
       } catch (error) {
@@ -119,7 +119,7 @@ export const useReportesStore = defineStore('reportes', {
 
     async createReporteEncuestas(reporteData) {
       try {
-        const response = await axios.post(`${API_BASE_URL}/reportes/encuestas/`, reporteData)
+        const response = await api.post('/reportes/encuestas/', reporteData)
         this.reportesEncuestas.push(response.data)
         return response.data
       } catch (error) {
@@ -130,7 +130,7 @@ export const useReportesStore = defineStore('reportes', {
 
     async updateReporteSalud(id, reporteData) {
       try {
-        const response = await axios.put(`${API_BASE_URL}/reportes/salud/${id}/`, reporteData)
+        const response = await api.put(`/reportes/salud/${id}/`, reporteData)
         const index = this.reportesSalud.findIndex(r => r.id === id)
         if (index !== -1) {
           this.reportesSalud[index] = response.data
@@ -144,7 +144,7 @@ export const useReportesStore = defineStore('reportes', {
 
     async deleteReporteSalud(id) {
       try {
-        await axios.delete(`${API_BASE_URL}/reportes/salud/${id}/`)
+        await api.delete(`/reportes/salud/${id}/`)
         this.reportesSalud = this.reportesSalud.filter(r => r.id !== id)
       } catch (error) {
         this.error = 'Error al eliminar reporte de salud'
@@ -154,7 +154,7 @@ export const useReportesStore = defineStore('reportes', {
 
     async deleteReporteSocial(id) {
       try {
-        await axios.delete(`${API_BASE_URL}/reportes/social/${id}/`)
+        await api.delete(`/reportes/social/${id}/`)
         this.reportesSociales = this.reportesSociales.filter(r => r.id !== id)
       } catch (error) {
         this.error = 'Error al eliminar reporte social'
@@ -164,7 +164,7 @@ export const useReportesStore = defineStore('reportes', {
 
     async deleteReporteEncuestas(id) {
       try {
-        await axios.delete(`${API_BASE_URL}/reportes/encuestas/${id}/`)
+        await api.delete(`/reportes/encuestas/${id}/`)
         this.reportesEncuestas = this.reportesEncuestas.filter(r => r.id !== id)
       } catch (error) {
         this.error = 'Error al eliminar reporte de encuestas'
@@ -174,7 +174,7 @@ export const useReportesStore = defineStore('reportes', {
 
     async updateReporteSocial(id, reporteData) {
       try {
-        const response = await axios.put(`${API_BASE_URL}/reportes/social/${id}/`, reporteData)
+        const response = await api.put(`/reportes/social/${id}/`, reporteData)
         const index = this.reportesSociales.findIndex(r => r.id === id)
         if (index !== -1) {
           this.reportesSociales[index] = response.data
@@ -188,7 +188,7 @@ export const useReportesStore = defineStore('reportes', {
 
     async updateReporteEncuestas(id, reporteData) {
       try {
-        const response = await axios.put(`${API_BASE_URL}/reportes/encuestas/${id}/`, reporteData)
+        const response = await api.put(`/reportes/encuestas/${id}/`, reporteData)
         const index = this.reportesEncuestas.findIndex(r => r.id === id)
         if (index !== -1) {
           this.reportesEncuestas[index] = response.data
@@ -204,14 +204,14 @@ export const useReportesStore = defineStore('reportes', {
       try {
         let url = ''
         if (categoria === 'Salud') {
-          url = `${API_BASE_URL}/reportes/salud/${id}/export_pdf/`
+          url = `/reportes/salud/${id}/export_pdf/`
         } else if (categoria === 'Social') {
-          url = `${API_BASE_URL}/reportes/social/${id}/export_pdf/`
+          url = `/reportes/social/${id}/export_pdf/`
         } else if (categoria === 'Encuestas') {
-          url = `${API_BASE_URL}/reportes/encuestas/${id}/export_pdf/`
+          url = `/reportes/encuestas/${id}/export_pdf/`
         }
 
-        const response = await axios.get(url, { responseType: 'blob' })
+        const response = await api.get(url, { responseType: 'blob' })
 
         // Crear un enlace para descargar el archivo
         const blob = new Blob([response.data], { type: 'application/pdf' })

@@ -1,0 +1,222 @@
+[
+  {
+    "model": "poblacion.persona",
+    "pk": 1,
+    "fields": {
+      "tipo_identificacion": 1,
+      "numero_identificacion": "1234567890",
+      "primer_nombre": "Juan",
+      "segundo_nombre": "Carlos",
+      "primer_apellido": "García",
+      "segundo_apellido": "López",
+      "fecha_nacimiento": "1985-03-15",
+      "genero": "M",
+      "direccion": "Calle Principal 123",
+      "nivel_educativo": 4,
+      "ocupacion": 2,
+      "grupo_etnico": 1,
+      "estado_civil": 2,
+      "lengua_materna": 1,
+      "fecha_creacion": "2024-01-01T00:00:00Z",
+      "fecha_modificacion": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "poblacion.persona",
+    "pk": 2,
+    "fields": {
+      "tipo_identificacion": 1,
+      "numero_identificacion": "1234567891",
+      "primer_nombre": "María",
+      "segundo_nombre": "José",
+      "primer_apellido": "Rodríguez",
+      "segundo_apellido": "Martínez",
+      "fecha_nacimiento": "1990-07-22",
+      "genero": "F",
+      "direccion": "Avenida Central 456",
+      "nivel_educativo": 4,
+      "ocupacion": 4,
+      "grupo_etnico": 1,
+      "estado_civil": 1,
+      "lengua_materna": 1,
+      "fecha_creacion": "2024-01-01T00:00:00Z",
+      "fecha_modificacion": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "poblacion.persona",
+    "pk": 3,
+    "fields": {
+      "tipo_identificacion": 1,
+      "numero_identificacion": "1234567892",
+      "primer_nombre": "Pedro",
+      "segundo_nombre": "Antonio",
+      "primer_apellido": "Hernández",
+      "segundo_apellido": "González",
+      "fecha_nacimiento": "1978-11-08",
+      "genero": "M",
+      "direccion": "Carrera 7 # 45-67",
+      "nivel_educativo": 3,
+      "ocupacion": 2,
+      "grupo_etnico": 2,
+      "estado_civil": 2,
+      "lengua_materna": 2,
+      "fecha_creacion": "2024-01-01T00:00:00Z",
+      "fecha_modificacion": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "poblacion.persona",
+    "pk": 4,
+    "fields": {
+      "tipo_identificacion": 1,
+      "numero_identificacion": "1234567893",
+      "primer_nombre": "Ana",
+      "segundo_nombre": "Lucía",
+      "primer_apellido": "Pérez",
+      "segundo_apellido": "Sánchez",
+      "fecha_nacimiento": "1995-05-30",
+      "genero": "F",
+      "direccion": "Transversal 12 # 34-56",
+      "nivel_educativo": 4,
+      "ocupacion": 1,
+      "grupo_etnico": 1,
+      "estado_civil": 1,
+      "lengua_materna": 1,
+      "fecha_creacion": "2024-01-01T00:00:00Z",
+      "fecha_modificacion": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "poblacion.persona",
+    "pk": 5,
+    "fields": {
+      "tipo_identificacion": 1,
+      "numero_identificacion": "1234567894",
+      "primer_nombre": "Luis",
+      "segundo_nombre": "Miguel",
+      "primer_apellido": "Torres",
+      "segundo_apellido": "Ramírez",
+      "fecha_nacimiento": "1982-09-12",
+      "genero": "M",
+      "direccion": "Diagonal 15 # 78-90",
+      "nivel_educativo": 2,
+      "ocupacion": 3,
+      "grupo_etnico": 3,
+      "estado_civil": 3,
+      "lengua_materna": 3,
+      "fecha_creacion": "2024-01-01T00:00:00Z",
+      "fecha_modificacion": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "poblacion.persona",
+    "pk": 6,
+    "fields": {
+      "tipo_identificacion": 1,
+      "numero_identificacion": "1234567895",
+      "primer_nombre": "Carmen",
+      "segundo_nombre": "Elena",
+      "primer_apellido": "Flores",
+      "segundo_apellido": "Morales",
+      "fecha_nacimiento": "1988-12-03",
+      "genero": "F",
+      "direccion": "Calle 20 # 45-67",
+      "nivel_educativo": 4,
+      "ocupacion": 4,
+      "grupo_etnico": 1,
+      "estado_civil": 2,
+      "lengua_materna": 1,
+      "fecha_creacion": "2024-01-01T00:00:00Z",
+      "fecha_modificacion": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "poblacion.persona",
+    "pk": 7,
+    "fields": {
+      "tipo_identificacion": 1,
+      "numero_identificacion": "1234567896",
+      "primer_nombre": "José",
+      "segundo_nombre": "Manuel",
+      "primer_apellido": "Díaz",
+      "segundo_apellido": "Ortiz",
+      "fecha_nacimiento": "1975-06-18",
+      "genero": "M",
+      "direccion": "Avenida 30 # 12-34",
+      "nivel_educativo": 3,
+      "ocupacion": 2,
+      "grupo_etnico": 2,
+      "estado_civil": 4,
+      "lengua_materna": 2,
+      "fecha_creacion": "2024-01-01T00:00:00Z",
+      "fecha_modificacion": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "poblacion.persona",
+    "pk": 8,
+    "fields": {
+      "tipo_identificacion": 1,
+      "numero_identificacion": "1234567897",
+      "primer_nombre": "Rosa",
+      "segundo_nombre": "María",
+      "primer_apellido": "Gutiérrez",
+      "segundo_apellido": "Chávez",
+      "fecha_nacimiento": "1992-01-25",
+      "genero": "F",
+      "direccion": "Carrera 45 # 67-89",
+      "nivel_educativo": 4,
+      "ocupacion": 1,
+      "grupo_etnico": 1,
+      "estado_civil": 1,
+      "lengua_materna": 1,
+      "fecha_creacion": "2024-01-01T00:00:00Z",
+      "fecha_modificacion": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "poblacion.persona",
+    "pk": 9,
+    "fields": {
+      "tipo_identificacion": 1,
+      "numero_identificacion": "1234567898",
+      "primer_nombre": "Francisco",
+      "segundo_nombre": "Javier",
+      "primer_apellido": "Ruiz",
+      "segundo_apellido": "Jiménez",
+      "fecha_nacimiento": "1980-04-10",
+      "genero": "M",
+      "direccion": "Transversal 50 # 23-45",
+      "nivel_educativo": 5,
+      "ocupacion": 2,
+      "grupo_etnico": 3,
+      "estado_civil": 2,
+      "lengua_materna": 4,
+      "fecha_creacion": "2024-01-01T00:00:00Z",
+      "fecha_modificacion": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "poblacion.persona",
+    "pk": 10,
+    "fields": {
+      "tipo_identificacion": 1,
+      "numero_identificacion": "1234567899",
+      "primer_nombre": "Isabel",
+      "segundo_nombre": "Cristina",
+      "primer_apellido": "Moreno",
+      "segundo_apellido": "Álvarez",
+      "fecha_nacimiento": "1998-08-14",
+      "genero": "F",
+      "direccion": "Diagonal 60 # 78-90",
+      "nivel_educativo": 4,
+      "ocupacion": 1,
+      "grupo_etnico": 1,
+      "estado_civil": 1,
+      "lengua_materna": 1,
+      "fecha_creacion": "2024-01-01T00:00:00Z",
+      "fecha_modificacion": "2024-01-01T00:00:00Z"
+    }
+  }
+]

@@ -27,15 +27,9 @@
               </div>
 
               <!-- Fecha del reporte -->
-              <div class="col-md-6">
+              <div class="col-md-12">
                 <label class="form-label fw-bold">Fecha del reporte</label>
                 <input v-model="form.fecha_reporte" type="date" class="form-control" required />
-              </div>
-
-              <!-- Persona (ID) -->
-              <div class="col-md-6">
-                <label class="form-label fw-bold">ID de Persona</label>
-                <input v-model="form.persona" type="number" class="form-control" required min="1" />
               </div>
 
               <!-- Descripción -->
@@ -73,11 +67,9 @@ const emit = defineEmits(["close", "save"])
 const loading = ref(false)
 
 const form = reactive({
-  persona: 1, // ID de persona por defecto
   tipo_reporte: "",
   datos_agregados: {},
   fecha_reporte: "",
-  generado_por: "Usuario Frontend",
   descripcion: ""
 })
 
@@ -91,7 +83,7 @@ watch(
 )
 
 async function guardar() {
-  if (!form.tipo_reporte || !form.fecha_reporte || !form.persona) {
+  if (!form.tipo_reporte || !form.fecha_reporte) {
     alert("Por favor complete los campos obligatorios.")
     return
   }
@@ -100,11 +92,9 @@ async function guardar() {
   try {
     // Preparar datos para el backend
     const reporteData = {
-      persona: form.persona,
       tipo_reporte: form.tipo_reporte,
       datos_agregados: form.datos_agregados || {},
-      fecha_reporte: form.fecha_reporte,
-      generado_por: form.generado_por
+      fecha_reporte: form.fecha_reporte
     }
 
     emit("save", reporteData)

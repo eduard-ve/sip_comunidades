@@ -1,9 +1,8 @@
 from django.db import models
-from apps.poblacion.models.personas import Persona
+from apps.usuarios.models import Usuario
 
 # Modelo para reportes de salud
 class ReporteSalud(models.Model):
-    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, related_name='reportes_salud')
     tipo_reporte = models.CharField(max_length=100, help_text="Tipo de reporte (ej: resumen salud, indicadores)")
     datos_agregados = models.JSONField(help_text="Datos agregados del reporte en formato JSON")
     fecha_reporte = models.DateField()
@@ -12,10 +11,10 @@ class ReporteSalud(models.Model):
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ['persona', 'tipo_reporte', 'fecha_reporte']
+        unique_together = ['generado_por', 'tipo_reporte', 'fecha_reporte']
 
     def __str__(self):
-        return f"Reporte Salud de {self.persona} - {self.tipo_reporte} ({self.fecha_reporte})"
+        return f"Reporte Salud - {self.tipo_reporte} ({self.fecha_reporte}) - {self.generado_por}"
 
     class Meta:
         verbose_name = "Reporte de Salud"
@@ -24,7 +23,6 @@ class ReporteSalud(models.Model):
 
 # Modelo para reportes sociales
 class ReporteSocial(models.Model):
-    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, related_name='reportes_sociales')
     tipo_reporte = models.CharField(max_length=100, help_text="Tipo de reporte social (ej: apoyo social, condiciones)")
     datos_agregados = models.JSONField(help_text="Datos agregados del reporte social en formato JSON")
     fecha_reporte = models.DateField()
@@ -33,10 +31,10 @@ class ReporteSocial(models.Model):
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ['persona', 'tipo_reporte', 'fecha_reporte']
+        unique_together = ['generado_por', 'tipo_reporte', 'fecha_reporte']
 
     def __str__(self):
-        return f"Reporte Social de {self.persona} - {self.tipo_reporte} ({self.fecha_reporte})"
+        return f"Reporte Social - {self.tipo_reporte} ({self.fecha_reporte}) - {self.generado_por}"
 
     class Meta:
         verbose_name = "Reporte Social"
@@ -45,7 +43,6 @@ class ReporteSocial(models.Model):
 
 # Modelo para reportes de encuestas
 class ReporteEncuestas(models.Model):
-    persona = models.ForeignKey(Persona, on_delete=models.CASCADE, related_name='reportes_encuestas')
     tipo_reporte = models.CharField(max_length=100, help_text="Tipo de reporte de encuestas (ej: resultados encuesta, análisis)")
     datos_agregados = models.JSONField(help_text="Datos agregados del reporte de encuestas en formato JSON")
     fecha_reporte = models.DateField()
@@ -54,10 +51,10 @@ class ReporteEncuestas(models.Model):
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ['persona', 'tipo_reporte', 'fecha_reporte']
+        unique_together = ['generado_por', 'tipo_reporte', 'fecha_reporte']
 
     def __str__(self):
-        return f"Reporte Encuestas de {self.persona} - {self.tipo_reporte} ({self.fecha_reporte})"
+        return f"Reporte Encuestas - {self.tipo_reporte} ({self.fecha_reporte}) - {self.generado_por}"
 
     class Meta:
         verbose_name = "Reporte de Encuestas"
