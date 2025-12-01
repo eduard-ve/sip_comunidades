@@ -48,12 +48,10 @@ class PreguntaCreateSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
+        # La validación de opciones vacías se delega al EncuestaCreateSerializer
+        # donde se puede validar la encuesta completa
         tipo = data.get('tipo')
         opciones = data.get('opciones', [])
-
-        # Validaciones específicas por tipo
-        if tipo in ['opcion_multiple', 'escala'] and not opciones:
-            raise serializers.ValidationError(f"Las preguntas de tipo '{tipo}' requieren al menos una opción")
 
         if tipo == 'si_no' and len(opciones) != 2:
             # Para si_no, asegurar que tenga exactamente 2 opciones si se proporcionan
@@ -98,6 +96,16 @@ class EncuestaCreateSerializer(serializers.ModelSerializer):
         textos_preguntas = [p['texto_pregunta'] for p in preguntas]
         if len(textos_preguntas) != len(set(textos_preguntas)):
             raise serializers.ValidationError("No se permiten preguntas duplicadas en la misma encuesta")
+
+        # Validar que las preguntas de opción múltiple tengan opciones
+        for pregunta in preguntas:
+            if pregunta.get('tipo') in ['opcion_multiple', 'escala']:
+                opciones = pregunta.get('opciones', [])
+                if not opciones:
+                    raise serializers.ValidationError(
+                        f"La pregunta '{pregunta.get('texto_pregunta', 'sin texto')}' "
+                        f"de tipo '{pregunta.get('tipo')}' requiere al menos una opción"
+                    )
 
         return data
 

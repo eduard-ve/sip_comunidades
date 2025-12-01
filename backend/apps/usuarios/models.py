@@ -3,7 +3,7 @@ from django.db import models
 
 class Usuario(AbstractUser):
     # Campo de teléfono
-    telefono = models.CharField(max_length=20, blank=True, null=True, help_text="Número de teléfono del usuario"
+    telefono = models.CharField(max_length=255, blank=True, null=True, help_text="Número de teléfono del usuario"
     )
     
     # Definir choices como constantes

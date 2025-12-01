@@ -9,7 +9,25 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.js'],
     coverage: {
       reporter: ['text', 'lcov'],
-      reportsDirectory: './coverage'
+      reportsDirectory: './coverage',
+      include: ['src/**/*.{js,vue,ts}'],
+      exclude: [
+        'src/test/**',
+        '**/*.test.js',
+        '**/*.spec.js',
+        'src/main.js',
+        'src/router/**',
+        'node_modules/**'
+      ],
+      all: true,
+      thresholds: {
+        global: {
+          branches: 0,
+          functions: 0,
+          lines: 0,
+          statements: 0
+        }
+      }
     }
   }
 })

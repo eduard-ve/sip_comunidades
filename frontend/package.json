@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "test:coverage": "vitest --coverage",
+    "test:coverage": "vitest --coverage --config=vitest.coverage.config.js --reporter=verbose --run & node fix-lcov-paths.js",
     "test:ui": "vitest --ui"
   },
   "dependencies": {

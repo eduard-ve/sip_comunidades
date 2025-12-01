@@ -10,6 +10,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from apps.auditoria.models import AuditLog
+from datetime import date, datetime
 
 User = get_user_model()
 
@@ -47,6 +48,7 @@ def audit_log(user):
         user_agent='Test Agent'
     )
 
+# Encuestas fixtures
 @pytest.fixture
 def encuesta():
     from apps.encuestas.models import Encuesta
@@ -85,6 +87,7 @@ def respuesta(encuesta, pregunta, opcion):
         respuesta_texto='Blue is nice'
     )
 
+# Poblacion fixtures
 @pytest.fixture
 def tipo_identificacion():
     from apps.poblacion.models.catalogos import TipoIdentificacion
@@ -123,7 +126,6 @@ def tipo_relacion():
 @pytest.fixture
 def persona(tipo_identificacion, nivel_educativo, ocupacion, grupo_etnico, estado_civil, lengua):
     from apps.poblacion.models.personas import Persona
-    from datetime import date
     return Persona.objects.create(
         tipo_identificacion=tipo_identificacion,
         numero_identificacion='12345678',
@@ -141,7 +143,6 @@ def persona(tipo_identificacion, nivel_educativo, ocupacion, grupo_etnico, estad
 @pytest.fixture
 def persona2(tipo_identificacion, nivel_educativo, ocupacion, grupo_etnico, estado_civil, lengua):
     from apps.poblacion.models.personas import Persona
-    from datetime import date
     return Persona.objects.create(
         tipo_identificacion=tipo_identificacion,
         numero_identificacion='87654321',
@@ -163,4 +164,182 @@ def relacion_familiar(persona, persona2, tipo_relacion):
         persona=persona,
         familiar=persona2,
         tipo_relacion=tipo_relacion
+    )
+
+# Social fixtures
+@pytest.fixture
+def tipo_actividad():
+    from apps.social.models import TipoActividad
+    return TipoActividad.objects.create(
+        nombre='Taller',
+        descripcion='Actividad de taller comunitario'
+    )
+
+@pytest.fixture
+def estado_actividad():
+    from apps.social.models import EstadoActividad
+    return EstadoActividad.objects.create(
+        nombre='Planificada',
+        descripcion='Actividad planificada'
+    )
+
+@pytest.fixture
+def estado_programa():
+    from apps.social.models import EstadoPrograma
+    return EstadoPrograma.objects.create(nombre='Activo')
+
+@pytest.fixture
+def programa_social(estado_programa, admin_user):
+    from apps.social.models import ProgramaSocial
+    return ProgramaSocial.objects.create(
+        nombre='Programa Educativo',
+        descripcion='Programa para educación comunitaria',
+        tipo_programa='educacion',
+        estado=estado_programa,
+        responsable=admin_user
+    )
+
+@pytest.fixture
+def actividad_comunitaria(tipo_actividad, estado_actividad):
+    from apps.social.models import ActividadComunitaria
+    return ActividadComunitaria.objects.create(
+        titulo='Taller de Computación',
+        descripcion='Aprender computación básica',
+        tipo_actividad=tipo_actividad,
+        estado=estado_actividad,
+        fecha_inicio=datetime(2024, 12, 15, 10, 0),
+        ubicacion='Centro Comunitario',
+        capacidad_maxima=20
+    )
+
+@pytest.fixture
+def asistencia_actividad(actividad_comunitaria, persona):
+    from apps.social.models import AsistenciaActividad
+    return AsistenciaActividad.objects.create(
+        actividad=actividad_comunitaria,
+        persona=persona,
+        confirmado=True
+    )
+
+# Salud fixtures
+@pytest.fixture
+def historial_medico(persona):
+    from apps.salud.models import HistorialMedico
+    return HistorialMedico.objects.create(
+        persona=persona,
+        antecedentes_familiares='Diabetes en la familia',
+        alergias='Penicilina',
+        condiciones_cronicas='Hipertensión'
+    )
+
+@pytest.fixture
+def vacuna(persona):
+    from apps.salud.models import Vacuna
+    return Vacuna.objects.create(
+        persona=persona,
+        nombre_vacuna='COVID-19',
+        tipo_vacuna='campana',
+        fecha_aplicacion=date(2024, 1, 15),
+        dosis='Primera dosis',
+        lote='ABC123'
+    )
+
+@pytest.fixture
+def medicamento(persona):
+    from apps.salud.models import Medicamento
+    return Medicamento.objects.create(
+        persona=persona,
+        nombre_medicamento='Paracetamol',
+        dosis='500mg',
+        frecuencia='Cada 8 horas',
+        indicacion='Dolor de cabeza',
+        fecha_prescripcion=date(2024, 1, 1),
+        fecha_inicio=date(2024, 1, 1),
+        activo=True
+    )
+
+@pytest.fixture
+def examen_medico(persona):
+    from apps.salud.models import ExamenMedico
+    return ExamenMedico.objects.create(
+        persona=persona,
+        tipo_examen='laboratorio',
+        nombre_examen='Hemograma completo',
+        fecha_solicitud=date(2024, 1, 10),
+        resultado='Normal'
+    )
+
+@pytest.fixture
+def registro_salud(persona):
+    from apps.salud.models import RegistroSalud
+    return RegistroSalud.objects.create(
+        persona=persona,
+        fecha_registro=date(2024, 1, 5),
+        tipo_registro='Consulta general',
+        descripcion='Chequeo rutinario'
+    )
+
+@pytest.fixture
+def alerta_salud(persona):
+    from apps.salud.models import AlertaSalud
+    return AlertaSalud.objects.create(
+        persona=persona,
+        titulo='Control de presión arterial',
+        descripcion='Paciente con hipertensión requiere control mensual',
+        prioridad='media'
+    )
+
+@pytest.fixture
+def control_salud(persona):
+    from apps.salud.models import ControlSalud
+    return ControlSalud.objects.create(
+        persona=persona,
+        tipo_control='Chequeo mensual',
+        fecha_programada=date(2024, 2, 1)
+    )
+
+# Reportes fixtures
+@pytest.fixture
+def reporte_salud(admin_user):
+    from apps.reportes.models import ReporteSalud
+    return ReporteSalud.objects.create(
+        tipo_reporte='Resumen mensual',
+        datos_agregados={
+            'total_registros': 150,
+            'total_alertas': 5,
+            'alertas_activas': 3,
+            'controles_pendientes': 12
+        },
+        fecha_reporte=date(2024, 12, 1),
+        generado_por='admin'
+    )
+
+@pytest.fixture
+def reporte_social(admin_user):
+    from apps.reportes.models import ReporteSocial
+    return ReporteSocial.objects.create(
+        tipo_reporte='Programas sociales',
+        datos_agregados={
+            'total_programas': 25,
+            'programas_activos': 20,
+            'programas_egresados': 5
+        },
+        fecha_reporte=date(2024, 12, 1),
+        generado_por='admin'
+    )
+
+@pytest.fixture
+def reporte_encuestas(admin_user):
+    from apps.reportes.models import ReporteEncuestas
+    return ReporteEncuestas.objects.create(
+        tipo_reporte='Resultados encuestas',
+        datos_agregados={
+            'total_respuestas_persona': 500,
+            'estadisticas_generales': {
+                'encuestas_activas': 5,
+                'total_preguntas': 25
+            }
+        },
+        fecha_reporte=date(2024, 12, 1),
+        generado_por='admin'
     )

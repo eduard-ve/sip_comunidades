@@ -93,7 +93,7 @@ class ReporteEncuestasSerializer(serializers.ModelSerializer):
                     'encuestas_cerradas': Encuesta.objects.filter(estado='cerrada').count(),
                     'total_preguntas': Pregunta.objects.count(),
                     'total_opciones': Opcion.objects.count(),
-                    'respuestas_por_encuesta': list(Respuesta.objects.values('encuesta__titulo').annotate(count=Count('id')))
+                    'respuestas_por_encuesta': list(Respuesta.objects.values('encuesta__titulo').annotate(count=Count('id_respuesta')))
                 }
             }
             validated_data['datos_agregados'] = datos_agregados

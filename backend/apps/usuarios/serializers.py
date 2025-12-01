@@ -31,6 +31,11 @@ class RegistroSerializer(serializers.ModelSerializer):
             'last_name': {'required': False},
         }
     
+    def validate_email(self, value):
+        if Usuario.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Ya existe un usuario con este email")
+        return value
+
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({
