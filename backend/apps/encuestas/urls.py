@@ -3,6 +3,8 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 from .views import EncuestaViewSet, PreguntaViewSet, OpcionViewSet, RespuestaViewSet
 
+app_name = 'encuestas'
+
 # Configuración del enrutador para las vistas de encuestas
 router = DefaultRouter()
 router.register(r'', EncuestaViewSet, basename='encuestas')

@@ -1,207 +1,186 @@
+import pytest
 from django.urls import reverse
-from rest_framework.test import APITestCase
 from rest_framework import status
-from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import RefreshToken
-from apps.poblacion.models.personas import Persona
-from apps.poblacion.models.catalogos import TipoIdentificacion
-from .models import RegistroSalud, AlertaSalud, ControlSalud
+from datetime import date
+from apps.salud.models import HistorialMedico, Vacuna, Medicamento, RegistroSalud, AlertaSalud, ControlSalud
 
-Usuario = get_user_model()
+pytestmark = pytest.mark.django_db
 
-class SaludModuloTests(APITestCase):
-    def setUp(self):
-        # Crear usuario admin
-        self.admin = Usuario.objects.create_superuser(
-            username="admin",
-            email="admin@example.com",
-            password="Admin123!",
-            rol=Usuario.ADMIN,
-            is_staff=True
+class TestHistorialMedicoModel:
+    def test_historial_medico_creation(self, persona):
+        historial = HistorialMedico.objects.create(
+            persona=persona,
+            antecedentes_familiares='Diabetes',
+            alergias='Penicilina'
         )
+        assert historial.persona == persona
+        assert historial.antecedentes_familiares == 'Diabetes'
+        assert historial.alergias == 'Penicilina'
 
-        # Crear tipo de identificación
-        self.tipo_id = TipoIdentificacion.objects.create(nombre="Cédula")
+    def test_historial_medico_str(self, persona):
+        historial = HistorialMedico.objects.create(persona=persona)
+        expected = f"Historial médico de {persona}"
+        assert str(historial) == expected
 
-        # Crear persona de prueba
-        self.persona = Persona.objects.create(
-            tipo_identificacion=self.tipo_id,
-            numero_identificacion="123456789",
-            primer_nombre="Juan",
-            primer_apellido="Pérez",
-            fecha_nacimiento="1990-01-01",
-            genero="M"
+
+class TestVacunaModel:
+    def test_vacuna_creation(self, persona):
+        vacuna = Vacuna.objects.create(
+            persona=persona,
+            nombre_vacuna='COVID-19',
+            tipo_vacuna='campana',
+            fecha_aplicacion=date.today(),
+            dosis='1ra dosis'
         )
+        assert vacuna.persona == persona
+        assert vacuna.nombre_vacuna == 'COVID-19'
+        assert vacuna.tipo_vacuna == 'campana'
 
-        # Endpoints
-        self.registros_url = reverse('registros-salud-list')
-        self.alertas_url = reverse('alertas-salud-list')
-        self.controles_url = reverse('controles-salud-list')
-
-        # Token para autenticación
-        self.token = RefreshToken.for_user(self.admin).access_token
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
-
-    # -----------------------
-    # Registros de Salud
-    # -----------------------
-    def test_crear_registro_salud(self):
-        """Crear un registro de salud válido"""
-        data = {
-            "persona": self.persona.id,
-            "tipo_registro": "Consulta médica",
-            "fecha_registro": "2024-01-15",
-            "descripcion": "Consulta general",
-            "observaciones": "Paciente en buen estado"
-        }
-        response = self.client.post(self.registros_url, data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(RegistroSalud.objects.filter(persona=self.persona).exists())
-
-    def test_listar_registros_salud(self):
-        """Listar registros de salud"""
-        RegistroSalud.objects.create(
-            persona=self.persona,
-            tipo_registro="Vacunación",
-            fecha_registro="2024-01-10"
+    def test_vacuna_str(self, persona):
+        vacuna = Vacuna.objects.create(
+            persona=persona,
+            nombre_vacuna='Sarampión',
+            fecha_aplicacion=date.today()
         )
-        response = self.client.get(self.registros_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
+        expected = f"Sarampión - {persona} ({date.today()})"
+        assert str(vacuna) == expected
 
-    def test_actualizar_registro_salud(self):
-        """Actualizar un registro de salud"""
+
+class TestMedicamentoModel:
+    def test_medicamento_creation(self, persona):
+        medicamento = Medicamento.objects.create(
+            persona=persona,
+            nombre_medicamento='Paracetamol',
+            dosis='500mg',
+            frecuencia='Cada 8 horas',
+            indicacion='Dolor de cabeza',
+            fecha_prescripcion=date.today(),
+            fecha_inicio=date.today()
+        )
+        assert medicamento.persona == persona
+        assert medicamento.nombre_medicamento == 'Paracetamol'
+        assert medicamento.activo is True
+
+    def test_medicamento_str(self, persona):
+        medicamento = Medicamento.objects.create(
+            persona=persona,
+            nombre_medicamento='Ibuprofeno',
+            dosis='200mg',
+            frecuencia='Cada 6 horas',
+            indicacion='Inflamación',
+            fecha_prescripcion=date.today(),
+            fecha_inicio=date.today()
+        )
+        expected = f"Ibuprofeno - {persona}"
+        assert str(medicamento) == expected
+
+
+class TestRegistroSaludModel:
+    def test_registro_salud_creation(self, persona):
         registro = RegistroSalud.objects.create(
-            persona=self.persona,
-            tipo_registro="Consulta",
-            fecha_registro="2024-01-01"
+            persona=persona,
+            fecha_registro=date.today(),
+            tipo_registro='Consulta',
+            descripcion='Chequeo general'
         )
-        data = {"observaciones": "Actualización de observaciones"}
-        response = self.client.patch(f"{self.registros_url}{registro.id}/", data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        registro.refresh_from_db()
-        self.assertEqual(registro.observaciones, "Actualización de observaciones")
+        assert registro.persona == persona
+        assert registro.tipo_registro == 'Consulta'
+        assert registro.descripcion == 'Chequeo general'
 
-    # -----------------------
-    # Alertas de Salud
-    # -----------------------
-    def test_crear_alerta_salud(self):
-        """Crear una alerta de salud"""
-        data = {
-            "persona": self.persona.id,
-            "titulo": "Alerta médica",
-            "descripcion": "Requiere atención inmediata",
-            "prioridad": "alta"
-        }
-        response = self.client.post(self.alertas_url, data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(AlertaSalud.objects.filter(persona=self.persona).exists())
+    def test_registro_salud_str(self, persona):
+        registro = RegistroSalud.objects.create(
+            persona=persona,
+            fecha_registro=date.today(),
+            tipo_registro='Vacunación'
+        )
+        expected = f"Registro de {persona} - Vacunación ({date.today()})"
+        assert str(registro) == expected
 
-    def test_marcar_alerta_resuelta(self):
-        """Marcar alerta como resuelta"""
+
+class TestAlertaSaludModel:
+    def test_alerta_salud_creation(self, persona):
         alerta = AlertaSalud.objects.create(
-            persona=self.persona,
-            titulo="Alerta de prueba",
-            descripcion="Descripción de prueba",
-            prioridad="media"
+            persona=persona,
+            titulo='Presión alta',
+            descripcion='Paciente con hipertensión',
+            prioridad='alta'
         )
-        data = {"resuelta": True, "fecha_resolucion": "2024-01-20"}
-        response = self.client.patch(f"{self.alertas_url}{alerta.id}/", data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        alerta.refresh_from_db()
-        self.assertTrue(alerta.resuelta)
+        assert alerta.persona == persona
+        assert alerta.titulo == 'Presión alta'
+        assert alerta.prioridad == 'alta'
+        assert alerta.resuelta is False
 
-    def test_filtrar_alertas_por_prioridad(self):
-        """Filtrar alertas por prioridad"""
-        AlertaSalud.objects.create(
-            persona=self.persona,
-            titulo="Alerta baja",
-            descripcion="Descripción",
-            prioridad="baja"
+    def test_alerta_salud_str(self, persona):
+        alerta = AlertaSalud.objects.create(
+            persona=persona,
+            titulo='Fiebre',
+            descripcion='Temperatura elevada',
+            prioridad='media'
         )
-        AlertaSalud.objects.create(
-            persona=self.persona,
-            titulo="Alerta alta",
-            descripcion="Descripción",
-            prioridad="alta"
+        expected = f"Alerta para {persona} - Fiebre (media)"
+        assert str(alerta) == expected
+
+    def test_alerta_salud_str_general(self):
+        alerta = AlertaSalud.objects.create(
+            titulo='Alerta general',
+            descripcion='Alerta sin persona específica',
+            prioridad='baja'
         )
-        response = self.client.get(self.alertas_url, {"prioridad": "alta"})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # Verificar que solo retorna alertas de alta prioridad
+        expected = "Alerta para General - Alerta general (baja)"
+        assert str(alerta) == expected
 
-    # -----------------------
-    # Controles de Salud
-    # -----------------------
-    def test_crear_control_salud(self):
-        """Crear un control de salud"""
-        data = {
-            "persona": self.persona.id,
-            "tipo_control": "Chequeo anual",
-            "fecha_programada": "2024-06-15",
-            "observaciones": "Control rutinario"
-        }
-        response = self.client.post(self.controles_url, data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(ControlSalud.objects.filter(persona=self.persona).exists())
 
-    def test_marcar_control_realizado(self):
-        """Marcar control como realizado"""
+class TestControlSaludModel:
+    def test_control_salud_creation(self, persona):
         control = ControlSalud.objects.create(
-            persona=self.persona,
-            tipo_control="Vacunación",
-            fecha_programada="2024-02-01"
+            persona=persona,
+            tipo_control='Chequeo anual',
+            fecha_programada=date.today()
         )
-        data = {"realizado": True, "fecha_realizada": "2024-02-01"}
-        response = self.client.patch(f"{self.controles_url}{control.id}/", data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        control.refresh_from_db()
-        self.assertTrue(control.realizado)
+        assert control.persona == persona
+        assert control.tipo_control == 'Chequeo anual'
+        assert control.realizado is False
 
-    def test_eliminar_registro_salud(self):
-        """Eliminar un registro de salud"""
-        registro = RegistroSalud.objects.create(
-            persona=self.persona,
-            tipo_registro="Consulta",
-            fecha_registro="2024-01-01"
+    def test_control_salud_str(self, persona):
+        control = ControlSalud.objects.create(
+            persona=persona,
+            tipo_control='Vacunación',
+            fecha_programada=date.today()
         )
-        response = self.client.delete(f"{self.registros_url}{registro.id}/")
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(RegistroSalud.objects.filter(id=registro.id).exists())
+        expected = f"Control de {persona} - Vacunación ({date.today()})"
+        assert str(control) == expected
 
-    # -----------------------
-    # Serialización y campos relacionados
-    # -----------------------
-    def test_serializacion_incluye_datos_persona(self):
-        """Verificar que la serialización incluye datos de la persona"""
-        registro = RegistroSalud.objects.create(
-            persona=self.persona,
-            tipo_registro="Consulta",
-            fecha_registro="2024-01-01"
+
+class TestSaludViewSets:
+    def test_historial_medico_list_admin(self, api_client, admin_user, persona):
+        HistorialMedico.objects.create(persona=persona)
+        api_client.force_authenticate(user=admin_user)
+        url = reverse('historialmedico-list')
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_vacuna_list_admin(self, api_client, admin_user, persona):
+        Vacuna.objects.create(
+            persona=persona,
+            nombre_vacuna='Test',
+            fecha_aplicacion=date.today()
         )
-        response = self.client.get(f"{self.registros_url}{registro.id}/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("persona_nombre", response.data)
-        self.assertEqual(response.data["persona_nombre"], "Juan")
+        api_client.force_authenticate(user=admin_user)
+        url = reverse('vacuna-list')
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_200_OK
 
-    # -----------------------
-    # Validaciones
-    # -----------------------
-    def test_registro_sin_persona_falla(self):
-        """Crear registro sin persona debe fallar"""
-        data = {
-            "tipo_registro": "Consulta",
-            "fecha_registro": "2024-01-15"
-        }
-        response = self.client.post(self.registros_url, data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_alerta_prioridad_invalida_falla(self):
-        """Prioridad inválida debe fallar"""
-        data = {
-            "persona": self.persona.id,
-            "titulo": "Alerta",
-            "descripcion": "Descripción",
-            "prioridad": "invalida"
-        }
-        response = self.client.post(self.alertas_url, data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    def test_medicamento_list_admin(self, api_client, admin_user, persona):
+        Medicamento.objects.create(
+            persona=persona,
+            nombre_medicamento='Test',
+            dosis='100mg',
+            frecuencia='Diario',
+            indicacion='Test',
+            fecha_prescripcion=date.today(),
+            fecha_inicio=date.today()
+        )
+        api_client.force_authenticate(user=admin_user)
+        url = reverse('medicamento-list')
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_200_OK

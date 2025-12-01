@@ -27,3 +27,5 @@ django-debug-toolbar==4.2.0
 
 # Testing (opcional)
 pytest-django==4.7.0
+pytest-cov==4.1.0
+coverage==7.4.1

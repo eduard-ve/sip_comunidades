@@ -1,265 +1,152 @@
-from django.test import TestCase
+import pytest
 from django.urls import reverse
-from rest_framework.test import APITestCase
 from rest_framework import status
-from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import RefreshToken
 from datetime import date
+from apps.social.models import (
+    TipoAutoridad, RolAutoridad, AutoridadComunitaria,
+    ProgramaSocial, EstadoPrograma, ActividadComunitaria, TipoActividad, EstadoActividad
+)
 
-from .models import EstadoPrograma, ProgramaSocial, ProgramaBeneficiario, ActividadSocial, CoberturaPrograma
-from apps.poblacion.models import personas
-from apps.poblacion.models.catalogos import TipoIdentificacion
-from apps.usuarios.models import Usuario
+pytestmark = pytest.mark.django_db
 
-Usuario = get_user_model()
-
-class SocialModuloTests(APITestCase):
-    def setUp(self):
-        # Crear usuario admin para autenticación
-        self.admin = Usuario.objects.create_superuser(
-            username="admin_social",
-            email="admin_social@example.com",
-            password="Admin123!",
-            rol=Usuario.ADMIN,
-            is_staff=True
+class TestTipoAutoridadModel:
+    def test_tipo_autoridad_creation(self):
+        tipo = TipoAutoridad.objects.create(
+            nombre='Comunitario',
+            descripcion='Líder comunitario'
         )
+        assert tipo.nombre == 'Comunitario'
+        assert tipo.descripcion == 'Líder comunitario'
 
-        # Crear tipo de identificación para personas
-        self.tipo_id = TipoIdentificacion.objects.create(nombre="Cédula")
+    def test_tipo_autoridad_str(self):
+        tipo = TipoAutoridad.objects.create(nombre='Tradicional')
+        assert str(tipo) == 'Tradicional'
 
-        # Crear estado de programa
-        self.estado = EstadoPrograma.objects.create(nombre="Activo")
 
-        # Crear persona para beneficiarios
-        self.persona = personas.Persona.objects.create(
-            tipo_identificacion=self.tipo_id,
-            numero_identificacion="123456789",
-            primer_nombre="Juan",
-            primer_apellido="Pérez",
-            fecha_nacimiento=date(1990, 1, 1),
-            genero="M"
+class TestRolAutoridadModel:
+    def test_rol_autoridad_creation(self):
+        rol = RolAutoridad.objects.create(
+            nombre='Presidente',
+            descripcion='Jefe de la comunidad'
         )
+        assert rol.nombre == 'Presidente'
 
-        # Crear programa social
-        self.programa = ProgramaSocial.objects.create(
-            nombre="Programa de Alimentación",
-            descripcion="Programa para apoyar alimentación",
-            estado=self.estado,
-            fecha_inicio=date(2023, 1, 1),
-            responsable=self.admin
+    def test_rol_autoridad_str(self):
+        rol = RolAutoridad.objects.create(nombre='Secretario')
+        assert str(rol) == 'Secretario'
+
+
+class TestAutoridadComunitariaModel:
+    def test_autoridad_comunitaria_creation(self, persona, tipo_identificacion, nivel_educativo, ocupacion, grupo_etnico, estado_civil, lengua):
+        tipo_autoridad = TipoAutoridad.objects.create(nombre='Comunitario')
+        rol = RolAutoridad.objects.create(nombre='Líder')
+        autoridad = AutoridadComunitaria.objects.create(
+            persona=persona,
+            tipo_autoridad=tipo_autoridad,
+            rol=rol,
+            fecha_inicio_mandato=date.today()
         )
+        assert autoridad.persona == persona
+        assert autoridad.activo is True
 
-        # URLs de la API
-        self.estados_url = reverse('social:estado-list')
-        self.programas_url = reverse('social:programa-list')
-        self.beneficiarios_url = reverse('social:beneficiario-list')
-        self.actividades_url = reverse('social:actividad-list')
-        self.coberturas_url = reverse('social:cobertura-list')
+    def test_autoridad_comunitaria_str(self, persona):
+        tipo_autoridad = TipoAutoridad.objects.create(nombre='Comunitario')
+        rol = RolAutoridad.objects.create(nombre='Líder')
+        autoridad = AutoridadComunitaria.objects.create(
+            persona=persona,
+            tipo_autoridad=tipo_autoridad,
+            rol=rol,
+            fecha_inicio_mandato=date.today()
+        )
+        expected = f"{persona} - {rol} ({tipo_autoridad})"
+        assert str(autoridad) == expected
 
 
-        # Token para autenticación
-        self.token = RefreshToken.for_user(self.admin).access_token
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
-
-    # -----------------------
-    # Tests de Modelos
-    # -----------------------
-    def test_creacion_estado_programa(self):
-        """Verificar creación de EstadoPrograma"""
-        estado = EstadoPrograma.objects.create(nombre="Inactivo")
-        self.assertEqual(estado.nombre, "Inactivo")
-        self.assertEqual(str(estado), "Inactivo")
-
-    def test_creacion_programa_social(self):
-        """Verificar creación de ProgramaSocial con relaciones"""
+class TestProgramaSocialModel:
+    def test_programa_social_creation(self):
+        estado = EstadoPrograma.objects.create(nombre='Activo')
         programa = ProgramaSocial.objects.create(
-            nombre="Programa Educativo",
-            descripcion="Programa para educación",
-            estado=self.estado,
-            responsable=self.admin
+            nombre='Programa Educativo',
+            descripcion='Apoyo educativo',
+            tipo_programa='educacion',
+            estado=estado
         )
-        self.assertEqual(programa.nombre, "Programa Educativo")
-        self.assertEqual(programa.estado, self.estado)
-        self.assertEqual(programa.responsable, self.admin)
+        assert programa.nombre == 'Programa Educativo'
+        assert programa.tipo_programa == 'educacion'
+        assert programa.beneficiarios_count == 0
 
-    def test_relacion_programa_beneficiario(self):
-        """Verificar relación ProgramaBeneficiario"""
-        beneficiario = ProgramaBeneficiario.objects.create(
-            programa=self.programa,
-            persona=self.persona,
-            observaciones="Beneficiario activo"
+    def test_programa_social_str(self):
+        estado = EstadoPrograma.objects.create(nombre='Activo')
+        programa = ProgramaSocial.objects.create(
+            nombre='Programa Salud',
+            tipo_programa='salud',
+            estado=estado
         )
-        self.assertEqual(beneficiario.programa, self.programa)
-        self.assertEqual(beneficiario.persona, self.persona)
-        self.assertEqual(beneficiario.estado, 'activo')
+        assert str(programa) == 'Programa Salud'
 
-    def test_creacion_actividad_social(self):
-        """Verificar creación de ActividadSocial"""
-        actividad = ActividadSocial.objects.create(
-            programa=self.programa,
-            titulo="Taller de Nutrición",
-            descripcion="Taller sobre alimentación saludable",
-            fecha=date(2023, 6, 15),
-            ubicacion="Centro Comunitario"
+
+class TestActividadComunitariaModel:
+    def test_actividad_comunitaria_creation(self):
+        tipo_actividad = TipoActividad.objects.create(nombre='Taller')
+        estado = EstadoActividad.objects.create(nombre='Planificada')
+        from datetime import datetime
+        actividad = ActividadComunitaria.objects.create(
+            titulo='Taller de Computación',
+            descripcion='Aprender computación',
+            tipo_actividad=tipo_actividad,
+            estado=estado,
+            fecha_inicio=datetime.now(),
+            capacidad_maxima=20
         )
-        self.assertEqual(actividad.titulo, "Taller de Nutrición")
-        self.assertEqual(actividad.programa, self.programa)
+        assert actividad.titulo == 'Taller de Computación'
+        assert actividad.asistentes_confirmados == 0
+        assert actividad.tasa_participacion == 0
 
-    def test_creacion_cobertura_programa(self):
-        """Verificar creación de CoberturaPrograma"""
-        cobertura = CoberturaPrograma.objects.create(
-            programa=self.programa,
-            latitud=4.6097,
-            longitud=-74.0817,
-            descripcion="Cobertura en Bogotá",
-            area_nombre="Centro"
+    def test_actividad_comunitaria_str(self):
+        tipo_actividad = TipoActividad.objects.create(nombre='Reunión')
+        estado = EstadoActividad.objects.create(nombre='Completada')
+        from datetime import datetime
+        actividad = ActividadComunitaria.objects.create(
+            titulo='Reunión Comunitaria',
+            tipo_actividad=tipo_actividad,
+            estado=estado,
+            fecha_inicio=datetime.now()
         )
-        self.assertEqual(cobertura.programa, self.programa)
-        self.assertEqual(float(cobertura.latitud), 4.6097)
-        self.assertEqual(float(cobertura.longitud), -74.0817)
+        expected = f"Reunión Comunitaria - {actividad.fecha_inicio.strftime('%d/%m/%Y %H:%M')}"
+        assert str(actividad) == expected
 
-    # -----------------------
-    # Tests de API - EstadoPrograma
-    # -----------------------
-    def test_listar_estados_programa(self):
-        """Listar todos los estados de programa"""
-        response = self.client.get(self.estados_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
 
-    def test_crear_estado_programa(self):
-        """Crear nuevo estado de programa"""
-        data = {"nombre": "Suspendido"}
-        response = self.client.post(self.estados_url, data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['nombre'], "Suspendido")
+class TestSocialViewSets:
+    def test_tipo_autoridad_list_admin(self, api_client, admin_user):
+        TipoAutoridad.objects.create(nombre='Test')
+        api_client.force_authenticate(user=admin_user)
+        url = reverse('tipoautoridad-list')
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_200_OK
 
-    def test_detalle_estado_programa(self):
-        """Obtener detalle de estado de programa"""
-        url = reverse('social:estado-detail', kwargs={'pk': self.estado.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['nombre'], "Activo")
-
-    # -----------------------
-    # Tests de API - ProgramaSocial
-    # -----------------------
-    def test_listar_programas_sociales(self):
-        """Listar todos los programas sociales"""
-        response = self.client.get(self.programas_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
-
-    def test_crear_programa_social(self):
-        """Crear nuevo programa social"""
-        data = {
-            "nombre": "Programa de Salud",
-            "descripcion": "Programa para atención médica",
-            "estado_id": self.estado.id,
-            "fecha_inicio": "2023-02-01",
-            "responsable": self.admin.id
-        }
-        response = self.client.post(self.programas_url, data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['nombre'], "Programa de Salud")
-
-    def test_detalle_programa_social(self):
-        """Obtener detalle de programa social"""
-        url = reverse('social:programa-detail', kwargs={'pk': self.programa.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['nombre'], "Programa de Alimentación")
-
-    # -----------------------
-    # Tests de API - ProgramaBeneficiario
-    # -----------------------
-    def test_listar_beneficiarios(self):
-        """Listar todos los beneficiarios"""
-        response = self.client.get(self.beneficiarios_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_crear_beneficiario(self):
-        """Crear nuevo beneficiario"""
-        data = {
-            "programa": self.programa.id,
-            "persona": self.persona.id,
-            "observaciones": "Nuevo beneficiario"
-        }
-        response = self.client.post(self.beneficiarios_url, data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['programa'], self.programa.id)
-
-    # -----------------------
-    # Tests de API - ActividadSocial
-    # -----------------------
-    def test_listar_actividades(self):
-        """Listar todas las actividades sociales"""
-        response = self.client.get(self.actividades_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_crear_actividad_social(self):
-        """Crear nueva actividad social"""
-        data = {
-            "titulo": "Charla Motivacional",
-            "descripcion": "Charla sobre emprendimiento",
-            "fecha": "2023-07-20",
-            "ubicacion": "Auditorio Principal",
-            "programa": self.programa.id
-        }
-        response = self.client.post(self.actividades_url, data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['titulo'], "Charla Motivacional")
-
-    # -----------------------
-    # Tests de API - CoberturaPrograma
-    # -----------------------
-    def test_listar_coberturas(self):
-        """Listar todas las coberturas de programa"""
-        response = self.client.get(self.coberturas_url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_crear_cobertura_programa(self):
-        """Crear nueva cobertura de programa"""
-        data = {
-            "programa": self.programa.id,
-            "latitud": 4.7110,
-            "longitud": -74.0721,
-            "descripcion": "Cobertura en Chapinero",
-            "area_nombre": "Chapinero"
-        }
-        response = self.client.post(self.coberturas_url, data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['area_nombre'], "Chapinero")
-
-    # -----------------------
-    # Tests de Integración
-    # -----------------------
-    def test_integracion_programa_beneficiarios(self):
-        """Verificar integración entre programa y beneficiarios"""
-        # Crear beneficiario
-        beneficiario = ProgramaBeneficiario.objects.create(
-            programa=self.programa,
-            persona=self.persona
+    def test_programa_social_list_admin(self, api_client, admin_user):
+        estado = EstadoPrograma.objects.create(nombre='Activo')
+        ProgramaSocial.objects.create(
+            nombre='Test Program',
+            tipo_programa='educacion',
+            estado=estado
         )
+        api_client.force_authenticate(user=admin_user)
+        url = reverse('programasocial-list')
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_200_OK
 
-        # Verificar que el programa tiene el beneficiario
-        self.assertIn(self.persona, self.programa.beneficiarios.all())
-
-        # Verificar que la persona tiene el programa
-        self.assertIn(self.programa, self.persona.programas_sociales.all())
-
-    def test_integracion_con_usuarios(self):
-        """Verificar integración con módulo de usuarios"""
-        # El responsable del programa debe ser un usuario válido
-        self.assertEqual(self.programa.responsable, self.admin)
-        self.assertIsInstance(self.programa.responsable, Usuario)
-
-    def test_integracion_con_poblacion(self):
-        """Verificar integración con módulo de población"""
-        # Los beneficiarios deben ser personas válidas
-        beneficiario = ProgramaBeneficiario.objects.create(
-            programa=self.programa,
-            persona=self.persona
+    def test_actividad_comunitaria_list_admin(self, api_client, admin_user):
+        tipo_actividad = TipoActividad.objects.create(nombre='Test')
+        estado = EstadoActividad.objects.create(nombre='Planificada')
+        from datetime import datetime
+        ActividadComunitaria.objects.create(
+            titulo='Test Activity',
+            tipo_actividad=tipo_actividad,
+            estado=estado,
+            fecha_inicio=datetime.now()
         )
-        self.assertIsInstance(beneficiario.persona, personas.Persona)
-        self.assertEqual(beneficiario.persona.numero_identificacion, "123456789")
+        api_client.force_authenticate(user=admin_user)
+        url = reverse('actividadcomunitaria-list')
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_200_OK

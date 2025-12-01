@@ -2,8 +2,14 @@ from rest_framework import serializers
 from .models import AuditLog
 
 class AuditLogSerializer(serializers.ModelSerializer):
-    usuario_username = serializers.CharField(source='usuario.username', read_only=True)
-    usuario_rol = serializers.CharField(source='usuario.rol', read_only=True)
+    usuario_username = serializers.SerializerMethodField()
+    usuario_rol = serializers.SerializerMethodField()
+
+    def get_usuario_username(self, obj):
+        return obj.usuario.username if obj.usuario else ''
+
+    def get_usuario_rol(self, obj):
+        return obj.usuario.rol if obj.usuario else ''
 
     class Meta:
         model = AuditLog
