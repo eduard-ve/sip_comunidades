@@ -215,7 +215,7 @@ function submit() {
       texto_pregunta: p.texto.trim(),
       tipo: p.tipo,
       orden: preguntas.value.indexOf(p) + 1,
-      opciones: p.opciones.map(opt => ({
+      opciones: (p.opciones || []).map(opt => ({
         texto_opcion: opt.texto_opcion?.trim() || '',
         valor: opt.valor
       }))

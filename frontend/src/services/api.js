@@ -80,6 +80,7 @@ export const poblacionService = {
 
   // Estadísticas de población
   getPopulationStats: () => api.get('/poblacion/stats/'),
+  getStats: () => api.get('/poblacion/stats/'),
   getEstadisticas: () => api.get('/poblacion/estadisticas/estadisticas/'),
   getDistribucionEdad: () => api.get('/poblacion/estadisticas/distribucion_edad/'),
   getDistribucionEducativa: () => api.get('/poblacion/estadisticas/distribucion_educativa/'),
@@ -88,39 +89,49 @@ export const poblacionService = {
   getLenguasMaternas: () => api.get('/poblacion/estadisticas/lenguas_maternas/'),
   getLenguasPorGrupoEtnico: (grupoId) => api.get(`/poblacion/estadisticas/${grupoId}/lenguas_por_grupo_etnico/`),
   getDashboardData: () => api.get('/poblacion/estadisticas/dashboard/'),
+  getDashboard: () => api.get('/poblacion/estadisticas/dashboard/'),
   }
   
   // Servicios sociales
   export const socialService = {
     // Estados de programas
     getEstadosProgramas: () => api.get('/social/estados/'),
+    getEstadosPrograma: () => api.get('/social/estados/'),
     createEstadoPrograma: (estadoData) => api.post('/social/estados/', estadoData),
     updateEstadoPrograma: (id, estadoData) => api.put(`/social/estados/${id}/`, estadoData),
     deleteEstadoPrograma: (id) => api.delete(`/social/estados/${id}/`),
-  
+
     // Programas sociales
     getProgramasSociales: () => api.get('/social/programas/'),
+    getProgramas: () => api.get('/social/programas/'),
     createProgramaSocial: (programaData) => api.post('/social/programas/', programaData),
+    createPrograma: (programaData) => api.post('/social/programas/', programaData),
     updateProgramaSocial: (id, programaData) => api.put(`/social/programas/${id}/`, programaData),
+    updatePrograma: (id, programaData) => api.put(`/social/programas/${id}/`, programaData),
     deleteProgramaSocial: (id) => api.delete(`/social/programas/${id}/`),
-  
+    deletePrograma: (id) => api.delete(`/social/programas/${id}/`),
+
     // Beneficiarios
     getBeneficiarios: () => api.get('/social/beneficiarios/'),
     createBeneficiario: (beneficiarioData) => api.post('/social/beneficiarios/', beneficiarioData),
     updateBeneficiario: (id, beneficiarioData) => api.put(`/social/beneficiarios/${id}/`, beneficiarioData),
     deleteBeneficiario: (id) => api.delete(`/social/beneficiarios/${id}/`),
-  
+
     // Actividades sociales
     getActividadesSociales: () => api.get('/social/actividades/'),
     createActividadSocial: (actividadData) => api.post('/social/actividades/', actividadData),
     updateActividadSocial: (id, actividadData) => api.put(`/social/actividades/${id}/`, actividadData),
     deleteActividadSocial: (id) => api.delete(`/social/actividades/${id}/`),
-  
+
     // Coberturas de programas
     getCoberturasProgramas: () => api.get('/social/coberturas/'),
+    getCoberturas: () => api.get('/social/coberturas/'),
     createCoberturaPrograma: (coberturaData) => api.post('/social/coberturas/', coberturaData),
+    createCobertura: (coberturaData) => api.post('/social/coberturas/', coberturaData),
     updateCoberturaPrograma: (id, coberturaData) => api.put(`/social/coberturas/${id}/`, coberturaData),
+    updateCobertura: (id, coberturaData) => api.put(`/social/coberturas/${id}/`, coberturaData),
     deleteCoberturaPrograma: (id) => api.delete(`/social/coberturas/${id}/`),
+    deleteCobertura: (id) => api.delete(`/social/coberturas/${id}/`),
 
     // Autoridades comunitarias
     getTiposAutoridad: () => api.get('/social/tipos-autoridad/'),
@@ -134,10 +145,15 @@ export const poblacionService = {
     deleteRolAutoridad: (id) => api.delete(`/social/roles-autoridad/${id}/`),
 
     getAutoridadesComunitarias: () => api.get('/social/autoridades/'),
+    getAutoridades: () => api.get('/social/autoridades/'),
     createAutoridadComunitaria: (autoridadData) => api.post('/social/autoridades/', autoridadData),
+    createAutoridad: (autoridadData) => api.post('/social/autoridades/', autoridadData),
     updateAutoridadComunitaria: (id, autoridadData) => api.put(`/social/autoridades/${id}/`, autoridadData),
+    updateAutoridad: (id, autoridadData) => api.put(`/social/autoridades/${id}/`, autoridadData),
     deleteAutoridadComunitaria: (id) => api.delete(`/social/autoridades/${id}/`),
+    deleteAutoridad: (id) => api.delete(`/social/autoridades/${id}/`),
     buscarPersonaPorCedula: (numeroIdentificacion) => api.get(`/social/autoridades/buscar-persona/?numero_identificacion=${numeroIdentificacion}`),
+    buscarPersona: (numeroIdentificacion) => api.get('/social/autoridades/buscar-persona/', { params: { numero_identificacion: numeroIdentificacion } }),
 
     // Actividades comunitarias
     getTiposActividad: () => api.get('/social/tipos-actividad/'),

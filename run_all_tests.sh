@@ -37,7 +37,7 @@ fi
 print_status "Ejecutando pruebas del backend (Django/Python)..."
 cd backend
 
-if python -m pytest apps/auditoria/tests.py apps/encuestas/tests.py apps/poblacion/tests.py -v; then
+if python -m pytest --cov=. --cov-report=xml --cov-config=.coveragerc apps/auditoria/tests.py apps/encuestas/tests.py apps/poblacion/tests.py apps/social/tests.py apps/salud/tests.py apps/usuarios/tests.py apps/reportes/tests.py -v; then
     print_success "✅ Pruebas del backend completadas exitosamente"
 else
     print_error "❌ Fallaron las pruebas del backend"

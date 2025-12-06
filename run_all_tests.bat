@@ -34,7 +34,7 @@ if %errorlevel% neq 0 (
 
 REM 3. Pruebas del Backend
 echo [INFO] Ejecutando pruebas del backend (Django/Python)...
-python -m pytest apps/auditoria/tests.py apps/encuestas/tests.py apps/poblacion/tests.py apps/social/tests.py apps/salud/tests.py apps/usuarios/tests.py apps/reportes/tests.py -v
+python -m pytest --cov=. --cov-report=xml --cov-config=.coveragerc apps/auditoria/tests.py apps/encuestas/tests.py apps/poblacion/tests.py apps/social/tests.py apps/salud/tests.py apps/usuarios/tests.py apps/reportes/tests.py -v
 if %errorlevel% neq 0 (
     echo [ERROR] ❌ Fallaron las pruebas del backend
     cd ..

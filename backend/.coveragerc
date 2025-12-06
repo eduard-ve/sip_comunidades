@@ -4,6 +4,7 @@ omit =
     */migrations/*
     */tests/*
     */test_*.py
+    */tests.py
     */conftest.py
     */manage.py
     */wsgi.py
@@ -12,6 +13,13 @@ omit =
     */urls.py
     */admin.py
     */apps.py
+    */__init__.py
+    */venv/*
+    */env/*
+    */media/*
+    */staticfiles/*
+    */fixtures/*
+    */management/commands/*
 
 [report]
 exclude_lines =

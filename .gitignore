@@ -33,3 +33,59 @@ dist/
 
 # ==== Archivos del sistema ====
 Thumbs.db
+
+# ==== Archivos de cobertura y testing ====
+# Backend coverage
+backend/.coverage
+backend/coverage.xml
+backend/htmlcov/
+backend/.pytest_cache/
+backend/.tox/
+backend/.cache/
+backend/*.egg-info/
+backend/dist/
+backend/build/
+
+# Frontend coverage
+frontend/coverage/
+frontend/.nyc_output/
+frontend/.vite/
+
+# Archivos temporales de tests
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Archivos de SonarQube temporales
+.sonar/
+.scannerwork/
+
+# Archivos de reportes de análisis
+*.xml
+!backend/coverage.xml
+!sonar-project.properties
+pylint-report.xml
+bandit-report.json
+
+# Archivos de sistema operativo
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Archivos de backup
+*.bak
+*.backup
+*.old
+*.orig
+
+# Archivos de lock temporales
+*.lock
+package-lock.json.bak
+yarn.lock.bak
